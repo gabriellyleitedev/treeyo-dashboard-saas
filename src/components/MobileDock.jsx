@@ -1,0 +1,70 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Search, BarChart2, Zap, TrendingUp, PieChart, DollarSign, Settings } from 'lucide-react';
+
+const MobileDock = () => {
+    const location = useLocation();
+    const isActive = (path) => location.pathname === path;
+
+    const navLinks = [
+        { icon: Search, href: '/search' },
+        { icon: BarChart2, href: '/visao-geral' },
+        { icon: Zap, href: '/lancamento' },
+        { icon: BarChart2, href: '/movimentacao' },
+        { icon: TrendingUp, href: '/evolucao-saldo' },
+        { icon: PieChart, href: '/resultado' },
+        { icon: DollarSign, href: '/fluxo-projetado' },
+        { icon: Settings, href: '/configuracoes' }
+    ];
+
+    return (
+        <div className="lg:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 touch-none pointer-events-none">
+            <nav className="w-full max-w-[240px] h-[50px] bg-black/20 backdrop-blur border border-white/10 rounded-full overflow-hidden pointer-events-auto shadow-2xl">
+
+                {/* ÁREA DE SCROLL: */}
+                <div className="flex flex-nowrap items-center h-full px-4 overflow-x-auto overflow-y-hidden no-scrollbar snap-x touch-pan-x">
+                    {navLinks.map((link, idx) => {
+                        const active = isActive(link.href);
+                        return (
+                            <Link
+                                key={idx}
+                                to={link.href}
+                                className="relative flex flex-col items-center justify-center min-w-[60px] h-full snap-center"
+                            >
+                                {/* ICONE */}
+                                <div className={`relative z-10 transition-all duration-300 ${active ? 'text-white scale-110' : 'text-neutral-500'}`}>
+                                    <link.icon size={22} strokeWidth={active ? 2.5 : 2} />
+                                </div>
+
+                                {/* O BRILHO */}
+                                {active && (
+                                    <div className="absolute bottom-0 flex flex-col items-center w-full pointer-events-none">
+                                        <div className="absolute w-10 h-8 bg-[#1fba11]/30 blur-lg bottom-[-5px]" />
+                                        <div
+                                            className="h-[5px] w-9 rounded-t-full z-20"
+                                            style={{
+                                                background: '#1fba11',
+                                                boxShadow: '0 0 15px #1fba11, 0 0 15px #1fba11 '
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </Link>
+                        );
+                    })}
+                </div>
+            </nav>
+
+            <style jsx>{`
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { 
+                    -ms-overflow-style: none; 
+                    scrollbar-width: none;
+                    -webkit-overflow-scrolling: touch;
+                }
+            `}</style>
+        </div>
+    );
+}
+
+export default MobileDock;

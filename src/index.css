@@ -1,0 +1,136 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  width: 100%;
+  background: #0D0D0D;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(-50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateY(-50%) scale(1.08);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.15s ease-out;
+}
+
+.animate-barGrow {
+  animation: barGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+.custom-scroll {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #333333 transparent !important;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 5px !important;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: #222222 !important;
+  border-radius: 20px !important;
+}
+
+.sidebar-container {
+  height: 100vh;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  background-color: #0a0a0a;
+  transition: all 0.5s ease-in-out;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+@media (min-width: 1024px) {
+  .sidebar-container {
+    position: sticky;
+  }
+}
+
+.nav-section-margin {
+  margin-bottom: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .nav-section-margin {
+    margin-bottom: 6.25rem;
+  }
+}
+
+.mobile-calendar-hack button {
+  padding: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.mobile-calendar-hack span,
+.mobile-calendar-hack svg:not(.lucide-calendar) {
+  display: none !important;
+}
