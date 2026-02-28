@@ -72,7 +72,7 @@ function VisaoGeral() {
 
 
                         {/* GRÁFICO */}
-                         <div className="w-full py-4 min-h-[300px]">
+                         <div className="-mx-4 md:mx-0 w-full md:w-full overflow-hidden">
                             <MainChart />
                         </div>
                     </div>
