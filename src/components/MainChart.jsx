@@ -89,7 +89,7 @@ export default function MainChart() {
   /* interval 0 força aparecer tudo, sem pular nenhum */
   interval={0}
   /* O segredo está aqui: padding interno para o texto não vazar */
-  padding={{ left: 10, right: 10 }}
+  padding={{ left: 10, right: 8 }}
   /* Sua lógica de pegar só a letra no mobile */
   tickFormatter={(val) => (isMobile && val.length > 1 ? val.charAt(0) : val)}
             />
