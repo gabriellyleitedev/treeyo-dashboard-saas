@@ -74,7 +74,7 @@ function VisaoGeral() {
 
 
                         {/* GRÁFICO */}
-                        <div className="w-full pr-0 md:pl-0 py-4 min-h-[300px]">
+                         <div className="w-full py-4 min-h-[300px]">
                             <MainChart />
                         </div>
                     </div>

@@ -14,7 +14,7 @@ const formatCurrency = (value) =>
     currency: 'BRL',
   });
 
-const data = [
+const data = [ 
   { day: "Seg", saldo: 2100 }, { day: "", saldo: 3500 },
   { day: "Ter", saldo: 2800 }, { day: "", saldo: 5200 },
   { day: "Qua", saldo: 3900 }, { day: "", saldo: 3100 },
@@ -27,7 +27,11 @@ const data = [
 
 export default function MainChart() {
   return (
-    <div className="w-full h-[380px] md:h-[320px] bg-black/20 md:rounded-[22px] border-y md:border border-white/5 backdrop-blur-md flex flex-col overflow-hidden">
+    <div className="w-full h-[320px] lg:h-[350px] 
+                    /* Ajuste de Borda: 'md:' garante que iPads (768px+) já mostrem a borda */
+                    bg-transparent border-none 
+                    md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md 
+                    flex flex-col overflow-hidden px-0 relative">
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pt-6 px-6">
         <div>
@@ -44,9 +48,9 @@ export default function MainChart() {
 
       <div className="flex-1 w-full mt-auto">
         <ResponsiveContainer width="100%" height="100%">
-           <AreaChart
+          <AreaChart
             data={data}
-            margin={{ top: 10, right: 0, left: 0, bottom: 0 }} // Margens pra não cortar os nomes
+           margin={{ top: 10, right: 0, left: 0, bottom: 0 }}// Margens pra não cortar os nomes
           >
             <defs>
               <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
@@ -59,14 +63,18 @@ export default function MainChart() {
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
 
             <XAxis
-              dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: '#888', fontSize: 11 }}
-              padding={{ left: 0, right: 0}}
-              minTickGap={30}
-              interval="preserveStartEnd"
-            />
+dataKey="day"
+                hide={false}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: '#888', fontSize: 10 }}
+                /* 3. OS DIAS: 'gap' alto garante que ele só mostre os nomes principais 
+                   sem 'comer' a escala da linha */
+                interval="preserveStartEnd"
+          
+                minTickGap={30}
+/>
+
 
             <YAxis hide
               width={0}
@@ -92,19 +100,19 @@ export default function MainChart() {
             />
 
             <Area
-              type="monotone" // Gera as curvas suaves (ondas)
+             type="monotone"
               dataKey="saldo"
               stroke="#1fba11"
               strokeWidth={3}
-              fillOpacity={1}
               fill="url(#colorGreen)"
-              connectNulls={true} // garante que a linha nunca "quebre" caso algum dado venha faltando
-              animationDuration={2000}
+              connectNulls={true}
+              isAnimationActive={false}
 
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
+      
 
       <div className="mt-4 pt-2 px-7 border-t border-white/5">
         <h3 className="text-neutral-400 text-xs font-base">Média</h3>
