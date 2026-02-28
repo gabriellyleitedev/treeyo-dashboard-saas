@@ -53,7 +53,7 @@ export default function SaldoMiniChart() {
     if (range === "30d") base = data30d;
     if (range === "custom") base = dataCustom;
 
-    // Marca último ponto
+    // Marca último ponto ( o map é uma pesquisa simples)
     return base.map((d, i) => ({
       ...d,
       isLast: i === base.length - 1,
@@ -128,6 +128,7 @@ export default function SaldoMiniChart() {
             ))}
           </div>
 
+            {/* data.length - 1 ainda mais rápido que a pesquisa binária */}
           <span className="absolute right-0 top-2 text-xs text-neutral-400 font-bold">
             R$ {data[data.length - 1].saldo.toLocaleString("pt-BR")}
           </span>
