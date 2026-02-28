@@ -29,38 +29,46 @@ const data = [
 export default function MainChart() {
   const [isMobile, setIsMobile] = useState(false);
 
+  // Monitora o tamanho da tela para iPad vs Mobile
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const checkSize = () => setIsMobile(window.innerWidth < 768);
+    checkSize();
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
   }, []);
 
-  const validData = data.filter(d => d.day !== "");
-  const highest = validData.reduce((a, b) => (a.saldo > b.saldo ? a : b), data[0]);
-  const lowest = validData.reduce((a, b) => (a.saldo < b.saldo ? a : b), data[0]);
+  const highest = data.reduce((a, b) => (a.saldo > b.saldo ? a : b));
+  const lowest = data.reduce((a, b) => (a.saldo < b.saldo ? a : b));
 
   return (
-    <div className="w-full h-[380px] lg:h-[340px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0 relative">
+    <div className="w-full h-[320px] lg:h-[350px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0 relative">
+      
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pt-6 px-6">
         <div>
           <h1 className="text-xs text-gray-200 md:text-sm">
-            Desempenho - <span className="text-gray-500 text-xs md:text-sm font-medium"> Últimos 7 dias</span>
+            Desempenho - <span className="text-gray-500 font-medium">Últimos 7 dias</span>
           </h1>
         </div>
-        <div className="pt-0 py-0">
-          <p className="text-xs text-neutral-400 md:text-xs whitespace-nowrap">
-            Você faturou <strong className="font-semibold text-gray-200 text-xs">+12%</strong> que na última terça
+        <div className="px-0 py-0">
+          <p className="text-[10px] text-neutral-400 md:text-xs whitespace-nowrap">
+            Faturamento <strong className="font-semibold text-gray-200">+12%</strong> vs última terça
           </p>
         </div>
       </div>
 
-      <div className="flex-1 w-full mt-auto relative">
+      {/* CHART */}
+      <div className="flex-1 w-full mt-auto">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data}
-            margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
-          >
+         <AreaChart
+  data={data}
+  margin={{ 
+    top: 10, 
+    right: isMobile ? 8 : 0,  // Deixa um pequeno respiro na direita
+    left: isMobile ? -5 : 0, // Ajuste fino para alinhar a linha sem cortar o texto
+    bottom: 0 
+  }}
+>
             <defs>
               <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
@@ -69,49 +77,38 @@ export default function MainChart() {
             </defs>
 
             <CartesianGrid
-              strokeDasharray="3 3"
               vertical={false}
               stroke="rgba(255,255,255,0.03)"
             />
 
             <XAxis
               dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              interval={0}
-              padding={{ left: 0, right: 0 }}
-              tick={(props) => {
-                const { x, y, payload, index } = props;
-                if (!payload.value) return null;
-
-                let anchor = "middle";
-                let xOffset = x;
-
-                // Ajuste inteligente das pontas
-                if (index === 0) {
-                  anchor = "start";
-                  xOffset = x + 12; // Empurra a "Segunda" para dentro
-                } else if (index === data.length - 1) {
-                  anchor = "end";
-                  xOffset = x - 12; // Empurra o "Hoje" para dentro
-                }
-
-                return (
-                  <text x={xOffset} y={y + 15} fill="#6b7280" fontSize={10} textAnchor={anchor}>
-                    {payload.value}
-                  </text>
-                );
-              }}
+  axisLine={false}
+  tickLine={false}
+  tick={{ fill: "#6b7280", fontSize: 10 }}
+  /* interval 0 força aparecer tudo, sem pular nenhum */
+  interval={0}
+  /* O segredo está aqui: padding interno para o texto não vazar */
+  padding={{ left: 10, right: 10 }}
+  /* Sua lógica de pegar só a letra no mobile */
+  tickFormatter={(val) => (isMobile && val.length > 1 ? val.charAt(0) : val)}
             />
 
-            <YAxis hide domain={["dataMin - 500", "dataMax + 500"]} />
+            <YAxis
+              hide={isMobile} // ESCONDE OS 7K NO MOBILE
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#6b7280", fontSize: 10 }}
+              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+              domain={["dataMin - 500", "dataMax + 500"]}
+            />
 
             <Tooltip
-              allowEscapeViewBox={{ x: true, y: true }}
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   const current = payload[0].value;
-                  const index = data.findIndex(d => d.saldo === current);
+                  const item = payload[0].payload;
+                  const index = data.findIndex(d => d === item);
                   const previous = data[index - 1]?.saldo;
                   const diff = previous ? ((current - previous) / previous) * 100 : null;
 
@@ -138,26 +135,21 @@ export default function MainChart() {
               stroke="#1fbA11"
               strokeWidth={2}
               fill="url(#colorGreen)"
-              isAnimationActive={true}
-              connectNulls={true}
-              activeDot={{ r: 6, strokeWidth: 0, fill: "#1fbA11" }}
+              isAnimationActive={false} // Desativa para performance no mobile
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 pt-4 px-7 border-t border-white/5 flex justify-between text-xs pb-6">
+      {/* FOOTER */}
+      <div className="mt-4 pb-6 px-7 border-t border-white/5 flex justify-between text-[10px]">
         <div>
-          <h3 className="text-neutral-400 text-[10px] uppercase tracking-wider">Melhor dia</h3>
-          <h1 className="text-[#1fba11] font-medium text-xs">
-            {highest.day || "Pico"} • {formatCurrency(highest.saldo)}
-          </h1>
+          <h3 className="text-neutral-500 uppercase">Melhor</h3>
+          <h1 className="text-[#1fba11] font-medium">{highest.day} • {formatCurrency(highest.saldo)}</h1>
         </div>
         <div className="text-right">
-          <h3 className="text-neutral-400 text-[10px] uppercase tracking-wider">Pior dia</h3>
-          <h1 className="text-red-400 font-medium text-xs">
-            {lowest.day || "Mínimo"} • {formatCurrency(lowest.saldo)}
-          </h1>
+          <h3 className="text-neutral-500 uppercase">Pior</h3>
+          <h1 className="text-red-400 font-medium">{lowest.day || "Seg"} • {formatCurrency(lowest.saldo)}</h1>
         </div>
       </div>
     </div>
