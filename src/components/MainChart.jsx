@@ -27,7 +27,7 @@ const data = [
 
 export default function MainChart() {
   return (
-    <div className="w-full h-full min-h-[320px] p-4 md:p-0 bg-black/20 rounded-[22px] border border-white/5 backdrop-blur-md flex flex-col">
+    <div className="w-full h-[380px] md:h-[320px]  bg-black/20 rounded-[22px] border border-white/5 backdrop-blur-md flex flex-col overflow-hidden">
 
       <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4 pt-3 px-7">
         <div>
