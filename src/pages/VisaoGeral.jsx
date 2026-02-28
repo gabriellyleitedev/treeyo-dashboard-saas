@@ -40,7 +40,7 @@ function VisaoGeral() {
                     <div className="flex flex-col gap-6 md:col-span-8 items-center md:items-start w-full">
 
                         {/* CARD DE SALDO ATUAL */}
-                        <div className="w-[320px] h-[180px] mx-auto md:mx-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
+                        <div className="max-w-[320px] h-[180px] w-full rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
                             <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
                             <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
                             <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
@@ -74,7 +74,7 @@ function VisaoGeral() {
 
 
                         {/* GRÁFICO */}
-                        <div className="w-full p-4 md:p-6 min-h-[300px]">
+                        <div className="w-full pr-0 md:pl-0 py-4 min-h-[300px]">
                             <MainChart />
                         </div>
                     </div>
