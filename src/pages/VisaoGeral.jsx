@@ -27,7 +27,6 @@ function VisaoGeral() {
 
             <section className="px-4 md:pl-6 md:pr-8 pt-4 w-full max-w-[100vw] overflow-x-hidden">
 
-                {/* TÍTULO */}
                 <div className="block pb-6 md:pb-4">
                     <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px]">
                         Visão Geral
@@ -36,7 +35,6 @@ function VisaoGeral() {
 
                 <div className="flex flex-col md:grid md:grid-cols-12 gap-4">
 
-                    {/* COLUNA DA ESQUERDA (Saldo e Gráfico) */}
                     <div className="flex flex-col gap-6 md:col-span-8 items-center md:items-start w-full">
 
                         {/* CARD DE SALDO ATUAL */}
