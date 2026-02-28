@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"; // Adicionado apenas o necessário para o sensor de tela
 import {
   AreaChart,
   Area,
@@ -26,25 +27,28 @@ const data = [
 ];
 
 export default function MainChart() {
+  const [isMobile, setIsMobile] = useState(false);
 
-  const highest = data.reduce((a, b) =>
-    a.saldo > b.saldo ? a : b
-  );
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-  const lowest = data.reduce((a, b) =>
-    a.saldo < b.saldo ? a : b
-  );
+  const highest = data.reduce((a, b) => (a.saldo > b.saldo ? a : b));
+  const lowest = data.reduce((a, b) => (a.saldo < b.saldo ? a : b));
 
   return (
     <div className="w-full h-[320px] lg:h-[350px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0 relative">
-
-      {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pt-6 px-6">
         <div>
-          <h1 className="text-xs text-gray-200 md:text-sm">Desempenho - <span className="text-gray-500 text-xs md:text-sm font-medium"> Últimos 7 dias</span></h1>
+          <h1 className="text-xs text-gray-200 md:text-sm">
+            Desempenho - <span className="text-gray-500 text-xs md:text-sm font-medium"> Últimos 7 dias</span>
+          </h1>
         </div>
 
-        <div className="px-0 py-0">
+        <div className="pt-0 py-0">
           <p className="text-xs text-neutral-400 md:text-xs whitespace-nowrap">
             Você faturou <strong className="font-semibold text-gray-200 text-xs">+12%</strong> que na última terça
           </p>
@@ -56,9 +60,13 @@ export default function MainChart() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
-            margin={{ top: 10, right: 0, left: -15, bottom: 0 }}
+            margin={{ 
+                top: 10, 
+                right: isMobile ? -5 : 0, 
+                left: isMobile ? -45 : -15, 
+                bottom: 0 
+            }}
           >
-
             <defs>
               <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
@@ -77,9 +85,11 @@ export default function MainChart() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#6b7280", fontSize: 11 }}
+              padding={{ left: isMobile ? 50 : 20, right: 20 }}
             />
 
             <YAxis
+              hide={isMobile}
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#6b7280", fontSize: 11 }}
@@ -96,25 +106,15 @@ export default function MainChart() {
                     : 0;
 
                   const previous = data[index - 1]?.saldo;
-
-                  const diff = previous
-                    ? ((current - previous) / previous) * 100
-                    : null;
+                  const diff = previous ? ((current - previous) / previous) * 100 : null;
 
                   return (
                     <div className="bg-[#0b0b0b] border border-white/10 rounded-xl px-4 py-3 text-xs shadow-xl">
-                      <p className="text-neutral-400 uppercase text-[10px] mb-1">
-                        {label}
-                      </p>
-
-                      <p className="text-gray-200 font-semi-medium">
-                        {formatCurrency(current)}
-                      </p>
-
+                      <p className="text-neutral-400 uppercase text-[10px] mb-1">{label}</p>
+                      <p className="text-gray-200 font-semi-medium">{formatCurrency(current)}</p>
                       {diff !== null && (
                         <p className={`mt-1 ${diff >= 0 ? "text-[#1fba11]" : "text-red-400"}`}>
-                          {diff >= 0 ? "+" : ""}
-                          {diff.toFixed(1)}% vs dia anterior
+                          {diff >= 0 ? "+" : ""}{diff.toFixed(1)}% vs dia anterior
                         </p>
                       )}
                     </div>
@@ -144,23 +144,22 @@ export default function MainChart() {
         </ResponsiveContainer>
       </div>
 
-      {/* FOOTER INSIGHTS */}
-      <div className="mt-4 pt-4 px-7 border-t border-white/5 flex justify-between text-xs">
+      {/* FOOTER */}
+      <div className="mt-4 pt-4 px-7 border-t border-white/5 flex justify-between text-xs pb-6">
         <div>
-          <h3 className="text-neutral-400 text-xs">Melhor dia</h3>
+          <h3 className="text-neutral-400 text-[10px] uppercase tracking-wider">Melhor dia</h3>
           <h1 className="text-[#1fba11] font-medium text-xs">
             {highest.day} • {formatCurrency(highest.saldo)}
           </h1>
         </div>
 
-        <div>
-          <h3 className="text-neutral-400 text-xs">Pior dia</h3>
+        <div className="text-right">
+          <h3 className="text-neutral-400 text-[10px] uppercase tracking-wider">Pior dia</h3>
           <h1 className="text-red-400 font-medium text-xs">
             {lowest.day} • {formatCurrency(lowest.saldo)}
           </h1>
         </div>
       </div>
-
     </div>
   );
 }
