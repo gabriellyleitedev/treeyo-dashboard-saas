@@ -60,11 +60,11 @@ export default function MainChart() {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
-            margin={{ 
-                top: 10, 
-                right: isMobile ? -5 : 0, 
-                left: isMobile ? -45 : -15, 
-                bottom: 0 
+            margin={{
+              top: 10,
+              right: isMobile ? -5 : 0,
+              left: isMobile ? -45 : -15,
+              bottom: 0
             }}
           >
             <defs>

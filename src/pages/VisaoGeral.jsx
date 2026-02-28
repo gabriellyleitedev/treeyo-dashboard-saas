@@ -79,7 +79,7 @@ function VisaoGeral() {
 
                     {/* COLUNA DIREITA (Cards, Lembretes e IA) 
                     <div className="flex flex-col gap-6 md:col-span-4">
-                        {/* Fila Inteligente (CardsStack) 
+                        {/* Fila Inteligente (CardsStack) */}
                         <div className="w-full">
                             <h3 className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3 px-2">Fila Inteligente</h3>
                             <CardsStack />
