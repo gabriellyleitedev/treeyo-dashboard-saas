@@ -41,28 +41,29 @@ export default function MainChart() {
 
   return (
     <div className="w-full h-[380px] lg:h-[340px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0">
+      
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-4 pt-5 px-6">
         <div>
           <h1 className="text-xs text-gray-200 md:text-sm">
             Desempenho - <span className="text-neutral-400 text-xs md:text-sm font-medium"> Últimos 7 dias</span>
           </h1>
         </div>
-
         <div className="pt-0">
-          <p className="text-xs text-neutral-400 md:text-xs">
-            <strong className="font-semibold text-gray-200 text-xs">+12%</strong> que na última terça
+          <p className="text-xs text-neutral-400">
+            <strong className="font-semibold text-gray-200">+12%</strong> que na última terça
           </p>
         </div>
       </div>
 
       {/* CHART */}
-      <div className="flex-1 w-full mt-auto">
+      <div className="flex-1 w-full mt-auto relative">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={data}
             margin={{
               top: 10,
-              right: isMobile ? -5 : 0,
+              right: isMobile ? 15 : 0,
               left: isMobile ? -45 : -15,
               bottom: 0
             }}
@@ -75,7 +76,6 @@ export default function MainChart() {
             </defs>
 
             <CartesianGrid
-              strokeDasharray="3 3"
               vertical={false}
               stroke="rgba(255,255,255,0.03)"
             />
@@ -84,37 +84,40 @@ export default function MainChart() {
               dataKey="day"
               axisLine={false}
               tickLine={false}
+              height={45}
               tick={{ fill: "#6b7280", fontSize: 11 }}
-              padding={{ left: isMobile ? 57 : 20, right:10 }}
+              dy={10}
+              padding={{ left: isMobile ? 50 : 30 }}
+              // FORMATAÇÃO APENAS PARA MOBILE (S, T, Q...)
+              tickFormatter={(value) => (isMobile && value ? value.charAt(0) : value)}
             />
 
             <YAxis
               hide={isMobile}
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#6b7280", fontSize: 11 }}
-              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-              domain={["dataMin - 500", "dataMax + 500"]}
+              tick={{ fill: "#6b7280", fontSize: 11, dy: 10 }}
+              tickFormatter={(value) => value > 0 ? `${(value / 1000).toFixed(0)}k` : ""}
+              domain={["dataMin - 1000", "dataMax + 1000"]}
             />
 
             <Tooltip
-              content={({ active, payload, label }) => {
+              content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const current = payload[0].value;
-                  const index = payload[0].payload.day
-                    ? data.findIndex(d => d.day === payload[0].payload.day)
-                    : 0;
-
+                  const index = data.indexOf(payload[0].payload);
                   const previous = data[index - 1]?.saldo;
                   const diff = previous ? ((current - previous) / previous) * 100 : null;
 
                   return (
                     <div className="bg-[#0b0b0b] border border-white/10 rounded-xl px-4 py-3 text-xs shadow-xl">
-                      <p className="text-neutral-400 uppercase text-[10px] mb-1">{label}</p>
-                      <p className="text-gray-200 font-semi-medium">{formatCurrency(current)}</p>
+                      <p className="text-neutral-400 uppercase text-[10px] mb-1 font-bold">
+                        {payload[0].payload.day || "Análise"}
+                      </p>
+                      <p className="text-gray-200 font-bold text-sm">{formatCurrency(current)}</p>
                       {diff !== null && (
-                        <p className={`mt-1 ${diff >= 0 ? "text-[#1fba11]" : "text-red-400"}`}>
-                          {diff >= 0 ? "+" : ""}{diff.toFixed(1)}% vs dia anterior
+                        <p className={`mt-1 font-medium ${diff >= 0 ? "text-[#1fba11]" : "text-red-400"}`}>
+                          {diff >= 0 ? "+" : ""}{diff.toFixed(1)}% vs anterior
                         </p>
                       )}
                     </div>
@@ -126,38 +129,34 @@ export default function MainChart() {
                 stroke: "#1fbA11",
                 strokeWidth: 1,
                 strokeDasharray: "3 6",
-                opacity: 0.4,
               }}
             />
 
             <Area
-              type="natural"
+              type="monotone"
               dataKey="saldo"
               stroke="#1fbA11"
-              strokeWidth={2}
+              strokeWidth={2.5}
               fill="url(#colorGreen)"
               isAnimationActive={true}
-              animationDuration={600}
-              animationEasing="ease-out"
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
       {/* FOOTER */}
-      <div className="mt-4 pt-4 px-7 border-t border-white/5 flex justify-between text-xs pb-6">
+      <div className="mt-2 pt-4 px-7 border-t border-white/5 flex justify-between text-xs pb-6">
         <div>
-          <h3 className="text-neutral-400 text-[10px] uppercase tracking-wider">Melhor dia</h3>
-          <h1 className="text-[#1fba11] font-medium text-xs">
-            {highest.day} • {formatCurrency(highest.saldo)}
-          </h1>
+          <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Melhor dia</h3>
+          <p className="text-[#1fba11] font-semibold text-normal">
+            {highest.day || "Hoje"} • {formatCurrency(highest.saldo)}
+          </p>
         </div>
-
         <div className="text-right">
-          <h3 className="text-neutral-400 text-[10px] uppercase tracking-wider">Pior dia</h3>
-          <h1 className="text-red-400 font-medium text-xs">
-            {lowest.day} • {formatCurrency(lowest.saldo)}
-          </h1>
+          <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Pior dia</h3>
+          <p className="text-red-500 font-semibold text-normal">
+            {lowest.day || "Seg"} • {formatCurrency(lowest.saldo)}
+          </p>
         </div>
       </div>
     </div>
