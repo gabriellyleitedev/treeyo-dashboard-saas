@@ -85,7 +85,7 @@ export default function MainChart() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#6b7280", fontSize: 11 }}
-              padding={{ left: isMobile ? 55 : 20, right:10 }}
+              padding={{ left: isMobile ? 57 : 20, right:10 }}
             />
 
             <YAxis
