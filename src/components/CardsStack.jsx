@@ -65,6 +65,20 @@ export default function CardsStack() {
           return (
             <motion.div
               key={card.title}
+
+              drag={isTop ? "x" : false} 
+  // 2. Define limites para o card voltar se o deslize for curto
+  dragConstraints={{ left: 0, right: 0 }} 
+  // 3. Sensibilidade do deslize
+  dragElastic={0.7}
+  // 4. A mágica: quando soltar e passar de uma distância, chama sua função next
+  onDragEnd={(e, info) => {
+    if (Math.abs(info.offset.x) > 100) {
+      next();
+    }
+  }}
+
+
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{
                 opacity: 1,
