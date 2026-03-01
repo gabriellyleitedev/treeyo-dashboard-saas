@@ -41,7 +41,7 @@ export default function MainChart() {
 
   return (
     <div className="w-full h-[380px] lg:h-[340px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0">
-      <div className="flex sm:flex-row justify-between items-start sm:items-center gap-1 mb-4 pt-5 px-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-4 pt-5 px-6">
         <div>
           <h1 className="text-xs text-gray-200 md:text-sm">
             Desempenho - <span className="text-neutral-400 text-xs md:text-sm font-medium"> Últimos 7 dias</span>
@@ -85,7 +85,7 @@ export default function MainChart() {
               axisLine={false}
               tickLine={false}
               tick={{ fill: "#6b7280", fontSize: 11 }}
-              padding={{ left: isMobile ? 60 : 20, right: 0 }}
+              padding={{ left: isMobile ? 55 : 20, right:10 }}
             />
 
             <YAxis
