@@ -65,15 +65,26 @@ export default function CardsStack() {
           return (
             <motion.div
               key={card.title}
+              drag={isTop ? "y" : false} 
+              dragConstraints={{ top: 0, bottom: 0 }} 
+              dragElastic={0.7}
+  
 
-              drag={isTop ? "x" : false} 
-  // 2. Define limites para o card voltar se o deslize for curto
-  dragConstraints={{ left: 0, right: 0 }} 
-  // 3. Sensibilidade do deslize
-  dragElastic={0.7}
-  // 4. A mágica: quando soltar e passar de uma distância, chama sua função next
   onDragEnd={(e, info) => {
-    if (Math.abs(info.offset.x) > 100) {
+    if (Math.abs(info.offset.y) > 80) {
+      next();
+    }
+  }}
+
+  style={{
+    touchAction: isTop ? "none" : "auto",
+    cursor: isTop ? "grab" : "default",
+  }}
+
+  onClick={(e) => {
+    if (!isTop) return;
+
+    if (window.matchMedia("(pointer: fine)").matches) {
       next();
     }
   }}
@@ -89,7 +100,7 @@ export default function CardsStack() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
               className="absolute w-full cursor-pointer"
-              onClick={isTop ? next : undefined}
+             
             >
               <ActionBlock {...card} isTop={isTop} />
             </motion.div>

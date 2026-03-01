@@ -37,10 +37,10 @@ function VisaoGeral() {
                     <div className="md:col-span-8 flex flex-col gap-6 w-full">
 
                         {/* LINHA SUPERIOR */}
-                        <div className="flex flex-col lg:flex-row gap-6 items-start w-full">
+                        <div className="flex flex-col lg:flex-row gap-6 items-center w-full">
 
-                            <div className="max-w-[320px] h-[180px] w-full rounded-2xl bg-neutral-800/40 border border-white/10 pt-4 px-5 relative overflow-hidden backdrop-blur-xl shadow-2xl flex-shrink-0">
-                                <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
+                            <div className="max-w-[320px] h-[180px] w-full rounded-2xl  bg-neutral-800/40 border border-white/10 pt-4 px-5 relative overflow-hidden backdrop-blur-xl shadow-2xl flex-shrink-0">
+                                <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none " />
                                 <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
                                 <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
                                 <div className="flex items-center gap-2 mt-2 text-sm font-medium text-[#1fba11] relative z-10">
