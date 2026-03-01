@@ -72,7 +72,7 @@ function VisaoGeral() {
 
 
                         {/* GRÁFICO */}
-                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full overflow-hidden">
+                         <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full overflow-hidden pt-4">
                             <MainChart />
                         </div>
                     </div>
