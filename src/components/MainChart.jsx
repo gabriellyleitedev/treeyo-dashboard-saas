@@ -63,7 +63,7 @@ export default function MainChart() {
             data={data}
             margin={{
               top: 10,
-              right: isMobile ? 10 : 0,
+              right: isMobile ? 5 : 0,
               left: isMobile ? -45 : -15,
               bottom: 0
             }}
@@ -116,7 +116,7 @@ export default function MainChart() {
                       </p>
                       <p className="text-gray-200 font-bold text-sm">{formatCurrency(current)}</p>
                       {diff !== null && (
-                        <p className={`mt-1 font-medium ${diff >= 0 ? "text-[#1fba11]" : "text-red-400"}`}>
+                        <p className={`mt-1 font-medium ${diff >= 0 ? "text-[#1fba11]" : "text-red-500"}`}>
                           {diff >= 0 ? "+" : ""}{diff.toFixed(1)}% vs anterior
                         </p>
                       )}
