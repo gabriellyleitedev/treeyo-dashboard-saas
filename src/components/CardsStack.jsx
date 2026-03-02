@@ -54,14 +54,9 @@ export default function CardsStack() {
   };
 
   return (
-   <div className="  relative
-   md:px-12
-  
-  w-[340px]
-  h-[320px]
-  sm:h-[260px]
-  lg:h-[320px]">
-      <h1 className="text-gray-200 text-2xl font-normal mb-2 px-2 py-6 md:py-4 ">Fila Inteligente</h1>
+
+
+    <div className="relative md:w-[320px] w-[350px] lg:w-[360px]   ">
 
       <AnimatePresence>
         {cards.map((card, i) => {
