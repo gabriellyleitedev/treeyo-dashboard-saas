@@ -1,5 +1,6 @@
 import React from 'react'
-import { TrendingUp } from 'lucide-react'
+import { LayoutDashboard, Sun, Moon, Bell, TrendingUp } from 'lucide-react'
+import CalendarPicker from '../components/CalendarPicker'
 import CardsStack from '../components/CardsStack'
 import MainChart from '../components/MainChart'
 import RemindersPanel from '../components/RemindersPanel'
@@ -24,23 +25,26 @@ function VisaoGeral() {
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
-            <section className="px-4 md:pl-4 md:pr-2 pt-4 w-full max-w-[100vw] overflow-x-hidden relative z-10">
+            <section className="px-4 md:px-8 pt-6 w-full max-w-[1600px] mx-auto">
 
-                <div className="block pb-6 md:pb-0">
+                {/* TÍTULO */}
+                <div className="block pb-6 md:pb-4 ">
                     <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px]">
                         Visão Geral
                     </h1>
                 </div>
 
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <div className="md:col-span-8 flex flex-col gap-6 w-full">
+                    {/* COLUNA ESQUERDA */}
+                    <div className="lg:col-span-8 flex flex-col gap-0">
 
-                        {/* LINHA SUPERIOR */}
-                        <div className="flex flex-col lg:flex-row gap-6 items-center w-full">
+                        {/* LINHA SUPERIOR (Saldo + Fila no desktop) */}
+                        <div className="flex flex-col md:flex-row gap-8 w-full items-center md:items-start">
 
-                            <div className="max-w-[320px] h-[180px] w-full rounded-2xl  bg-neutral-800/40 border border-white/10 pt-4 px-5 relative overflow-hidden backdrop-blur-xl shadow-2xl flex-shrink-0">
-                                <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none " />
+                            {/* CARD DE SALDO ATUAL */}
+                            <div className=" w-full max-w-[320px] h-[180px] mx-auto md:mx-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl ">
+                                <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
                                 <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
                                 <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
                                 <div className="flex items-center gap-2 mt-2 text-sm font-medium text-[#1fba11] relative z-10">
@@ -48,14 +52,20 @@ function VisaoGeral() {
                                     <span>+12,4% este mês</span>
                                 </div>
 
-                                <div className="absolute bottom-0 left-0 right-0 h-16 flex items-end justify-center gap-[5px] px-2 overflow-hidden">
+                                <div className="absolute bottom-0 left-0 right-0 h-20 flex items-end justify-center gap-[6px] px-0 overflow-hidden">
                                     {[40, 55, 35, 60, 45, 70, 50, 65, 42, 58, 38, 62, 48, 52].map((height, index) => (
                                         <div
                                             key={index}
-                                            className={`w-[18px] rounded-t-md origin-bottom animate-barGrow ${index % 2 === 0
+                                            className={`
+                                                w-[18px]
+                                                rounded-t-md
+                                                origin-bottom
+                                                animate-barGrow
+                                                ${index % 2 === 0
                                                     ? 'bg-[#1fba11] shadow-[0_0_12px_rgba(31,186,17,0.6)]'
                                                     : 'bg-zinc-700/50'
-                                                }`}
+                                                }
+              `}
                                             style={{
                                                 height: `${height}%`,
                                                 animationDelay: `${index * 80}ms`
@@ -64,36 +74,33 @@ function VisaoGeral() {
                                     ))}
                                 </div>
                             </div>
-                    </div>
 
-                     
- {/* FILA INTELIGENTE - No mobile usamos order-3 para descer */}
-                            <div className="order-3  flex justify-center lg:justify-start min-h-[300px] lg:min-h-[200px]">
+                            {/* FILA INTELIGENTE (aparece ao lado do saldo apenas no xl) */}
+                            <div className="hidden md:flex md:justify-start  relative md:-top-[4rem]">
                                 <CardsStack />
                             </div>
 
+                        </div>
 
-                        {/* GRÁFICO  */}
-                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full overflow-hidden pt-4 order-2 lg:order-3">
+                        {/* GRÁFICO SEMPRE ABAIXO */}
+                        <div className="h-[320px] w-full">
                             <MainChart />
-                          
                         </div>
-                     </div>
 
-                    {/* COLUNA DIREITA (Lembretes e IA - Desktop) */}
-                    <div className="hidden md:flex md:col-span-4 flex-col gap-6">
-                        <div className="w-full">
-                            <RemindersPanel />
-                        </div>
-                        <div className="w-full mt-2">
-                            <TreeyoAssistant />
-                        </div>
+                    </div>
+
+                    {/* FILA INTELIGENTE (mobile e notebook) */}
+                    <div className="md:hidden flex justify-center pt-[8rem]">
+                        <CardsStack />
                     </div>
 
                 </div>
+
+
+
             </section>
         </div>
-    );
+    )
 }
 
 export default VisaoGeral;
