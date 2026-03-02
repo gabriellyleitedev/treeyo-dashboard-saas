@@ -152,7 +152,7 @@ export default function MainChart() {
             {highest.day || "Hoje"} • {formatCurrency(highest.saldo)}
           </p>
         </div>
-        <div className="px-10">
+        <div className="px-8">
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Pior dia</h3>
           <p className="text-red-500 font-semibold text-normal">
             {lowest.day || "Seg"} • {formatCurrency(lowest.saldo)}
