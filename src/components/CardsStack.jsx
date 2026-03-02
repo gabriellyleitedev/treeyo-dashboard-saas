@@ -61,7 +61,7 @@ export default function CardsStack() {
   h-[320px]
   sm:h-[260px]
   lg:h-[320px]">
-      <h1 className="text-gray-200 text-2xl font-normal mb-2 px-2 py-2 md:py-4 ">Fila Inteligente</h1>
+      <h1 className="text-gray-200 text-2xl font-normal mb-2 px-2 py-6 md:py-4 ">Fila Inteligente</h1>
 
       <AnimatePresence>
         {cards.map((card, i) => {

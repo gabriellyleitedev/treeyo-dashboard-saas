@@ -28,7 +28,7 @@ function VisaoGeral() {
             <section className="px-4 md:px-8 pt-6 w-full max-w-[1600px] mx-auto">
 
                 {/* TÍTULO */}
-                <div className="block pb-6 md:pb-4 ">
+                <div className="block pb-6 md:pb-4">
                     <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px]">
                         Visão Geral
                     </h1>
@@ -90,7 +90,7 @@ function VisaoGeral() {
                     </div>
 
                     {/* FILA INTELIGENTE (mobile e notebook) */}
-                    <div className="md:hidden flex justify-center pt-[8rem]">
+                    <div className="md:hidden flex justify-center pt-12">
                         <CardsStack />
                     </div>
 
