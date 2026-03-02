@@ -63,8 +63,8 @@ export default function MainChart() {
             data={data}
             margin={{
               top: 10,
-              right: isMobile ? 35 : 0,
-              left: isMobile ? -50 : -15,
+              right: isMobile ? -45 : 0,
+              left: isMobile ? -45: -15,
               bottom: 0
             }}
           >
