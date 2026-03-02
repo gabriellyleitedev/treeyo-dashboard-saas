@@ -24,9 +24,9 @@ function VisaoGeral() {
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
-            <section className="px-4 md:pl-6 md:pr-8 pt-4 w-full max-w-[100vw] overflow-x-hidden relative z-10">
+            <section className="px-4 md:pl-4 md:pr-2 pt-4 w-full max-w-[100vw] overflow-x-hidden relative z-10">
 
-                <div className="block pb-6 md:pb-4">
+                <div className="block pb-6 md:pb-0">
                     <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px]">
                         Visão Geral
                     </h1>
@@ -48,7 +48,7 @@ function VisaoGeral() {
                                     <span>+12,4% este mês</span>
                                 </div>
 
-                                <div className="absolute bottom-0 left-0 right-0 h-16 flex items-end justify-center gap-[6px] px-2 overflow-hidden">
+                                <div className="absolute bottom-0 left-0 right-0 h-16 flex items-end justify-center gap-[5px] px-2 overflow-hidden">
                                     {[40, 55, 35, 60, 45, 70, 50, 65, 42, 58, 38, 62, 48, 52].map((height, index) => (
                                         <div
                                             key={index}
@@ -64,23 +64,21 @@ function VisaoGeral() {
                                     ))}
                                 </div>
                             </div>
+                    </div>
 
-                            {/* FILA INTELIGENTE (Desktop - Lado a Lado) */}
-                            <div className="hidden lg:block flex-1">
+                     
+ {/* FILA INTELIGENTE - No mobile usamos order-3 para descer */}
+                            <div className="order-3  flex justify-center lg:justify-start min-h-[300px] lg:min-h-[200px]">
                                 <CardsStack />
                             </div>
-                        </div>
+
 
                         {/* GRÁFICO  */}
-                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full overflow-hidden pt-4">
+                        <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full overflow-hidden pt-4 order-2 lg:order-3">
                             <MainChart />
+                          
                         </div>
-
-                        {/* FILA INTELIGENTE (Mobile - Abaixo do Gráfico) */}
-                        <div className="lg:hidden w-full mt-4 pb-10">
-                            <CardsStack />
-                        </div>
-                    </div>
+                     </div>
 
                     {/* COLUNA DIREITA (Lembretes e IA - Desktop) */}
                     <div className="hidden md:flex md:col-span-4 flex-col gap-6">

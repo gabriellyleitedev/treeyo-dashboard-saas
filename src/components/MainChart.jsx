@@ -64,7 +64,7 @@ export default function MainChart() {
             margin={{
               top: 10,
               right: isMobile ? 35 : 0,
-              left: isMobile ? -45 : -15,
+              left: isMobile ? -50 : -15,
               bottom: 0
             }}
           >
@@ -145,14 +145,14 @@ export default function MainChart() {
       </div>
 
       {/* FOOTER */}
-      <div className="mt-2 pt-4 px-7 border-t border-white/5 flex justify-between text-xs pb-6">
+      <div className="mt-2 pt-4 px-1 border-t border-white/5 flex justify-between text-xs pb-6">
         <div>
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Melhor dia</h3>
           <p className="text-[#1fba11] font-semibold text-normal">
             {highest.day || "Hoje"} • {formatCurrency(highest.saldo)}
           </p>
         </div>
-        <div className="text-right">
+        <div className="px-10">
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Pior dia</h3>
           <p className="text-red-500 font-semibold text-normal">
             {lowest.day || "Seg"} • {formatCurrency(lowest.saldo)}
