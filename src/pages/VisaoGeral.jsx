@@ -76,7 +76,7 @@ function VisaoGeral() {
                             </div>
 
                             {/* FILA INTELIGENTE */}
-                            <div className="hidden md:flex flex-col flex-auto min-w-[320px] max-w-[360px] md:-translate-y-16 lg:-translate-y-14">
+                            <div className="hidden md:flex flex-col flex-auto min-w-[320px] max-w-[360px] md:-translate-y-16 lg:-translate-y-15">
                                 <CardsStack />
                             </div>
 
@@ -91,6 +91,10 @@ function VisaoGeral() {
                     {/* FILA INTELIGENTE (mobile e notebook) */}
                     <div className="md:hidden flex justify-center pt-12">
                         <CardsStack />
+                    </div>
+
+                    <div className="lg:col-span-4 flex flex-col gap-6">
+                        <TreeyoAssistant />
                     </div>
 
                 </div>

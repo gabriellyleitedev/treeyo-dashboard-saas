@@ -1,4 +1,3 @@
-
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -56,9 +55,9 @@ export default function CardsStack() {
   return (
     <div className="relative w-full md:max-w-[360px] max-w-[320px] h-full transition-all duration-300 ease-in-out">
       <div className="px-2  md:px-2 p-4 md:p-3.5">
-      <h1 className="text-gray-200 font-normal text-2xl ">
-        Fila Inteligente
-      </h1>
+        <h1 className="text-gray-200 font-normal text-2xl ">
+          Fila Inteligente
+        </h1>
       </div>
 
       <AnimatePresence>
@@ -92,7 +91,7 @@ export default function CardsStack() {
               onClick={(e) => {
                 if (!isTop) return;
 
-                // Verifica se o dispositivo NÃO é primariamente touch para permitir o clique
+                // Verifica se o dispositivo NÃO é primariamente touch pra permitir o clique
                 // Isso evita que o toque no mobile dispare o 'next' duas vezes ou por erro
                 if (window.matchMedia("(pointer: fine)").matches) {
                   next();
@@ -113,11 +112,8 @@ export default function CardsStack() {
             >
               <ActionBlock {...card} isTop={isTop} />
             </motion.div>
-
           );
-
         })}
-
       </AnimatePresence>
 
     </div>
