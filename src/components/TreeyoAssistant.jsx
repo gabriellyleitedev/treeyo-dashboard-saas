@@ -6,7 +6,7 @@ const TreeyoAssistant = () => {
         <div className="flex flex-col items-center w-full justify-start p-4 md:p-10">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden w-full md:max-w-[350px] md:min-w-[310px] md:min-h-[360px] max-w-[320px] min-h-[330px] flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            <div className="relative overflow-hidden w-full md:max-w-[350px] md:min-w-[310px] md:min-h-[360px] max-w-[280px] min-h-[280px] flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
@@ -32,7 +32,7 @@ const TreeyoAssistant = () => {
                     </div>
 
                     {/* TEXTO */}
-                    <div className="mt-auto md:py-6 md:px-5">
+                    <div className="mt-auto md:py-6 md:px-5 px-4 pb-4">
                         <h3 className="text-white text-xl font-bold leading-tight">
                             <h1 className='flex'>Smart IA Assistente</h1>
                             <span className="text-[#1fba11] ">Sem Complicação</span>
