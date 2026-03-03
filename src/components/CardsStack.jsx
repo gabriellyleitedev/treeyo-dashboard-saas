@@ -54,9 +54,12 @@ export default function CardsStack() {
   };
 
   return (
-
-
-    <div className="relative md:w-[320px] w-[350px] lg:w-[360px]   ">
+    <div className="relative w-full md:max-w-[360px] max-w-[340px] h-full transition-all duration-300 ease-in-out">
+      <div className="px-2  md:px-2 p-4 md:p-3.5">
+      <h1 className="text-gray-200 font-normal text-2xl ">
+        Fila Inteligente
+      </h1>
+      </div>
 
       <AnimatePresence>
         {cards.map((card, i) => {

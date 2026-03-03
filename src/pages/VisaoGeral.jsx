@@ -32,18 +32,18 @@ function VisaoGeral() {
                     <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px]">
                         Visão Geral
                     </h1>
-                </div>
 
+                </div>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
                     {/* COLUNA ESQUERDA */}
                     <div className="lg:col-span-8 flex flex-col ">
 
                         {/* LINHA SUPERIOR */}
-                        <div className="flex flex-col md:flex-row gap-8 w-full items-center md:items-start">
+                        <div className="flex flex-col  md:flex-row gap-6 lg:gap-16 w-full items-center md:items-start">
 
-                            {/* CARD DE SALDO ATUAL */}
-                            <div className=" w-full max-w-[320px] min-w-[310px] h-[180px] mx-auto md:mx-0 flex-shrink-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl ">
+                            <div className=" 
+                           w-full max-w-[320px] md:max-w-[280px] lg:max-w-[320px] h-[180px] mx-auto md:mx-0 flex-shrink-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
                                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
                                 <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
                                 <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
@@ -76,10 +76,7 @@ function VisaoGeral() {
                             </div>
 
                             {/* FILA INTELIGENTE */}
-                            <div className="hidden md:flex flex-col gap-4 flex-1 ">
-                                <h1 className="text-gray-200 font-normal text-2xl h-8">
-                                    Fila Inteligente
-                                </h1>
+                            <div className="hidden md:flex flex-col flex-auto min-w-[320px] max-w-[360px] md:-translate-y-16 lg:-translate-y-14">
                                 <CardsStack />
                             </div>
 
@@ -92,7 +89,7 @@ function VisaoGeral() {
                     </div>
 
                     {/* FILA INTELIGENTE (mobile e notebook) */}
-                    <div className="md:hidden w-full pt-8 items-center flex justify-center ">
+                    <div className="md:hidden flex justify-center pt-12">
                         <CardsStack />
                     </div>
 
