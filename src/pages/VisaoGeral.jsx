@@ -93,7 +93,7 @@ function VisaoGeral() {
                         <CardsStack />
                     </div>
 
-                    <div className="lg:col-span-4 flex flex-col gap-6 lg:pt-12 pt-[18rem]">
+                    <div className="lg:col-span-4 flex flex-col gap-6 lg:pt-12 pt-[14rem]">
                         <TreeyoAssistant />
                     </div>
 

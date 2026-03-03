@@ -6,7 +6,7 @@ const TreeyoAssistant = () => {
         <div className="flex flex-col items-center w-full justify-start p-4 md:p-10">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden w-full md:max-w-[350px] md:min-w-[310px] md:min-h-[360px] max-w-[280px] min-h-[280px] flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            <div className="relative overflow-hidden w-full md:max-w-[360px] md:min-w-[310px] md:min-h-[360px] max-w-[270px] min-w-[240px] max-h-[360px] min-h-[300px] flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
@@ -68,17 +68,17 @@ const TreeyoAssistant = () => {
                             flex items-center gap-5 h-11 rounded-l-2xl bg-black/40 border border-white/10 md:px-4 text-sm text-gray-300 focus-within:border-[#1fba11] overflow-hidden
                             md:w-[300px]     /* 1. Definimos uma largura máxima para não bater na parede */
                             min-w-0       /* 2. Permite que o flexbox ignore o tamanho do texto */
-                            shrink-0      /* 3. Impede que o container mude de tamanho */
+                            shrink-0  
+                            w-[330px]    /* 3. Impede que o container mude de tamanho */
                         '>
 
-                            <MessageSquare className='w-4 h-4 text-gray-400 shrink-0' />
+                            <MessageSquare className='w-4 h-4 text-gray-400 shrink-0 translate-x-3' />
 
                             <input
                                 type='text'
                                 placeholder='Digite para falar com a Treeyo'
                                 className='
                                   flex-1
-                                  translate-x-4
                                   bg-transparent
                                   outline-none
                                   placeholder:text-gray-400
