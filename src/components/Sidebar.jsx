@@ -30,7 +30,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
     ]
 
     return (
-        <aside className={`relative h-screen hidden lg:flex shrink-0 z-50 flex-col bg-neutral-950 text-white transition-all duration-500 ease-in-out ${isCollapsed ? 'w-16' : 'w-72'}`}>
+        <aside className={`relative h-screen hidden xl:flex shrink-0 z-50 flex-col bg-neutral-950 text-white transition-all duration-500 ease-in-out ${isCollapsed ? 'w-16' : 'w-72'}`}>
 
             <div className='pointer-events-none absolute top-0 left-0 w-full h-42 bg-gradient-to-r from-green-50/20 to-transparent blur-2xl'></div>
             <div className='pointer-events-none absolute bottom-0 left-0 w-full h-42 bg-gradient-to-r from-green-50/20 to-transparent blur-2xl'></div>

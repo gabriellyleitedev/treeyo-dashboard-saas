@@ -40,7 +40,7 @@ export default function MainChart() {
   const lowest = data.reduce((a, b) => (a.saldo < b.saldo ? a : b));
 
   return (
-    <div className="w-full h-[380px] lg:h-[340px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0">
+    <div className="w-full h-[380px] lg:h-[320px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0">
 
       {/* HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mb-4 pt-5 px-6">
@@ -63,7 +63,7 @@ export default function MainChart() {
             data={data}
             margin={{
               top: 10,
-              right: isMobile ? -0 : 0,
+              right: isMobile ? 5 : 0,
               left: isMobile ? -45 : -15,
               bottom: 0
             }}
@@ -145,14 +145,14 @@ export default function MainChart() {
       </div>
 
       {/* FOOTER */}
-      <div className="mt-2 pt-4 px-6 border-t border-white/5 flex justify-between text-xs pb-4">
+      <div className="mt-2 pt-4 px-4 border-t border-white/5 flex justify-between text-xs pb-4">
         <div>
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Melhor dia</h3>
           <p className="text-[#1fba11] font-semibold text-normal">
             {highest.day || "Hoje"} • {formatCurrency(highest.saldo)}
           </p>
         </div>
-        <div className="px-10">
+        <div className="px-2">
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Pior dia</h3>
           <p className="text-red-500 font-semibold text-normal">
             {lowest.day || "Seg"} • {formatCurrency(lowest.saldo)}

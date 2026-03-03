@@ -13,12 +13,12 @@ const Layout = () => {
 
       
 
-      <main className="flex-1 transition-all duration-500 flex flex-col h-screen p-0 md:p-0 relative">
+      <main className="flex-1 transition-all duration-500 flex flex-col h-screen p-0 relative">
   
         <div className="
           flex-1 bg-[#1a1a1a] 
           rounded-none border-none
-          md:rounded-[2.5rem] md:border md:border-white/5 md:shadow-2xl
+          xl:rounded-[2.5rem] xl:border xl:border-white/5 xl:shadow-2xl
           overflow-y-auto overflow-x-hidden custom-scrollbar
         ">
           {/* Removi apenas o 'py-6' aqui para o Header colado no topo funcionar */}

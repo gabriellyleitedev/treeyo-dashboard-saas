@@ -82,7 +82,7 @@ function VisaoGeral() {
 
                         </div>
                         {/* GRÁFICO */}
-                        <div className="pt-6 pb-4">
+                        <div className="pt-24 md:pt-32 lg:pt-12 pb-4">
                             <MainChart />
                         </div>
 
