@@ -6,7 +6,7 @@ const TreeyoAssistant = () => {
         <div className="flex flex-col items-center w-full justify-start p-4 md:p-10">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden w-full md:max-w-[360px] md:min-w-[310px] md:min-h-[360px] max-w-[270px] min-w-[240px] max-h-[360px] min-h-[300px] flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            <div className="relative overflow-hidden w-full lg:max-w-[360px] lg:min-w-[310px] lg:min-h-[360px] max-w-[270px] min-w-[240px] max-h-[360px] min-h-[300px] flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
@@ -44,7 +44,7 @@ const TreeyoAssistant = () => {
                     </div>
 
                     {/* ÁREA DA AÇÃO */}
-                    <div className='flex flex-col items-start gap-4 px-5'> 
+                    <div className='flex flex-col items-start gap-4 px-5'>
                         <div className="flex items-center group">
                             <button className="
                                 bg-gradient-to-r from-[#1fba11] to-[#158f0d]
@@ -76,7 +76,7 @@ const TreeyoAssistant = () => {
 
                             <input
                                 type='text'
-                                placeholder='Digite para falar com a Treeyo'
+                                placeholder='Digite para falar com a Treeyo..'
                                 className='
                                   flex-1
                                   bg-transparent
