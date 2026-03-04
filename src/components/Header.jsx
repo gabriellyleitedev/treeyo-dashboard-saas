@@ -74,7 +74,7 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
       </div>
 
       {/* ESTRUTURA NOTEBOOK */}
-      <div className="hidden md:flex items-center justify-between bg-transparent px-2 py-4">
+      <div className="hidden md:flex items-center justify-between bg-transparent px-0 py-4">
         <div className="flex items-center gap-2">
           <div className="bg-[#1fba11]/10 p-2 rounded-lg">
             <LayoutDashboard size={28} className="text-[#1fba11]" />

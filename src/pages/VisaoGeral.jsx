@@ -34,7 +34,7 @@ function VisaoGeral() {
                     </h1>
 
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
                     {/* COLUNA ESQUERDA */}
                     <div className="lg:col-span-8 flex flex-col ">
@@ -43,7 +43,7 @@ function VisaoGeral() {
                         <div className="flex flex-col  md:flex-row gap-6 lg:gap-16 w-full items-center md:items-start">
 
                             <div className=" 
-                           w-full max-w-[320px] md:max-w-[280px] lg:max-w-[320px] h-[180px] mx-auto md:mx-0 flex-shrink-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
+                           w-full max-w-[320px] md:max-w-[280px] lg:max-w-[320px] h-[186px] mx-auto md:mx-0 flex-shrink-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
                                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
                                 <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
                                 <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
@@ -94,12 +94,13 @@ function VisaoGeral() {
                     </div>
 
                     <div className="lg:col-span-4 flex flex-col self-start lg:pt-[12rem] pt-[14rem] md:pt-4">
+                        <div className='order-4'>
+                            <RemindersPanel />
+                        </div>
                         <TreeyoAssistant />
                     </div>
 
                 </div>
-
-
 
             </section>
         </div>

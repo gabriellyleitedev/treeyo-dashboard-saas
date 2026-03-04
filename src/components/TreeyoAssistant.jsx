@@ -3,16 +3,16 @@ import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {
     return (
-        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-4 lg:pt-6 ">
+        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-4 lg:pt-10 ">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden  w-full
-            md:max-w-[300px] md:min-h-[360px] 
-                lg:w-[310px] lg:min-h-[330px] 
+            <div className="relative overflow-hidden  
+            w-full
+            md:max-w-[300px] md:min-h-[340px] 
+            lg:w-[310px] lg:min-h-[320px] 
             max-w-[280px] 
             min-h-[340px] 
-
-flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
@@ -31,14 +31,13 @@ flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-3
                 <div className="relative z-10 flex flex-col h-full">
 
                     {/* ICONE */}
-                    <div className="flex-1 flex flex-col justify-end py-4 px-4 lg:px-5 lg:py-6">
+                    <div className="flex-1 flex flex-col justify-end py-4 px-4 lg:px-5 lg:py-4 md:py-4">
                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1fba11] to-[#0d5c08] flex items-center justify-center shadow-[0_0_30px_rgba(31,186,17,0.5)]">
                             <Sparkles className="text-white w-7 h-7" />
                         </div>
                     </div>
 
-                    {/* TEXTO */}
-                    <div className="mt-auto md:py-6 md:px-5 px-4 pb-4 lg:py-3 lg:pt-0">
+                    <div className="mt-auto md:py-6 md:px-5 px-4 pb-4 lg:py-2 lg:pt-0 md:pt-1">
                         <h3 className="text-white text-xl font-bold leading-tight">
                             <h1>Smart IA Assistente</h1>
                             <span className="text-[#1fba11] ">Sem Complicação</span>
@@ -71,15 +70,12 @@ flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-3
 
                         {/* INPUT - DIGITAR (Ajustado para travar) */}
                         <div className='
-                            
                             flex items-center gap-3 h-11 rounded-l-2xl bg-black/40 border border-white/10 px-4 text-sm text-gray-300 focus-within:border-[#1fba11] overflow-hidden
                             w-[265px] 
                             md:w-[290px] 
-                               /* 1. Definimos uma largura máxima para não bater na parede */
-                            min-w-0       /* 2. Permite que o flexbox ignore o tamanho do texto */
+                            min-w-0   
                             shrink-0 
                         '>
-
                             <MessageSquare className='w-4 h-4 text-gray-400 shrink-0 ' />
 
                             <input

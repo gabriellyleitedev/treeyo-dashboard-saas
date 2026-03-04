@@ -101,7 +101,7 @@ export default function CardsStack() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{
                 opacity: 1,
-                y: position * 70,
+                y: position * 72,
                 scale: isTop ? 1 : 0.96,
                 zIndex: 30 - position,
               }}
@@ -126,7 +126,7 @@ function ActionBlock({ icon, title, status, action, color, isTop }) {
     <div
       className={`
         relative rounded-2xl border border-white/10 bg-[#0b0b0b] transition-all duration-300
-        ${isTop ? "p-1.5 h-auto" : "p-3 h-[64px] sm:h-[68px] opacity-40"} 
+        ${isTop ? "p-2 h-auto" : "p-3 h-[64px] sm:h-[56px] opacity-40"} 
       `}
       style={{
         boxShadow: isTop
