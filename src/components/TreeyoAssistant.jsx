@@ -3,10 +3,16 @@ import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {
     return (
-        <div className="flex flex-col items-center w-full justify-start p-4 md:p-8">
+        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-4 lg:pt-6 ">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden w-full md:max-w-[310px] md:min-w-[300px] md:min-h-[340px] max-w-[280px] min-h-[340px]  flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            <div className="relative overflow-hidden  w-full
+            md:max-w-[300px] md:min-h-[360px] 
+                lg:w-[310px] lg:min-h-[330px] 
+            max-w-[280px] 
+            min-h-[340px] 
+
+flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
