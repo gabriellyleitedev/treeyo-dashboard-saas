@@ -40,21 +40,21 @@ export default function RemindersPanel() {
   }
 
   return (
-    <div className="w-[300px] flex flex-col gap-8 right-10 relative left-15">
-      
+    <div className="flex flex-col gap-4 w-[300px]">
+
       {/* HEADER */}
       <div className="flex items-center justify-between px-1">
-        <span className="text-2xl text-gray-200 flex relative top-4">
+        <span className="text-2xl text-gray-200 flex ">
           Lembretes
         </span>
 
-        <button className="text-gray-400 hover:text-white transition duration-300 relative top-2 right-2">
+        <button className="text-gray-400 hover:text-white transition duration-300">
           <Plus size={14} />
         </button>
       </div>
 
       {/* LISTA */}
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 ">
         <AnimatePresence mode="popLayout">
           {reminders.map((reminder) => (
             <motion.div
@@ -65,7 +65,7 @@ export default function RemindersPanel() {
               exit={{ opacity: 0, y: -8 }}
               onClick={() => toggleReminder(reminder.id)}
               className={`
-                relative cursor-pointer rounded-xl border px-4 py-3
+                relative cursor-pointer rounded-xl border px-4 py-1.5
                 transition-all duration-300
                 ${
                   reminder.completed
@@ -76,7 +76,7 @@ export default function RemindersPanel() {
             >
               {/* BARRA LATERAL */}
               <div
-                className="absolute left-2 top-1/2 -translate-y-1/2 h-3/5 w-[3px] rounded-full"
+                className="absolute left-2 top-1/2 -translate-y-1/2 h-9 w-[2px] rounded-full"
                 style={{
                   backgroundColor: reminder.color,
                   boxShadow: reminder.completed
@@ -86,7 +86,7 @@ export default function RemindersPanel() {
               />
 
               {/* TEXTO */}
-              <div className="ml-3 flex flex-col gap-0.5 relative left-5">
+              <div className="ml-4 flex flex-col gap-0">
                 <span
                   className={`text-[13px] font-semibold  tracking-wide uppercase ${
                     reminder.completed
