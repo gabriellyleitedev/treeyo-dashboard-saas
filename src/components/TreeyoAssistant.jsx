@@ -3,16 +3,16 @@ import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {
     return (
-        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-4 lg:pt-6 lg:fixed">
+        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-4 lg:pt-6 ">
 
             {/* Card Principal */}
             <div className="relative overflow-hidden  w-full
             md:max-w-[300px] md:min-h-[360px] 
-                lg:w-[310px] lg:min-h-[330px] 
+            lg:w-[310px] lg:min-h-[330px] 
             max-w-[280px] 
             min-h-[340px] 
 
-flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
@@ -27,10 +27,8 @@ flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-3
                 {/* Brilho Verde (Glow) no fundo */}
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#1fba11]/30 blur-[60px] rounded-full"></div>
 
-                {/* Conteúdo do Card */}
                 <div className="relative z-10 flex flex-col h-full">
 
-                    {/* ICONE */}
                     <div className="flex-1 flex flex-col justify-end py-4 px-4 lg:px-5 lg:py-6">
                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1fba11] to-[#0d5c08] flex items-center justify-center shadow-[0_0_30px_rgba(31,186,17,0.5)]">
                             <Sparkles className="text-white w-7 h-7" />
@@ -71,12 +69,10 @@ flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-3
 
                         {/* INPUT - DIGITAR (Ajustado para travar) */}
                         <div className='
-                            
                             flex items-center gap-3 h-11 rounded-l-2xl bg-black/40 border border-white/10 px-4 text-sm text-gray-300 focus-within:border-[#1fba11] overflow-hidden
                             w-[265px] 
                             md:w-[290px] 
-                               /* 1. Definimos uma largura máxima para não bater na parede */
-                            min-w-0       /* 2. Permite que o flexbox ignore o tamanho do texto */
+                            min-w-0       
                             shrink-0 
                         '>
 
@@ -90,8 +86,7 @@ flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-3
                                   bg-transparent
                                   outline-none
                                   placeholder:text-gray-400
-                                  min-w-0      /* Crucial: input não empurra o pai */
-                                  whitespace-nowrap
+                                  min-w-0   
                                   overflow-hidden
                                 '/>
                         </div>

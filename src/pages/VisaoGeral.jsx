@@ -81,8 +81,6 @@ function VisaoGeral() {
                             </div>
                         </div>
 
-
-
                         {/* GRÁFICO */}
                         <div className="pt-24 md:pt-32 lg:pt-12 pb-4">
                             <MainChart />
@@ -90,24 +88,14 @@ function VisaoGeral() {
 
                     </div>
 
-
                     {/* FILA INTELIGENTE (mobile e notebook) */}
                     <div className="md:hidden flex justify-center pt-12">
-
                         <CardsStack />
-
                     </div>
 
-                    <div className=" lg:col-span-4 flex flex-col items-center md:items-start  self-start lg:translate-x-11 pt-[16rem] p-8">
 
-                        <div className="w-full">
-                            <RemindersPanel />
-                        </div>
-
-                        <div className="w-full lg:-translate-y-12 pt-12">
-                            <TreeyoAssistant />
-                        </div>
-
+                    <div className="lg:col-span-4 flex flex-col self-start lg:pt-[12rem] pt-[14rem] md:pt-4">
+                        <TreeyoAssistant />
                     </div>
 
 

@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,7 +40,7 @@ export default function RemindersPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-[300px] lg:-translate-y-12 ">
+    <div className="flex flex-col gap-4 w-full max-w-[300px]">
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-1">
@@ -67,10 +67,9 @@ export default function RemindersPanel() {
               className={`
                 relative cursor-pointer rounded-xl border px-4 py-1.5
                 transition-all duration-300
-                ${
-                  reminder.completed
-                    ? "bg-zinc-900/30 border-white/5 opacity-40"
-                    : "bg-[#161616] border-white/5 hover:border-white/10 hover:bg-[#1c1c1c]"
+                ${reminder.completed
+                  ? "bg-zinc-900/30 border-white/5 opacity-40"
+                  : "bg-[#161616] border-white/5 hover:border-white/10 hover:bg-[#1c1c1c]"
                 }
               `}
             >
@@ -88,21 +87,19 @@ export default function RemindersPanel() {
               {/* TEXTO */}
               <div className="ml-4 flex flex-col gap-0">
                 <span
-                  className={`text-[13px] font-semibold  tracking-wide uppercase ${
-                    reminder.completed
+                  className={`text-[13px] font-semibold  tracking-wide uppercase ${reminder.completed
                       ? "line-through text-zinc-600"
                       : "text-zinc-300"
-                  }`}
+                    }`}
                 >
                   {reminder.title}
                 </span>
 
                 <span
-                  className={`text-[15px] font-medium ${
-                    reminder.completed
+                  className={`text-[15px] font-medium ${reminder.completed
                       ? "line-through text-zinc-700"
                       : "text-zinc-500"
-                  }`}
+                    }`}
                 >
                   {reminder.description}
                 </span>
