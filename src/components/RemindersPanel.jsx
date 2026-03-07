@@ -40,7 +40,7 @@ export default function RemindersPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-[300px]">
+    <div className="flex flex-col gap-4 w-full max-w-[300px] lg:-translate-y-12 ">
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-1">

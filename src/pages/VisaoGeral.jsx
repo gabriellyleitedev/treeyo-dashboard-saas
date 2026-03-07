@@ -76,11 +76,13 @@ function VisaoGeral() {
                             </div>
 
                             {/* FILA INTELIGENTE */}
-                            <div className="hidden md:flex flex-col flex-auto min-w-[320px] max-w-[360px] md:-translate-y-16 lg:-translate-y-15">
+                            <div className="hidden md:flex flex-col flex-auto min-w-[320px] max-w-[360px] lg:translate-x-6 md:-translate-y-16 lg:-translate-y-15">
                                 <CardsStack />
                             </div>
-
                         </div>
+
+
+
                         {/* GRÁFICO */}
                         <div className="pt-24 md:pt-32 lg:pt-12 pb-4">
                             <MainChart />
@@ -88,47 +90,28 @@ function VisaoGeral() {
 
                     </div>
 
+
                     {/* FILA INTELIGENTE (mobile e notebook) */}
                     <div className="md:hidden flex justify-center pt-12">
+
                         <CardsStack />
+
                     </div>
 
-                    <div className="lg:col-span-4 relative self-start lg:pt-[12rem] pt-[14rem] md:pt-4">
+                    <div className=" lg:col-span-4 flex flex-col items-center md:items-start  self-start lg:translate-x-11 pt-[16rem] p-8">
 
-    <div
-        className="
-            flex flex-col items-center gap-6
-            md:grid md:grid-cols-2 md:items-start
-            lg:block
-        "
-    >
+                        <div className="w-full">
+                            <RemindersPanel />
+                        </div>
 
-        {/* TREYEO ASSISTANT */}
-        <div className="order-1 md:order-1 ">
-            <TreeyoAssistant />
-        </div>
+                        <div className="w-full lg:-translate-y-12 pt-12">
+                            <TreeyoAssistant />
+                        </div>
 
-        {/* REMINDERS */}
-        <div
-            className="
-                order-2
-                md:order-2
-                lg:absolute lg:-top-12 lg:right-0
-            "
-        >
-            <RemindersPanel />
-        </div>
+                    </div>
 
-    </div>
-
-
-
-</div>
 
                 </div>
-
-
-
             </section>
         </div>
     )
