@@ -104,7 +104,7 @@ const Lançamento = () => {
                         </div>
                         <div className="flex items-center flex-col">
                               <span className="text-neutral-400 font-base text-[14px] px-1">Dashboard</span>
-                            <span className="text-gray-200 font-base text-[12px]">Lançamento</span>
+                            <span className="text-gray-200 font-base text-[12.5px]">Lançamento</span>
                         </div>
                          <ChevronDown size={16} className={`text-neutral-400 border border-white/10 rounded-full w-4 h-4 transition-transform hover:scale-110  ${isMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
