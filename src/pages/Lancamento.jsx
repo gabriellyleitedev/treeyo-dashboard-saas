@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { 
   Sun, Moon, Bell, Search, Trash2, 
-  ChevronDown, User, LogOut, Calendar 
+  ChevronDown, User, LogOut, ChevronLeft 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
@@ -90,52 +90,47 @@ const Lançamento = () => {
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
             {/* --- HEADER MOBILE (Exclusivo Mobile) --- */}
-            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-4 ">
-                <div className="absolute inset-0 -z-10 bg-[#1a1a1a] rounded-md" />
+            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-2 ">
+                <div className="absolute inset-0 -z-10  rounded-md" />
                 
-                {/* Perfil Mobile */}
-                <div className='relative'>
-                    <button
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className='flex items-center gap-1 bg-transparent border-none outline-none'
+                 {/* Perfil Mobile */}
+                <div className="md:hidden flex items-center justify-between px-0 py-2 sticky top-0 z-50 ">
+                <div className="flex items-center gap-2">
+                    {/* Botão Voltar - Substitui a foto */}
+                    <button 
+                        onClick={() => navigate(-1)} 
+                        className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
                     >
-                        <div className="w-10 h-10 rounded-full border-[1.5px] border-[#1fba11] p-[1.5px] shrink-0 ">
-                            <img src="https://github.com/gabriellyleitedev.png" className="w-full h-full rounded-full object-cover" alt="Perfil" />
-                        </div>
-                        <div className="flex items-center flex-col">
-                              <span className="text-neutral-400 font-base text-[14px] px-1 h-4">Dashboard</span>
-                            <span className="text-gray-200 font-base text-[12.5px]">Lançamento</span>
-                        </div>
-                         <ChevronDown size={16} className={`text-neutral-400 border border-white/10 rounded-full w-4 h-4 transition-transform hover:scale-110  ${isMenuOpen ? 'rotate-180' : ''}`} />
+                        <ChevronLeft size={22} />
                     </button>
-
-                    {isMenuOpen && (
-                        <div className="absolute top-full left-0 mt-3 w-52 rounded-2xl bg-neutral-900/40 backdrop-blur-xl border border-white/10 shadow-2xl p-2 z-[100]">
-                            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-200 hover:bg-white/5 rounded-xl transition">
-                                <User size={16} className="text-[#1fba11]" /> Perfil
-                            </button>
-                            <button onClick={toggleTheme} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-200 hover:bg-white/5 rounded-xl transition">
-                                {isDarkMode ? <Sun size={16} className="text-yellow-500" /> : <Moon size={16} className="text-blue-400" />} Tema
-                            </button>
-                            <div className="h-[1px] bg-white/5 my-1" />
-                            <button className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-red-400/10 rounded-xl transition">
-                                <LogOut size={16} /> Sair
-                            </button>
-                        </div>
-                    )}
+                    <h1 className="text-gray-200 font-base text-normal">Lançamentos</h1>
                 </div>
+            </div>
 
-                {/* Calendário e Notificação Mobile */}
                 <div className="flex items-center gap-3">
-                   
+                
                     <div className="relative p-1.5 border bg-white/5 rounded-full border-white/10">
                         <Bell size={22} className="text-gray-200" />
                         <span className="absolute top-2 right-2 w-2 h-2 bg-[#1fba11] rounded-full" />
                     </div>
                 </div>
+               
             </div>
 
+{/* SEARCH EXCLUSIVO MOBILE 
+<div className="md:hidden px-4 mb-6">
+  <div className="flex items-center group relative">
+    <Search className="absolute left-3 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors" />
+    <input
+      type="text"
+      placeholder="Search report..."
+      className="w-full bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 focus:outline-none focus:border-green-500/20 transition-all placeholder:text-neutral-600"
+    />
+  </div>
+</div>
+*/}
             <motion.div className="w-full h-full flex flex-col" initial="hidden" animate="visible" variants={container}>
+
 
                 {/* HEADER DESKTOP (md:flex) */}
                 <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-14 gap-4 shrink-0 px-4 mt-4" variants={item}>
