@@ -110,9 +110,9 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
             </button>
           </div>
 
-          <div className="w-10 h-10 rounded-full border bg-[#1A1A1A] border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative">
+          <div className="w-10 h-10 rounded-full border bg-white/5 border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative">
             <Bell size={20} className="text-gray-200" />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-black" />
+            <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-white/10" />
           </div>
         </div>
       </div>

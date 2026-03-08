@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { 
-  Sun, Moon, Bell, Search, Trash2, 
-  ChevronDown, User, LogOut, ChevronLeft 
+import {
+    Sun, Moon, Bell, Search, Trash2,
+    ChevronDown, User, LogOut, ArrowLeft
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
 // Importe o seu CalendarPicker se ele for um componente separado
-import CalendarPicker from "../components/CalendarPicker"; 
+import CalendarPicker from "../components/CalendarPicker";
 
 function formatarDataCurta(dataISO) {
     if (!dataISO) return "";
@@ -38,7 +38,7 @@ const itemVariants = {
 const Lançamento = () => {
     const { isCollapsed } = useOutletContext();
     const [TipoAtivo, setTipoAtivo] = useState("Entrada");
-    
+
     // Estados para o Header Mobile
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
@@ -85,39 +85,39 @@ const Lançamento = () => {
     return (
         <div className="w-full h-screen overflow-hidden bg-transparent flex flex-col">
 
-            
+
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
             {/* --- HEADER MOBILE (Exclusivo Mobile) --- */}
-            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-2 ">
+            <div className="md:hidden flex items-center justify-between px-6 py-0 relative pt-2 ">
                 <div className="absolute inset-0 -z-10  rounded-md" />
-                
-                 {/* Perfil Mobile */}
+
+                {/* Perfil Mobile */}
                 <div className="md:hidden flex items-center justify-between px-0 py-2 sticky top-0 z-50 ">
-                <div className="flex items-center gap-2">
-                    {/* Botão Voltar - Substitui a foto */}
-                    <button 
-                        onClick={() => navigate(-1)} 
-                        className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
-                    >
-                        <ChevronLeft size={22} />
-                    </button>
-                    <h1 className="text-gray-200 font-base text-normal">Lançamentos</h1>
+                    <div className="flex items-center gap-2">
+                        {/* Botão Voltar - Substitui a foto */}
+                        <button
+                            onClick={() => navigate(-1)}
+                            className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
+                        >
+                            <ArrowLeft size={22} />
+                        </button>
+                        <h1 className="text-gray-200 font-medium text-xl">Lançamentos</h1>
+                    </div>
                 </div>
-            </div>
 
                 <div className="flex items-center gap-3">
-                
+
                     <div className="relative p-1.5 border bg-white/5 rounded-full border-white/10">
                         <Bell size={22} className="text-gray-200" />
                         <span className="absolute top-2 right-2 w-2 h-2 bg-[#1fba11] rounded-full" />
                     </div>
                 </div>
-               
+
             </div>
 
-{/* SEARCH EXCLUSIVO MOBILE 
+            {/* SEARCH EXCLUSIVO MOBILE 
 <div className="md:hidden px-4 mb-6">
   <div className="flex items-center group relative">
     <Search className="absolute left-3 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors" />
@@ -139,12 +139,13 @@ const Lançamento = () => {
                             <span className="text-neutral-400 font-normal"> Dashboard / </span> Lançamento
                         </h1>
                     </div>
-                    <div className="flex items-center group">
-                        <Search className="w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors z-10" />
+                    <div className="relative flex items-center group right-10">
+                        <Search className="absolute left-2 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors z-10" />
                         <input
                             type="text"
                             placeholder="Search report..."
-                            className="bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-8 pr-4 w-48 h-8 focus:outline-none focus:border-green-500/20 transition-all placeholder:text-neutral-600"
+                            style={{ paddingLeft: "2rem" }}
+                            className="bg-black/20 text-sm text-gray-200 pl-11 pr-4 py-2 rounded-full border border-white/10 w-48 h-8 focus:w-54 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                         />
                     </div>
                     <div className="flex items-center gap-4">
@@ -152,8 +153,9 @@ const Lançamento = () => {
                             <button onClick={toggleTheme} className={`flex items-center w-9 h-9 justify-center rounded-full transition ${!isDarkMode ? 'bg-[#333333] text-white' : 'text-gray-500'}`}><Sun size={16} /></button>
                             <button onClick={toggleTheme} className={`flex items-center w-10 h-10 justify-center rounded-full transition ${isDarkMode ? 'bg-[#333333] text-white' : 'text-gray-500'}`}><Moon size={16} /></button>
                         </div>
-                        <div className="w-10 h-10 rounded-full bg-[#1a1a1a] border border-white/5 hover:bg-white/5 flex items-center justify-center cursor-pointer">
-                            <Bell size={18} className="text-yellow-500/80" />
+                        <div className="w-10 h-10 rounded-full border bg-white/5 border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative">
+                            <Bell size={20} className="text-gray-200" />
+                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-white/10" />
                         </div>
                     </div>
                 </motion.header>
@@ -169,6 +171,7 @@ const Lançamento = () => {
                                 return (
                                     <div
                                         key={tipo}
+
                                         onClick={() => setTipoAtivo(tipo)}
                                         className={`flex items-center px-3 py-2.5 w-36 h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
                                     >
