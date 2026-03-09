@@ -37,7 +37,7 @@ const MobileDock = () => {
                                     <link.icon size={22} strokeWidth={active ? 2.5 : 2} />
                                 </div>
 
-                                <span className={`text-xs pt-1 z-10 transition-colors ${active ? 'text-white font-medium' : 'text-neutral-500'}`}>
+                                <span className={`text-[10px] pt-1 z-10 transition-colors ${active ? 'text-white font-medium' : 'text-neutral-500'}`}>
                                     {link.label}
                                 </span>
 

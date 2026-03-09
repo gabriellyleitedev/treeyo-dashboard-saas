@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
-import {
-    Sun, Moon, Bell, Search, Trash2,
-    ChevronDown, User, LogOut, ArrowLeft
-} from "lucide-react";
+import { Sun, Moon, Bell, Search, Trash2, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutletContext } from "react-router-dom";
-// Importe o seu CalendarPicker se ele for um componente separado
-import CalendarPicker from "../components/CalendarPicker";
-
+import FormularioLancamento from "../components/FormularioLancamento";
+import CardLancamento from "../components/CardLancamento";
 function formatarDataCurta(dataISO) {
     if (!dataISO) return "";
     if (dataISO.includes("/")) return dataISO;
@@ -85,18 +81,17 @@ const Lançamento = () => {
     return (
         <div className="w-full h-screen overflow-hidden bg-transparent flex flex-col">
 
-
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
-            {/* --- HEADER MOBILE (Exclusivo Mobile) --- */}
+            {/* HEADER MOBILE (Exclusivo Mobile) */}
             <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-1 ">
                 <div className="absolute inset-0 -z-10  rounded-md" />
 
                 {/* Perfil Mobile */}
                 <div className="md:hidden flex items-center justify-between px-0 py-3 sticky top-0 z-50 ">
                     <div className="flex items-center gap-2">
-                        {/* Botão Voltar - Substitui a foto */}
+                        {/* Botão Voltar */}
                         <button
                             onClick={() => navigate(-1)}
                             className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
@@ -114,26 +109,25 @@ const Lançamento = () => {
                         <span className="absolute top-2 right-2 w-2 h-2 bg-[#1fba11] rounded-full" />
                     </div>
                 </div>
-
             </div>
 
             {/* SEARCH EXCLUSIVO MOBILE 
-<div className="md:hidden px-4 mb-6">
-  <div className="flex items-center group relative">
-    <Search className="absolute left-3 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors" />
-    <input
-      type="text"
-      placeholder="Search report..."
-      className="w-full bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 focus:outline-none focus:border-green-500/20 transition-all placeholder:text-neutral-600"
-    />
-  </div>
-</div>
-*/}
+            <div className="md:hidden px-4 mb-6">
+            <div className="flex items-center group relative">
+                <Search className="absolute left-3 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors" />
+                <input
+                type="text"
+                placeholder="Search report..."
+                className="w-full bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 focus:outline-none focus:border-green-500/20 transition-all placeholder:text-neutral-600"
+                />
+            </div>
+            </div>
+            */}
             <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={container}>
 
 
                 {/* HEADER DESKTOP (md:flex) */}
-                <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4 " variants={item}>
+                <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={item}>
                     <div>
                         <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
                             <span className="text-neutral-400 font-normal"> Dashboard / </span> Lançamento
@@ -150,7 +144,6 @@ const Lançamento = () => {
                     </div>
                     <div className="ml-auto flex items-center gap-3 ">
 
-                        {/* Container do Sol/Lua */}
                         <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10 ">
                             <button
                                 onClick={() => !isDarkMode && toggleTheme()}
@@ -197,9 +190,6 @@ const Lançamento = () => {
 
                 <div className="shrink-0 ">
 
-
-
-
                     <motion.div variants={itemVariants}>
                         {/*
                         <div className="col-span-12 lg:col-span-4 pr-10 ">
@@ -212,96 +202,91 @@ const Lançamento = () => {
                     </motion.div>
                 </div>
 
-
-
                 <motion.div variants={itemVariants} className="shrink-0">
-                    {/*
+
+                    {/* CARD */}
                     <div className="col-span-12 flex justify-center mt-10">
                         {listaGeral.length > 0 ? (
                             <CardLancamento lancamento={listaGeral[0]} />
                         ) : (
-                            <div className="w-full -translate-y-32 -translate-x-20 max-w-[420px] h-[150px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
+                            <div className="w-full -translate-y-32 -translate-x-2 max-w-[420px] h-[150px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
                                 Nenhum lançamento de {TipoAtivo} para exibir no card.
                             </div>
                         )}
                     </div>
-                    */}
+                    
                 </motion.div>
 
                 <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
 
-    <h1 className="text-gray-200 mb-6 font-base uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
-        Últimos Lançamentos - {TipoAtivo}
-    </h1>
+                    <h1 className="text-gray-200 mb-6 font-base uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
+                        Últimos Lançamentos - {TipoAtivo}
+                    </h1>
 
-    <div className="flex-1 overflow-y-auto custom-scroll relative pt-6 md:pt-4">
-        <AnimatePresence mode="popLayout" initial={false}>
-            {listaGeral.length > 0 ? (
-                listaGeral.map((item) => {
-                    const isEntrada = item.tipo === 'Entrada';
-                    const isSaida = item.tipo === 'Saída';
+                    <div className="flex-1 overflow-y-auto custom-scroll relative pt-6 md:pt-4">
+                        <AnimatePresence mode="popLayout" initial={false}>
+                            {listaGeral.length > 0 ? (
+                                listaGeral.map((item) => {
+                                    const isEntrada = item.tipo === 'Entrada';
+                                    const isSaida = item.tipo === 'Saída';
 
-                    return (
-                        <motion.div
-                            key={item.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            // Mantive seu LG:GRID para salvar o layout nos iPads
-                            className="group relative w-full flex flex-col lg:grid lg:grid-cols-7 gap-1 lg:gap-3 items-start lg:items-center text-[13px] text-gray-200 py-4 lg:py-2 px-6 lg:px-4 hover:bg-white/[0.02] transition-all cursor-pointer border-b border-white/[0.05] lg:border-none"
-                        >
-                            {/* LINHA DE DIVISÃO QUE VOCÊ CRIOU */}
-                            <div
-                                className="absolute bottom-0 left-[-100vw] right-[-50vw] h-px"
-                                style={{
-                                    background: 'linear-gradient(to right, transparent 45%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 70%, transparent 95%)'
-                                }}
-                            />
+                                    return (
+                                        <motion.div
+                                            key={item.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, x: -10 }}
+                                            className="group relative w-full flex flex-col lg:grid lg:grid-cols-7 gap-1 lg:gap-3 items-start lg:items-center text-[13px] text-gray-200 py-4 lg:py-2 px-6 lg:px-4 hover:bg-white/[0.02] transition-all cursor-pointer border-b border-white/[0.05] lg:border-none"
+                                        >
+                                            {/* LINHA DE DIVISÃO */}
+                                            <div
+                                                className="absolute bottom-0 left-[-100vw] right-[-50vw] h-px"
+                                                style={{
+                                                    background: 'linear-gradient(to right, transparent 45%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 70%, transparent 95%)'
+                                                }}
+                                            />
 
-                            {/* DATA */}
-                            <span className="text-neutral-500">{formatarDataCurta(item.data)}</span>
+                                            {/* DATA */}
+                                            <span className="text-neutral-500">{formatarDataCurta(item.data)}</span>
 
-                            {/* TIPO */}
-                            <span className="hidden lg:block text-gray-200">{item.tipo}</span>
+                                            {/* TIPO */}
+                                            <span className="hidden lg:block text-gray-200">{item.tipo}</span>
 
-                            {/* VALOR */}
-                            <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
-                                {isEntrada ? '+ ' : isSaida ? '- ' : ''}
-                                R$ {(Number(item.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                            </span>
+                                            {/* VALOR */}
+                                            <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
+                                                {isEntrada ? '+ ' : isSaida ? '- ' : ''}
+                                                R$ {(Number(item.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                            </span>
 
-                            {/* CATEGORIA */}
-                            <span className="text-neutral-400 truncate w-full lg:w-auto">{item.categoria || "-"}</span>
+                                            <span className="text-neutral-400 truncate w-full lg:w-auto">{item.categoria || "-"}</span>
 
-                            {/* CAMPOS QUE SÓ APARECEM NO NOTEBOOK (LG) */}
-                            <span className="hidden lg:block text-neutral-400">{item.metodo}</span>
-                            <span className="hidden lg:block text-neutral-400">{item.conta}</span>
+                                            {/* CAMPOS QUE SÓ APARECEM NO NOTEBOOK (LG) */}
+                                            <span className="hidden lg:block text-neutral-400">{item.metodo}</span>
+                                            <span className="hidden lg:block text-neutral-400">{item.conta}</span>
 
-                            {/* CONTAINER DE STATUS E LIXEIRA */}
-                            <div className="absolute right-6 top-1/2 -translate-y-1/2 lg:relative lg:top-0 lg:translate-y-0 flex items-center justify-end gap-4 lg:gap-10">
-                                <span className="hidden lg:block text-neutral-400">{item.status}</span>
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (window.confirm("Deseja excluir este item?")) {
-                                            setLista(prev => prev.filter(l => l.id !== item.id));
-                                        }
-                                    }}
-                                    // AJUSTE: Visível no Mobile/iPad, Hover no Desktop
-                                    className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                        </motion.div>
-                    );
-                })
-            ) : (
-                <div className="text-center py-20 text-neutral-600 italic">Nenhum lançamento encontrado.</div>
-            )}
-        </AnimatePresence>
-    </div>
-</motion.div>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 lg:relative lg:top-0 lg:translate-y-0 flex items-center justify-end gap-4 lg:gap-10">
+                                                <span className="hidden lg:block text-neutral-400">{item.status}</span>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (window.confirm("Deseja excluir este item?")) {
+                                                            setLista(prev => prev.filter(l => l.id !== item.id));
+                                                        }
+                                                    }}
+                                                    className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    );
+                                })
+                            ) : (
+                                <div className="text-center py-20 text-neutral-600 italic">Nenhum lançamento encontrado.</div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </motion.div>
 
             </motion.div>
         </div>
