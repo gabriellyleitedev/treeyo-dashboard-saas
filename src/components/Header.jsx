@@ -31,8 +31,8 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
               <img src="https://github.com/gabriellyleitedev.png" className="w-full h-full rounded-full object-cover" alt="Perfil" />
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-white font-base text-[13px]">Olá Gabi!</span>
-              <ChevronDown size={16} className={`text-neutral-400 border border-white/10 rounded-full w-4 h-4 transition-transform hover:scale-110 ${isMenuOpen ? 'rotate-180' : ''}`} />
+              <span className="text-white font-base text-sm">Olá Gabi!</span>
+              <ChevronDown size={16} className={`text-neutral-400 border border-white/10 rounded-full w-5 h-5 transition-transform hover:scale-110 ${isMenuOpen ? 'rotate-180' : ''}`} />
             </div>
           </button>
 
