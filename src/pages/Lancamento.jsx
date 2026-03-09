@@ -176,9 +176,9 @@ const Lançamento = () => {
 
                 {/* Filtros de Tipo */}
                 <div className="shrink-0  pt-6 md:pt-4 md:px-3 ">
-                  <motion.div variants={item} className="flex justify-center md:block w-full">
-                      <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">    
-                        {["Entrada", "Saída", "Investimento"].map((tipo) => {
+                    <motion.div variants={item} className="flex justify-center md:block w-full">
+                        <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">
+                            {["Entrada", "Saída", "Investimento"].map((tipo) => {
                                 const cores = getCoresDinamicas(tipo);
                                 return (
                                     <div
@@ -195,13 +195,13 @@ const Lançamento = () => {
                     </motion.div>
                 </div>
 
- <div className="shrink-0 ">
-                   
+                <div className="shrink-0 ">
 
-                   
-              
+
+
+
                     <motion.div variants={itemVariants}>
-                         {/*
+                        {/*
                         <div className="col-span-12 lg:col-span-4 pr-10 ">
                             <FormularioLancamento
                                 tipoSelecionado={TipoAtivo}
@@ -209,11 +209,11 @@ const Lançamento = () => {
                             />
                         </div>
                          */}
-                        </motion.div>
+                    </motion.div>
                 </div>
-                
 
-                
+
+
                 <motion.div variants={itemVariants} className="shrink-0">
                     {/*
                     <div className="col-span-12 flex justify-center mt-10">
@@ -228,62 +228,81 @@ const Lançamento = () => {
                     */}
                 </motion.div>
 
+                <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
 
+    <h1 className="text-gray-200 mb-6 font-base uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
+        Últimos Lançamentos - {TipoAtivo}
+    </h1>
 
+    <div className="flex-1 overflow-y-auto custom-scroll relative pt-6 md:pt-4">
+        <AnimatePresence mode="popLayout" initial={false}>
+            {listaGeral.length > 0 ? (
+                listaGeral.map((item) => {
+                    const isEntrada = item.tipo === 'Entrada';
+                    const isSaida = item.tipo === 'Saída';
 
-                {/* LISTA DE ÚLTIMOS LANÇAMENTOS */}
-                <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-2 md:px-0  overflow-hidden">
-                    <h1 className="text-gray-200 mb-6 font-base uppercase text-sm shrink-0 md:pt-20 pt-16">
-                        Últimos Lançamentos - {TipoAtivo}
-                    </h1>
+                    return (
+                        <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            // Mantive seu LG:GRID para salvar o layout nos iPads
+                            className="group relative w-full flex flex-col lg:grid lg:grid-cols-7 gap-1 lg:gap-3 items-start lg:items-center text-[13px] text-gray-200 py-4 lg:py-2 px-6 lg:px-4 hover:bg-white/[0.02] transition-all cursor-pointer border-b border-white/[0.05] lg:border-none"
+                        >
+                            {/* LINHA DE DIVISÃO QUE VOCÊ CRIOU */}
+                            <div
+                                className="absolute bottom-0 left-[-100vw] right-[-50vw] h-px"
+                                style={{
+                                    background: 'linear-gradient(to right, transparent 45%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 70%, transparent 95%)'
+                                }}
+                            />
 
-                    <div className="flex-1 overflow-y-auto custom-scroll  pr-0  relative pt-6 md:pt-4">
-                        <AnimatePresence mode="popLayout" initial={false}>
-                            {listaGeral.length > 0 ? (
-                                listaGeral.map((item) => {
-                                    const isEntrada = item.tipo === 'Entrada';
-                                    const isSaida = item.tipo === 'Saída';
+                            {/* DATA */}
+                            <span className="text-neutral-500">{formatarDataCurta(item.data)}</span>
 
-                                    return (
-                                        <motion.div
-                                            key={item.id}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, x: -10 }}
-                                            className="group flex flex-col md:grid md:grid-cols-8 gap-1 md:gap-4 items-start md:items-center text-[13px] text-gray-200 mb-2 py-0 md:py-2 px-2 md:p-0 border-b border-white/[0.05] hover:bg-white/[0.03] transition-all cursor-pointer"
-                                        >
-                                            <span className="text-neutral-500">{formatarDataCurta(item.data)}</span>
-                                            <span className="hidden md:block text-gray-200">{item.tipo}</span>
-                                            <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
-                                                {isEntrada ? '+ ' : isSaida ? '- ' : ''}
-                                                R$ {(Number(item.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                            </span>
-                                            <span className="text-neutral-400 truncate">{item.categoria || "-"}</span>
-                                            <span className="hidden md:block text-neutral-400">{item.metodo}</span>
-                                            <span className="hidden md:block text-neutral-400">{item.conta}</span>
-                                            <span className="hidden md:block text-neutral-400">{item.status}</span>
+                            {/* TIPO */}
+                            <span className="hidden lg:block text-gray-200">{item.tipo}</span>
 
-                                                                                    <div className="flex w-full md:w-auto justify-end">
-                                                <button
-                                                    onClick={() => {
-                                                        if (window.confirm("Deseja excluir este item?")) {
-                                                            setLista(prev => prev.filter(l => l.id !== item.id));
-                                                        }
-                                                    }}
-                                                    className="md:opacity-0 group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-0 md:p-1"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    );
-                                })
-                            ) : (
-                                <div className="text-center py-20 text-neutral-600 italic">Nenhum lançamento encontrado.</div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </motion.div>
+                            {/* VALOR */}
+                            <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
+                                {isEntrada ? '+ ' : isSaida ? '- ' : ''}
+                                R$ {(Number(item.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                            </span>
+
+                            {/* CATEGORIA */}
+                            <span className="text-neutral-400 truncate w-full lg:w-auto">{item.categoria || "-"}</span>
+
+                            {/* CAMPOS QUE SÓ APARECEM NO NOTEBOOK (LG) */}
+                            <span className="hidden lg:block text-neutral-400">{item.metodo}</span>
+                            <span className="hidden lg:block text-neutral-400">{item.conta}</span>
+
+                            {/* CONTAINER DE STATUS E LIXEIRA */}
+                            <div className="absolute right-6 top-1/2 -translate-y-1/2 lg:relative lg:top-0 lg:translate-y-0 flex items-center justify-end gap-4 lg:gap-10">
+                                <span className="hidden lg:block text-neutral-400">{item.status}</span>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (window.confirm("Deseja excluir este item?")) {
+                                            setLista(prev => prev.filter(l => l.id !== item.id));
+                                        }
+                                    }}
+                                    // AJUSTE: Visível no Mobile/iPad, Hover no Desktop
+                                    className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        </motion.div>
+                    );
+                })
+            ) : (
+                <div className="text-center py-20 text-neutral-600 italic">Nenhum lançamento encontrado.</div>
+            )}
+        </AnimatePresence>
+    </div>
+</motion.div>
+
             </motion.div>
         </div>
     );
