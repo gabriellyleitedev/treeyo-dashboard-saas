@@ -175,19 +175,19 @@ const Lançamento = () => {
                 <motion.div variants={item} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
                 {/* Filtros de Tipo */}
-                <div className="shrink-0 px-4 md:px-0">
-                    <motion.div variants={item} className="grid grid-cols-12 gap-6 w-full">
-                        <div className="flex md:flex-row gap-3 w-fit ml-3">
-                            {["Entrada", "Saída", "Investimento"].map((tipo) => {
+                <div className="shrink-0  pt-6 md:pt-4 md:px-3 ">
+                  <motion.div variants={item} className="flex justify-center md:block w-full">
+                      <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">    
+                        {["Entrada", "Saída", "Investimento"].map((tipo) => {
                                 const cores = getCoresDinamicas(tipo);
                                 return (
                                     <div
                                         key={tipo}
                                         onClick={() => setTipoAtivo(tipo)}
-                                        className={`flex items-center px-3 py-2.5 md:w-36 w-full h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
+                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 w-40 h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
                                     >
-                                        <span className={`h-6 w-1 rounded-full transition-all duration-300 ${cores.barra}`}></span>
-                                        <span className="ml-2 font-normal text-gray-200 select-none">{tipo}</span>
+                                        <span className={`h-6 w-1 flex  rounded-full transition-all duration-300 ${cores.barra}`}></span>
+                                        <span className="pl-2 font-normal text-gray-200 select-none">{tipo}</span>
                                     </div>
                                 );
                             })}
@@ -232,12 +232,12 @@ const Lançamento = () => {
 
 
                 {/* LISTA DE ÚLTIMOS LANÇAMENTOS */}
-                <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col mt-10 md:mt-16 px-4 md:px-10 overflow-hidden">
-                    <h1 className="text-gray-200 mb-6 font-semibold uppercase text-sm md:ml-8 shrink-0 relative md:left-7">
+                <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-2 md:px-0  overflow-hidden">
+                    <h1 className="text-gray-200 mb-6 font-base uppercase text-sm shrink-0 md:pt-20 pt-16">
                         Últimos Lançamentos - {TipoAtivo}
                     </h1>
 
-                    <div className="flex-1 overflow-y-auto custom-scroll md:ml-8 pr-4 mb-10 relative md:top-7">
+                    <div className="flex-1 overflow-y-auto custom-scroll  pr-0  relative pt-6 md:pt-4">
                         <AnimatePresence mode="popLayout" initial={false}>
                             {listaGeral.length > 0 ? (
                                 listaGeral.map((item) => {
@@ -250,7 +250,7 @@ const Lançamento = () => {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, x: -10 }}
-                                            className="group flex flex-col md:grid md:grid-cols-8 gap-4 md:gap-16 items-start md:items-center text-[13px] text-gray-200 mb-2 py-4 px-4 md:px-8 border-b border-white/[0.05] hover:bg-white/[0.03] transition-all cursor-pointer"
+                                            className="group flex flex-col md:grid md:grid-cols-8 gap-1 md:gap-4 items-start md:items-center text-[13px] text-gray-200 mb-2 py-0 md:py-2 px-2 md:p-0 border-b border-white/[0.05] hover:bg-white/[0.03] transition-all cursor-pointer"
                                         >
                                             <span className="text-neutral-500">{formatarDataCurta(item.data)}</span>
                                             <span className="hidden md:block text-gray-200">{item.tipo}</span>
@@ -263,14 +263,14 @@ const Lançamento = () => {
                                             <span className="hidden md:block text-neutral-400">{item.conta}</span>
                                             <span className="hidden md:block text-neutral-400">{item.status}</span>
 
-                                            <div className="flex w-full md:w-auto justify-end">
+                                                                                    <div className="flex w-full md:w-auto justify-end">
                                                 <button
                                                     onClick={() => {
                                                         if (window.confirm("Deseja excluir este item?")) {
                                                             setLista(prev => prev.filter(l => l.id !== item.id));
                                                         }
                                                     }}
-                                                    className="md:opacity-0 group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
+                                                    className="md:opacity-0 group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-0 md:p-1"
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
