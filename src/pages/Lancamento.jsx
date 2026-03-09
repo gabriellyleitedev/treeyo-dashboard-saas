@@ -202,14 +202,14 @@ const Lançamento = () => {
                     </motion.div>
                 </div>
 
-                <motion.div variants={itemVariants} className="shrink-0">
+                <motion.div variants={itemVariants} className="shrink-0 w-full">
 
                     {/* CARD */}
-                    <div className="col-span-12 flex justify-center mt-10">
+                    <div className="flex justify-center w-full lg:py-0 py-14">
                         {listaGeral.length > 0 ? (
                             <CardLancamento lancamento={listaGeral[0]} />
                         ) : (
-                            <div className="w-full -translate-y-32 -translate-x-2 max-w-[420px] h-[150px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
+                            <div className="w-full max-w-[420px] h-[150px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
                                 Nenhum lançamento de {TipoAtivo} para exibir no card.
                             </div>
                         )}

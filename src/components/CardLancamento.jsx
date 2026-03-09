@@ -24,8 +24,9 @@ const CardLancamento = ({ lancamento }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex flex-col h-auto lg:p-3 p-3 transform bg-Neutral-800 border border-white/10 rounded-[14px] w-full max-w-[420px]  shadow-[0_0_30px_rgba(0,0,0,0.1)]"
             >
-                <div className="flex justify-between items-center mb-10">
-                    <div className="flex items-center gap-2 text-neutral-500 text-xs ">
+               <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center gap-2 text-neutral-500 text-xs 
+                    ">
                         <FileText size={16} />
                         <span>{formatarDataCard(lancamento.dataDisplay || lancamento.data)}</span>
                     </div>
