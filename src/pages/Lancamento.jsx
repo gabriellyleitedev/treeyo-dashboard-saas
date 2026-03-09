@@ -133,31 +133,43 @@ const Lançamento = () => {
 
 
                 {/* HEADER DESKTOP (md:flex) */}
-                <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-14 gap-4 shrink-0 px-4 mt-4" variants={item}>
+                <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-14 gap-2 shrink-0 px-4 mt-4" variants={item}>
                     <div>
-                        <h1 className="text-gray-200 font-semibold text-2xl">
+                        <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
                             <span className="text-neutral-400 font-normal"> Dashboard / </span> Lançamento
                         </h1>
                     </div>
-                    <div className="relative flex items-center group right-10">
-                        <Search className="absolute left-2 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors z-10" />
+                    <div className="flex items-center group relative">
+                        <Search className="absolute left-3 w-4 h-4 text-gray-200 group-focus-within:text-green-500 transition-colors z-10" />
                         <input
                             type="text"
-                            placeholder="Search report..."
+                            placeholder="Buscar Lançamento..."
                             style={{ paddingLeft: "2rem" }}
-                            className="bg-black/20 text-sm text-gray-200 pl-11 pr-4 py-2 rounded-full border border-white/10 w-48 h-8 focus:w-54 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                            className="bg-black/20 text-sm text-gray-200 pl-10 pr-4 py-2 rounded-full border border-white/10 w-48 h-8 focus:w-54 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                         />
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center p-1 bg-black/40 rounded-full border border-white/10">
-                            <button onClick={toggleTheme} className={`flex items-center w-9 h-9 justify-center rounded-full transition ${!isDarkMode ? 'bg-[#333333] text-white' : 'text-gray-500'}`}><Sun size={16} /></button>
-                            <button onClick={toggleTheme} className={`flex items-center w-10 h-10 justify-center rounded-full transition ${isDarkMode ? 'bg-[#333333] text-white' : 'text-gray-500'}`}><Moon size={16} /></button>
-                        </div>
-                        <div className="w-10 h-10 rounded-full border bg-white/5 border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative">
-                            <Bell size={20} className="text-gray-200" />
-                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-white/10" />
-                        </div>
-                    </div>
+                    <div className="ml-auto flex items-center gap-3"> 
+    
+    {/* Container do Sol/Lua */}
+    <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10">
+                               <button
+                                 onClick={() => !isDarkMode && toggleTheme()}
+                                 className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${!isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
+                               >
+                                 <Sun size={16} />
+                               </button>
+                               <button
+                                 onClick={() => isDarkMode && toggleTheme()}
+                                 className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
+                               >
+                                 <Moon size={16} />
+                               </button>
+                             </div>
+                             <div className="w-10 h-10 rounded-full border bg-white/5 border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative">
+                                         <Bell size={20} className="text-gray-200" />
+                                         <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-white/10" />
+                                       </div>
+                                    </div>
                 </motion.header>
 
                 <motion.div variants={item} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
