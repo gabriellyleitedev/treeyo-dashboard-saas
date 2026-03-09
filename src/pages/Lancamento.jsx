@@ -176,16 +176,15 @@ const Lançamento = () => {
 
                 {/* Filtros de Tipo */}
                 <div className="shrink-0 px-4 md:px-0">
-                    <motion.div variants={item} className="sm:grid grid-cols-12 gap-6 w-full">
-                        <div className="flex flex-wrap gap-3 w-fit ml-3">
+                    <motion.div variants={item} className="grid grid-cols-12 gap-6 w-full">
+                        <div className="flex md:flex-row gap-3 w-fit ml-3">
                             {["Entrada", "Saída", "Investimento"].map((tipo) => {
                                 const cores = getCoresDinamicas(tipo);
                                 return (
                                     <div
                                         key={tipo}
-
                                         onClick={() => setTipoAtivo(tipo)}
-                                        className={`flex items-center px-3 py-2.5 w-36 h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
+                                        className={`flex items-center px-3 py-2.5 md:w-36 w-full h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
                                     >
                                         <span className={`h-6 w-1 rounded-full transition-all duration-300 ${cores.barra}`}></span>
                                         <span className="ml-2 font-normal text-gray-200 select-none">{tipo}</span>
