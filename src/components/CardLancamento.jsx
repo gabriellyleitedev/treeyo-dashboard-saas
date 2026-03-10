@@ -22,7 +22,7 @@ const CardLancamento = ({ lancamento }) => {
                 key={lancamento.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col h-auto lg:p-3 p-3 backdrop-blur-md transform bg-Neutral-800 w-[92%] mx-auto lg:w-full border-white/10 border rounded-[14px] max-w-[420px] px-6 shadow-[0_0_30px_rgba(0,0,0,0.1)]"
+                className="flex flex-col h-auto p-3 backdrop-blur-md transform bg-Neutral-800 border border-white/10 rounded-[14px] w-[92%] mx-auto lg:w-full lg:mx-0 max-w-[400px] px-6 shadow-[0_0_30px_rgba(0,0,0,0.1)]"
             >
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-2 text-neutral-500 text-xs 

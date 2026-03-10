@@ -214,7 +214,7 @@ const Lançamento = () => {
                             </div>
                         )}
                     </div>
-                    
+
                 </motion.div>
 
                 <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
