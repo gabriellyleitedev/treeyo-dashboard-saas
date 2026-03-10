@@ -100,7 +100,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
     return (
         <motion.div
             animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
-            className="w-full max-w-[350px]"
+            className="w-full max-w-[400px] mx-auto lg:mx-0"
             onClick={limparErros}
         >
             <div className="grid grid-cols-2 gap-3 mb-4">

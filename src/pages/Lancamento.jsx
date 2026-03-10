@@ -188,34 +188,34 @@ const Lançamento = () => {
                     </motion.div>
                 </div>
 
-                <div className="shrink-0 ">
+                <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full xl:!-mt-36 gap-y-10 xl:gap-y-0">
 
-                    <motion.div variants={itemVariants}>
-                        {/*
-                        <div className="col-span-12 lg:col-span-4 pr-10 ">
-                            <FormularioLancamento
-                                tipoSelecionado={TipoAtivo}
-                                aoConfirmar={(novo) => setLista([novo, ...lista])}
-                            />
-                        </div>
-                         */}
-                    </motion.div>
+    {/* BLOCO DO FORMULÁRIO: Topo no iPad/Mobile e Direita no Desktop */}
+    <div className="shrink-0 w-full xl:w-auto">
+        <motion.div variants={itemVariants}>
+            <div className="flex justify-center xl:justify-end w-full px-4 pt-12 xl:px-0 xl:pr-10">
+                <FormularioLancamento
+                    tipoSelecionado={TipoAtivo}
+                    aoConfirmar={(novo) => setLista([novo, ...lista])}
+                />
+            </div>
+        </motion.div>
+    </div>
+
+    {/* BLOCO DO CARD: Centralizado horizontalmente no espaço restante */}
+    <motion.div variants={itemVariants} className="w-full xl:flex-1 ">
+        <div className="flex justify-center w-full py-6 xl:py-0 lg:translate-x-18">
+            {listaGeral.length > 0 ? (
+                <CardLancamento lancamento={listaGeral[0]} />
+            ) : (
+                <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
+                    Nenhum lançamento de {TipoAtivo} para exibir no card.
                 </div>
+            )}
+        </div>
+    </motion.div>
 
-                <motion.div variants={itemVariants} className="shrink-0 w-full">
-
-                    {/* CARD */}
-                    <div className="flex justify-center md:!-mt-[140px] lg:justify-center shrink-0 md:justify-end lg:py-0 py-14">
-                        {listaGeral.length > 0 ? (
-                            <CardLancamento lancamento={listaGeral[0]} />
-                        ) : (
-                            <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
-                                Nenhum lançamento de {TipoAtivo} para exibir no card.
-                            </div>
-                        )}
-                    </div>
-
-                </motion.div>
+</div>
 
                 <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
 
