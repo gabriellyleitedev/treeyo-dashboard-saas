@@ -168,7 +168,7 @@ const Lançamento = () => {
                 <motion.div variants={item} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
                 {/* Filtros de Tipo */}
-                <div className="shrink-0  pt-6 md:pt-4 md:px-3 ">
+                <div className="shrink-0  pt-6 md:pt-4 md:px-3">
                     <motion.div variants={item} className="flex justify-center md:block w-full">
                         <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">
                             {["Entrada", "Saída", "Investimento"].map((tipo) => {
@@ -205,11 +205,11 @@ const Lançamento = () => {
                 <motion.div variants={itemVariants} className="shrink-0 w-full">
 
                     {/* CARD */}
-                    <div className="flex justify-center w-full lg:py-0 py-14">
+                    <div className="flex justify-center md:!-mt-[140px] lg:justify-center shrink-0 md:justify-end lg:py-0 py-14">
                         {listaGeral.length > 0 ? (
                             <CardLancamento lancamento={listaGeral[0]} />
                         ) : (
-                            <div className="w-full max-w-[420px] h-[150px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
+                            <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
                                 Nenhum lançamento de {TipoAtivo} para exibir no card.
                             </div>
                         )}
