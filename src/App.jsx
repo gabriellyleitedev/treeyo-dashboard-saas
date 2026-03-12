@@ -5,10 +5,12 @@ import Movimentacao from './pages/Movimentacao'
 import EvolucaoSaldo from './pages/EvolucaoSaldo'
 import Lancamento from './pages/Lancamento'
 import { Toaster } from "react-hot-toast";
+import { NotificationProvider } from "./context/NotificationContext";
 
 function App() {
   return (
     <>
+      <NotificationProvider>
       <Routes>
         <Route element={<Layout />}>
 
@@ -23,6 +25,7 @@ function App() {
           <Route path='/configuracoes' element={<div className="text-white p-10">Página Configurações em breve...</div>} />
         </Route>
       </Routes>
+      </NotificationProvider>
 
       {/* Toast global */}
       <Toaster

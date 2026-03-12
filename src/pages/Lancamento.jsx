@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Sun, Moon, Bell, Search, Trash2, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Sun, Moon, Search, Trash2, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useOutletContext, useNavigate } from "react-router-dom";
 import FormularioLancamento from "../components/FormularioLancamento";
 import CardLancamento from "../components/CardLancamento";
 import ConfirmModal from "../components/ConfirmModal";
 import { toast } from "react-hot-toast";
+import { useNotifications } from "../context/NotificationContext";
+import NotificationBell from "../components/NotificationBell";
 function formatarDataCurta(dataISO) {
     if (!dataISO) return "";
     if (dataISO.includes("/")) return dataISO;
@@ -33,14 +35,14 @@ const itemVariants = {
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
-const Lançamento = () => {
-    const navigate = useNavigate();
+const Lancamento = () => {
+      const navigate = useNavigate(); 
     const [modalOpen, setModalOpen] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
 
-    const [TipoAtivo, setTipoAtivo] = useState("Entrada");
+    const [tipoAtivo, setTipoAtivo] = useState("Entrada");
+    const [busca, setBusca] = useState("");
 
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [diaSelecionado, setDiaSelecionado] = useState(new Date().getDate());
 
@@ -48,6 +50,8 @@ const Lançamento = () => {
         const salvos = localStorage.getItem("@treeyo:lancamentos");
         return salvos ? JSON.parse(salvos) : [];
     });
+
+    const { adicionarNotificacao } = useNotifications();
 
     useEffect(() => {
         localStorage.setItem("@treeyo:lancamentos", JSON.stringify(lista));
@@ -60,10 +64,32 @@ const Lançamento = () => {
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-    const listaGeral = [...lista].sort((a, b) => new Date(b.data) - new Date(a.data));
+    const listaGeral = React.useMemo(() => {
+        return lista
+            .filter((item) => {
+
+                if (!busca) return true;
+
+                const termo = busca.toLowerCase();
+                const dataFormatada = formatarDataCurta(item.data);
+
+                return (
+                    item.tipo?.toLowerCase().includes(termo) ||
+                    item.categoria?.toLowerCase().includes(termo) ||
+                    item.metodo?.toLowerCase().includes(termo) ||
+                    item.conta?.toLowerCase().includes(termo) ||
+                    item.status?.toLowerCase().includes(termo) ||
+                    String(item.valor)?.includes(termo) ||
+                    dataFormatada.includes(termo) ||
+                    item.data?.includes(termo)
+                );
+            })
+            .sort((a, b) => new Date(b.data) - new Date(a.data));
+
+    }, [lista, busca]);
 
     const getCoresDinamicas = (tipo) => {
-        const ativo = TipoAtivo === tipo;
+        const ativo = tipoAtivo === tipo;
         const config = {
             "Entrada": {
                 barra: "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]",
@@ -83,7 +109,7 @@ const Lançamento = () => {
     };
 
     return (
-        <div className="w-full lg:h-screen min-h-screen overflow-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
+        <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
 
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
@@ -106,10 +132,8 @@ const Lançamento = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-
-                    <div className="relative p-1.5 border bg-white/5 rounded-full border-white/10">
-                        <Bell size={22} className="text-gray-200" />
-                        <span className="absolute top-2 right-2 w-2 h-2 bg-[#1fba11] rounded-full" />
+                    <div className="flex items-center gap-3">
+                        <NotificationBell />
                     </div>
                 </div>
             </div>
@@ -119,10 +143,13 @@ const Lançamento = () => {
                 <div className="flex items-center group relative">
                     <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
                     <input
+                        autoComplete="off"
+                        value={busca}
+                        onChange={(e) => setBusca(e.target.value)}
                         type="text"
                         placeholder="Buscar Lançamento..."
                         style={{ paddingLeft: "2rem" }}
-                        className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-82 focus:w-76 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                        className="bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-[90vw] max-w-[420px] focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                     />
                 </div>
             </div>
@@ -134,15 +161,18 @@ const Lançamento = () => {
                     message="Esse item será removido permanentemente."
                     onConfirm={() => {
                         if (itemParaExcluir) {
-                            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id)); // remove item
-                            setItemParaExcluir(null); // limpa referência
-                            setModalOpen(false); // fecha modal
+                            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id));
+
+                            adicionarNotificacao({
+                                tipo: "erro",
+                                titulo: "Lançamento removido",
+                                mensagem: `${itemParaExcluir.tipo} de R$ ${itemParaExcluir.valor} foi excluída`
+                            });
+
+                            setItemParaExcluir(null);
+                            setModalOpen(false);
                             toast.success("Item excluído com sucesso!");
                         }
-                    }}
-                    onCancel={() => {
-                        setItemParaExcluir(null); // limpa referência
-                        setModalOpen(false); // fecha modal
                     }}
                 />
 
@@ -156,6 +186,9 @@ const Lançamento = () => {
                     <div className="flex items-center group relative">
                         <Search className="absolute left-3 w-4 h-4 text-gray-200 group-focus-within:text-green-500 transition-colors z-10" />
                         <input
+                            autoComplete="off"
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
                             type="text"
                             placeholder="Buscar Lançamento..."
                             style={{ paddingLeft: "2rem" }}
@@ -178,9 +211,8 @@ const Lançamento = () => {
                                 <Moon size={16} />
                             </button>
                         </div>
-                        <div className="w-10 h-10 rounded-full border bg-white/5 border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative">
-                            <Bell size={20} className="text-gray-200" />
-                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-white/10" />
+                        <div className="ml-auto flex items-center gap-3 ">
+                            <NotificationBell />
                         </div>
                     </div>
                 </motion.header>
@@ -190,7 +222,7 @@ const Lançamento = () => {
                 {/* Filtros de Tipo */}
                 <div className="shrink-0  pt-6 md:pt-4 md:px-3 relative z-20">
                     <motion.div variants={item} className="flex justify-center md:justify-center xl:block w-full">
-                        <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">
+                        <div className="flex flex-col gap-3 items-center md:items-start w-full md:w-fit">
                             {["Entrada", "Saída", "Investimento"].map((tipo) => {
                                 const cores = getCoresDinamicas(tipo);
                                 return (
@@ -215,8 +247,24 @@ const Lançamento = () => {
                         <motion.div variants={itemVariants}>
                             <div className="flex justify-center xl:justify-end w-full px-4 pt-12 xl:px-0 xl:pr-10">
                                 <FormularioLancamento
-                                    tipoSelecionado={TipoAtivo}
-                                    aoConfirmar={(novo) => setLista([novo, ...lista])}
+                                    tipoSelecionado={tipoAtivo}
+                                    aoConfirmar={(novo) => {
+
+                                        setLista(prev => [novo, ...prev]);
+
+                                        let tipoNotif = "info";
+                                        if (novo.tipo === "Entrada") tipoNotif = "sucesso";
+                                        if (novo.tipo === "Saída") tipoNotif = "aviso";
+                                        if (novo.tipo === "Investimento") tipoNotif = "info";
+
+                                        adicionarNotificacao({
+                                            tipo: tipoNotif,
+                                            titulo: "Novo lançamento registrado",
+                                            mensagem: `${novo.tipo} de R$ ${novo.valor} adicionada`
+                                        });
+
+                                    }}
+
                                 />
                             </div>
                         </motion.div>
@@ -229,7 +277,7 @@ const Lançamento = () => {
                                 <CardLancamento lancamento={listaGeral[0]} />
                             ) : (
                                 <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
-                                    Nenhum lançamento de {TipoAtivo} para exibir no card.
+                                    Nenhum lançamento de {tipoAtivo} para exibir no card.
                                 </div>
                             )}
                         </div>
@@ -239,11 +287,17 @@ const Lançamento = () => {
 
                 <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
 
-                    <h1 className="text-gray-200 mb-6 font-base uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
-                        Últimos Lançamentos - {TipoAtivo}
+                    <h1 className="text-gray-200 mb-6 font-medium tracking-wider uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
+                        Últimos Lançamentos
                     </h1>
 
-                    <div className="flex-1 overflow-hidden lg:overflow-hidden custom-scroll relative pt-6 md:pt-4">
+                    {busca.trim() !== "" && (
+                        <span className="text-neutral-500 text-xs lg:pl-1 pl-6">
+                            {listaGeral.length} resultado{listaGeral.length !== 1 && "s"}
+                        </span>
+                    )}
+
+                    <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll relative pt-6 md:pt-4">
                         <AnimatePresence mode="popLayout" initial={false}>
                             {listaGeral.length > 0 ? (
                                 listaGeral.map((item) => {
@@ -255,19 +309,12 @@ const Lançamento = () => {
                                             key={item.id}
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, x: -10 }}
-                                            className="group relative w-full flex flex-col lg:grid lg:grid-cols-7 gap-1 lg:gap-3 items-start lg:items-center text-[13px] text-gray-200 py-4 lg:py-2 px-6 lg:px-4 hover:bg-white/[0.02] transition-all cursor-pointer border-b border-white/[0.05] lg:border-none"
+                                            exit={{ opacity: 0, x: -30, transition: { duration: 0.2 } }}
+                                            className="group relative w-full flex flex-col lg:grid lg:grid-cols-7 gap-1 lg:gap-6 items-start lg:items-center text-[13px] text-gray-200 py-4 lg:py-2 px-4 lg:px-6 hover:bg-white/[0.04] transition-all duration-400 border-b border-white/10"
                                         >
-                                            {/* LINHA DE DIVISÃO */}
-                                            <div
-                                                className="absolute bottom-0 left-[-100vw] right-[-50vw] h-px"
-                                                style={{
-                                                    background: 'linear-gradient(to right, transparent 45%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 70%, transparent 95%)'
-                                                }}
-                                            />
 
                                             {/* DATA */}
-                                            <span className="text-neutral-500">{formatarDataCurta(item.data)}</span>
+                                            <span className="text-neutral-500 ">{formatarDataCurta(item.data)}</span>
 
                                             {/* TIPO */}
                                             <span className="hidden lg:block text-gray-200">{item.tipo}</span>
@@ -278,13 +325,13 @@ const Lançamento = () => {
                                                 R$ {(Number(item.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                             </span>
 
-                                            <span className="text-neutral-400 truncate w-full lg:w-auto">{item.categoria || "-"}</span>
+                                            <span className="text-neutral-400 truncate w-full max-w-[160px]">{item.categoria || "-"}</span>
 
                                             {/* CAMPOS QUE SÓ APARECEM NO NOTEBOOK (LG) */}
                                             <span className="hidden lg:block text-neutral-400">{item.metodo}</span>
                                             <span className="hidden lg:block text-neutral-400">{item.conta}</span>
 
-                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 lg:relative lg:top-0 lg:translate-y-0 flex items-center justify-end gap-4 lg:gap-10">
+                                            <div className="absolute right-4 top-10 lg:relative lg:right-auto lg:top-auto flex items-center gap-4 lg:gap-10">
                                                 <span className="hidden lg:block text-neutral-400">{item.status}</span>
 
                                                 <button
@@ -314,4 +361,4 @@ const Lançamento = () => {
     );
 };
 
-export default Lançamento;
+export default Lancamento;
