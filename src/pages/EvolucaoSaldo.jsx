@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import NotificationBell from "../components/NotificationBell";
 import ConfirmModal from "../components/ConfirmModal";
+import SaldoMiniChart from "../components/SaldoMiniChart";
 
 // Variantes de animação idênticas às enviadas
 const containerVariants = {
@@ -156,11 +157,11 @@ const EvolucaoSaldo = () => {
                 </motion.header>
 
                 <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
-                {/* GRÁFICO 
+                {/* GRÁFICO */}
                 <motion.div variants={itemVariants} className="w-[95%] transition-all duration-500">
                     <SaldoMiniChart />
                 </motion.div>
-                */}
+                
 
                 {/* BLOCO INFERIOR 
                 <div className="mt-8 flex w-full justify-start">

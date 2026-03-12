@@ -63,13 +63,13 @@ export default function SaldoMiniChart() {
   const data = getData();
 
   return (
-    <div className="w-full bg-[#161616] p-6 rounded-[14px] border border-white/10 text-white font-sans relative top-8 left-8">
-      <div className="flex flex-col md:flex-row gap-8 items-start">
+    <div className="w-full max-w-[95%] md:w-full p-4 md:p-6 bg-[#161616] rounded-[14px] border border-white/10 text-white font-sans mx-auto pb-6">
+      <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
 
         {/* GRÁFICO */}
-        <div className="flex-1 w-full h-[230px] relative">
+        <div className=" w-full h-[230px] md:h-[230px] relative">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 20, right: 20, left: 30, bottom: 25 }}>
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <pattern id="riscasVerdes" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
                   <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(31, 186, 17, 0.9)" strokeWidth="1" />
@@ -103,7 +103,7 @@ export default function SaldoMiniChart() {
               />
 
               <Area
-                type="linear"
+                type="monotone"
                 dataKey="saldo"
                 stroke="#1fba11"
                 strokeWidth={2}
@@ -135,7 +135,7 @@ export default function SaldoMiniChart() {
         </div>
 
         {/* BOTÕES LATERAIS */}
-        <div className="relative flex flex-col gap-5 w-32 top-7 right-5">
+        <div className="flex flex-col gap-5 w-full md:w-32 ">
           <button
             onClick={() => setRange("7d")}
             className={`h-7 py-2 px-4 rounded-lg text-xs transition 
