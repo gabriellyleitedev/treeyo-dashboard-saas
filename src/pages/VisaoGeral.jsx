@@ -1,17 +1,62 @@
-import React from 'react'
-import { LayoutDashboard, Sun, Moon, Bell, TrendingUp } from 'lucide-react'
-import CalendarPicker from '../components/CalendarPicker'
-import CardsStack from '../components/CardsStack'
-import MainChart from '../components/MainChart'
-import RemindersPanel from '../components/RemindersPanel'
-import TreeyoAssistant from '../components/TreeyoAssistant'
-import Header from '../components/Header'
+import React from 'react';
+import { LayoutDashboard, Sun, Moon, Bell, TrendingUp } from 'lucide-react';
+import CalendarPicker from '../components/CalendarPicker';
+import CardsStack from '../components/CardsStack';
+import MainChart from '../components/MainChart';
+import RemindersPanel from '../components/RemindersPanel';
+import TreeyoAssistant from '../components/TreeyoAssistant';
+import Header from '../components/Header';
+import { useNotifications } from "../context/NotificationContext";
 
 function VisaoGeral() {
     const [isDarkMode, setIsDarkMode] = React.useState(true);
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+    const { adicionarNotificacao } = useNotifications();
+
+React.useEffect(() => {
+
+    const lancamentos = JSON.parse(localStorage.getItem("@treeyo:lancamentos")) || [];
+
+    if (lancamentos.length === 0) {
+        adicionarNotificacao({
+            tipo: "info",
+            titulo: "Comece seu controle financeiro",
+            mensagem: "Adicione seu primeiro lançamento para iniciar seu histórico."
+        });
+    }
+
+    if (lancamentos.length > 0) {
+        adicionarNotificacao({
+            tipo: "sucesso",
+            titulo: "Dados carregados",
+            mensagem: `${lancamentos.length} lançamentos encontrados no sistema.`
+        });
+    }
+
+    const perfil = JSON.parse(localStorage.getItem("@treeyo:perfil"));
+
+    if (!perfil?.foto) {
+        adicionarNotificacao({
+            tipo: "aviso",
+            titulo: "Complete seu perfil",
+            mensagem: "Adicione uma foto de perfil para personalizar sua conta."
+        });
+    }
+
+    const plano = JSON.parse(localStorage.getItem("@treeyo:plano"));
+
+    if (plano?.vencimento) {
+        adicionarNotificacao({
+            tipo: "aviso",
+            titulo: "Plano próximo do vencimento",
+            mensagem: `Seu plano vence em ${plano.vencimento}.`
+        });
+    }
+
+}, []);
 
     return (
         <div className="w-full min-h-screen lg:pb-0 pb-24">

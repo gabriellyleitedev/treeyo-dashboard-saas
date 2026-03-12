@@ -11,20 +11,20 @@ function App() {
   return (
     <>
       <NotificationProvider>
-      <Routes>
-        <Route element={<Layout />}>
+        <Routes>
+          <Route element={<Layout />}>
 
-          <Route path="/" element={<Navigate to="/visao-geral" replace />} />
-          <Route path="/visao-geral" element={<VisaoGeral />} />
-          <Route path="/movimentacao" element={<Movimentacao />} />
+            <Route path="/" element={<Navigate to="/visao-geral" replace />} />
+            <Route path="/visao-geral" element={<VisaoGeral />} />
+            <Route path="/movimentacao" element={<Movimentacao />} />
 
-          <Route path="/lancamento" element={<Lancamento />} />
-          <Route path="/evolucao-saldo" element={<EvolucaoSaldo />} />
-          <Route path='/resultado' element={<div className="text-white p-10">Página Resultado em breve...</div>} />
-          <Route path='/fluxo-projetado' element={<div className="text-white p-10">Página Fluxo de Caixa Projetado em breve...</div>} />
-          <Route path='/configuracoes' element={<div className="text-white p-10">Página Configurações em breve...</div>} />
-        </Route>
-      </Routes>
+            <Route path="/lancamento" element={<Lancamento />} />
+            <Route path="/evolucao-saldo" element={<EvolucaoSaldo />} />
+            <Route path='/resultado' element={<div className="text-white p-10">Página Resultado em breve...</div>} />
+            <Route path='/fluxo-projetado' element={<div className="text-white p-10">Página Fluxo de Caixa Projetado em breve...</div>} />
+            <Route path='/configuracoes' element={<div className="text-white p-10">Página Configurações em breve...</div>} />
+          </Route>
+        </Routes>
       </NotificationProvider>
 
       {/* Toast global */}

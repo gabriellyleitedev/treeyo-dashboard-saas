@@ -36,7 +36,7 @@ const itemVariants = {
 };
 
 const Lancamento = () => {
-      const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
 

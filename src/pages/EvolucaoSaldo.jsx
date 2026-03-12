@@ -1,70 +1,161 @@
-import React from "react";
-import { Sun, Moon, Bell, Search } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Sun, Moon, Search, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
-import SaldoMiniChart from "../components/SaldoMiniChart";
+import { useNavigate } from "react-router-dom";
+import NotificationBell from "../components/NotificationBell";
+import ConfirmModal from "../components/ConfirmModal";
+
+// Variantes de animação idênticas às enviadas
+const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+        opacity: 1,
+        transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+    },
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
 
 const EvolucaoSaldo = () => {
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.15, delayChildren: 0.1 }
-        }
+    const navigate = useNavigate();
+    
+    // Estados principais
+    const [busca, setBusca] = useState("");
+    const [lista, setLista] = useState([]); 
+    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [itemParaExcluir, setItemParaExcluir] = useState(null);
+
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+    const formatarDataCurta = (dataISO) => {
+        if (!dataISO) return "";
+        const partes = dataISO.split("-");
+        if (partes.length !== 3) return dataISO;
+        const [ano, mes, dia] = partes;
+        return `${dia}/${mes}`;
     };
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.5, ease: "easeOut" }
-        }
-    };
+    // Lógica de Busca (Única mantida conforme pedido)
+    const listaFiltrada = useMemo(() => {
+        if (!lista) return [];
+        return lista
+            .filter((item) => {
+                if (!busca) return true;
+                const termo = busca.toLowerCase();
+                const dataFormatada = formatarDataCurta(item.data);
+
+                return (
+                    item.tipo?.toLowerCase().includes(termo) ||
+                    item.categoria?.toLowerCase().includes(termo) ||
+                    String(item.valor).includes(termo) ||
+                    dataFormatada.includes(termo)
+                );
+            })
+            .sort((a, b) => new Date(b.data) - new Date(a.data));
+    }, [lista, busca]);
 
     return (
-        <div className="w-full h-full rounded-[43px] pt-8 transition-all duration-500 ease-in-out overflow-x-auto">
-            <motion.div
-                className="min-w-[1200px] px-10 pb-32"
-                initial="hidden"
-                animate="visible"
+        <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
+            
+            {/* LUZ VERDE TOPO */}
+            <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
+
+            {/* HEADER MOBILE */}
+            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-1 ">
+                <div className="flex items-center gap-2">
+                    <div className="md:hidden flex items-center justify-between px-0 py-3 sticky top-0 z-50 ">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
+                            >
+                                <ArrowLeft size={22} />
+                            </button>
+                            <h1 className="text-gray-200 font-medium text-xl">Evolução do Saldo</h1>
+                        </div>
+                    </div>
+                </div>
+                <NotificationBell />
+            </div>
+
+            {/* SEARCH MOBILE */}
+            <div className="md:hidden flex items-center justify-center mb-6 ">
+                <div className="flex items-center group relative">
+                    <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
+                    <input
+                        autoComplete="off"
+                        value={busca}
+                        onChange={(e) => setBusca(e.target.value)}
+                        type="text"
+                        placeholder="Buscar..."
+                        style={{ paddingLeft: "2.5rem" }}
+                        className="bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pr-4 h-10 w-[90vw] max-w-[420px] focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                    />
+                </div>
+            </div>
+
+            <motion.div 
+                className="w-full h-full flex flex-col" 
+                initial="hidden" 
+                animate="visible" 
                 variants={containerVariants}
             >
+                <ConfirmModal
+                    isOpen={modalOpen}
+                    title="Excluir item?"
+                    message="Essa ação não pode ser desfeita."
+                    onConfirm={() => {
+                        setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id));
+                        setModalOpen(false);
+                    }}
+                    onClose={() => setModalOpen(false)}
+                />
 
-                {/* HEADER*/}
-                <motion.header variants={itemVariants} className="flex flex-col md:flex-row md:items-center md:justify-between w-full">
+                {/* HEADER DESKTOP - EXATAMENTE COMO O ENVIADO */}
+                <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={itemVariants}>
                     <div>
-                        <h1 className="relative text-gray-200 text-2xl font-semibold left-5 top-3">
-                            <span className="text-neutral-400 font-normal">Dashboard / </span>
-                            Evolução do Saldo
+                        <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
+                            <span className="text-neutral-400 font-normal"> Dashboard / </span> Evolução do Saldo
                         </h1>
                     </div>
-                    <div className="relative flex items-center group justify-center top-2">
-                        <Search className="text-neutral-300 transform translate-x-6 w-4 h-4 group-focus-within:text-green-500 transition-colors z-10" />
+                    
+                    <div className="flex items-center group relative">
+                        <Search className="absolute left-3 w-4 h-4 text-gray-200 group-focus-within:text-green-500 transition-colors z-10" />
                         <input
+                            autoComplete="off"
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
                             type="text"
-                            placeholder="Search report..."
-                            style={{ paddingLeft: "2rem" }}
-                            className="bg-black/20 text-gray-200 text-sm pl-11 pr-4 py-2 rounded-full border border-white/10 w-48 h-8 focus:outline-none focus:border-green-500/20 focus:w-54 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer" />
+                            placeholder="Buscar..."
+                            style={{ paddingLeft: "2.5rem" }}
+                            className="bg-black/20 text-sm text-gray-200 pr-4 py-2 rounded-full border border-white/10 w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                        />
                     </div>
-                    <div className="flex items-center gap-4 relative top-2">
-                        <div className="hidden md:flex items-center p-1 rounded-full bg-black/40 border border-white/10 relative right-10">
-                            <button className="w-9 h-9 flex items-center justify-center rounded-full text-gray-500 hover:bg-white/5 transition cursor-pointer">
+
+                    <div className="ml-auto flex items-center gap-3">
+                        <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10 ">
+                            <button
+                                onClick={() => !isDarkMode && toggleTheme()}
+                                className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${!isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
+                            >
                                 <Sun size={16} />
                             </button>
-                            <button className="w-9 h-9 flex items-center justify-center rounded-full bg-[#333333] text-white shadow-md transition cursor-pointer">
+                            <button
+                                onClick={() => isDarkMode && toggleTheme()}
+                                className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
+                            >
                                 <Moon size={16} />
                             </button>
                         </div>
-                        <div className="relative right-10 w-10 h-10 rounded-full border bg-[#1a1a1a] border-white/5 flex items-center justify-center">
-                            <Bell size={18} className="text-yellow-500/80" />
-                        </div>
+                        <NotificationBell />
                     </div>
                 </motion.header>
 
-                {/* LINHA DIVISÓRIA */}
-                <motion.div
-                    variants={itemVariants} className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-5 translate-y-4" />
-
+                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
                 {/* GRÁFICO 
                 <motion.div variants={itemVariants} className="w-[95%] transition-all duration-500">
                     <SaldoMiniChart />
