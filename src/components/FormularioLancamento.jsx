@@ -87,7 +87,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         }));
     };
 
-    const inputBaseStyle = "w-full bg-[#161616] backdrop-blur-sm border rounded-lg relative pl-10 pr-10 py-1 text-sm outline-none h-10 transition-all duration-300 appearance-none [text-indent:10px]";
+    const inputBaseStyle = "w-full bg-[#161616] backdrop-blur-sm border rounded-lg relative pl-4 pr-10 py-0 text-sm outline-none h-10 transition-all duration-300 appearance-none";
 
     const getBorderStyle = (campo) => {
         if (erros.includes(campo)) return "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]";

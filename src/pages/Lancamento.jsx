@@ -168,7 +168,7 @@ const Lançamento = () => {
                 <motion.div variants={item} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
                 {/* Filtros de Tipo */}
-                <div className="shrink-0  pt-6 md:pt-4 md:px-3">
+                <div className="shrink-0  pt-6 md:pt-4 md:px-3 relative z-20">
                     <motion.div variants={item} className="flex justify-center md:block w-full">
                         <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">
                             {["Entrada", "Saída", "Investimento"].map((tipo) => {
@@ -188,7 +188,7 @@ const Lançamento = () => {
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full xl:!-mt-36 gap-y-10 xl:gap-y-0">
+                <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full xl:!-mt-48 gap-y-10 xl:gap-y-0">
 
     {/* BLOCO DO FORMULÁRIO: Topo no iPad/Mobile e Direita no Desktop */}
     <div className="shrink-0 w-full xl:w-auto">
@@ -204,7 +204,7 @@ const Lançamento = () => {
 
     {/* BLOCO DO CARD: Centralizado horizontalmente no espaço restante */}
     <motion.div variants={itemVariants} className="w-full xl:flex-1 ">
-        <div className="flex justify-center w-full py-6 xl:py-0 lg:translate-x-18">
+        <div className="flex justify-center w-full py-6 xl:py-12 xl:pl-36">
             {listaGeral.length > 0 ? (
                 <CardLancamento lancamento={listaGeral[0]} />
             ) : (
