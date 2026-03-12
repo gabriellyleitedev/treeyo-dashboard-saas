@@ -19,7 +19,7 @@ const MobileDock = () => {
     ];
 
     return (
-        <div className="md:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 touch-none pointer-events-none">
+        <div className="lg:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 touch-none pointer-events-none">
             <nav className="w-full max-w-[270px] h-[60px] bg-black/20 backdrop-blur border border-white/10 rounded-full overflow-hidden pointer-events-auto shadow-2xl">
 
                 {/* ÁREA DE SCROLL: */}

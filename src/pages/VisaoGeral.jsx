@@ -14,7 +14,7 @@ function VisaoGeral() {
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
     return (
-        <div className="w-full min-h-screen  pb-32">
+        <div className="w-full min-h-screen lg:pb-0 pb-24">
             <Header
                 isDarkMode={isDarkMode}
                 toggleTheme={toggleTheme}

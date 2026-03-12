@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { motion } from "framer-motion";
+import SelectTreeyo from "./SelectTreeyo";
+import toast from "react-hot-toast";
 
 const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
+
     const hoje = new Date();
     const hojeISO = hoje.toISOString().split("T")[0];
 
@@ -34,7 +37,11 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
     useEffect(() => {
         if (formData.metodo === "Dinheiro") {
-            setFormData(prev => ({ ...prev, conta: "Espécie", outroBanco: "" }));
+            setFormData(prev => ({
+                ...prev,
+                conta: "Espécie",
+                outroBanco: ""
+            }));
         }
     }, [formData.metodo]);
 
@@ -42,19 +49,47 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         if (erros.length > 0) setErros([]);
     };
 
-    const handleDataChange = (e) => {
+    const handleChange = (campo, valor) => {
         limparErros();
-        let val = e.target.value.replace(/\D/g, "").slice(0, 8);
-        if (val.length >= 5) val = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
-        else if (val.length >= 3) val = `${val.slice(0, 2)}/${val.slice(2)}`;
+        setFormData(prev => ({
+            ...prev,
+            [campo]: valor
+        }));
+    };
 
-        setFormData((prev) => ({ ...prev, dataDisplay: val }));
-        if (val.length === 10) setFormData((prev) => ({ ...prev, data: converterParaISO(val) }));
+    const handleDataChange = (e) => {
+
+        limparErros();
+
+        let val = e.target.value.replace(/\D/g, "").slice(0, 8);
+
+        if (val.length >= 5)
+            val = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
+        else if (val.length >= 3)
+            val = `${val.slice(0, 2)}/${val.slice(2)}`;
+
+        setFormData(prev => ({
+            ...prev,
+            dataDisplay: val
+        }));
+
+        if (val.length === 10) {
+            setFormData(prev => ({
+                ...prev,
+                data: converterParaISO(val)
+            }));
+        }
+
     };
 
     const validarEEnviar = () => {
+
         const novosErros = [];
-        const bancoFinal = formData.conta === "Outro" ? formData.outroBanco : formData.conta;
+
+        const bancoFinal =
+            formData.conta === "Outro"
+                ? formData.outroBanco
+                : formData.conta;
 
         if (!formData.categoria) novosErros.push("categoria");
         if (!formData.valor) novosErros.push("valor");
@@ -63,14 +98,17 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         if (!bancoFinal) novosErros.push("conta");
 
         if (novosErros.length > 0) {
-            setErros(novosErros); // Primeiro pinta de vermelho
+
+            setErros(novosErros);
             setShake(true);
 
-            setTimeout(() => {
-                alert("⚠️ Por favor, preencha todos os campos antes de confirmar."); //
-                setShake(false);
-            }, 50);
+setTimeout(() => {
+    toast.error("⚠️ Por favor, preencha todos os campos");
+    setShake(false);
+}, 50);
+
             return;
+
         }
 
         aoConfirmar({
@@ -81,29 +119,39 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         });
 
         setErros([]);
+
         setFormData(prev => ({
             ...prev,
-            categoria: "", valor: "", status: "", metodo: "", conta: "", outroBanco: ""
+            categoria: "",
+            valor: "",
+            status: "",
+            metodo: "",
+            conta: "",
+            outroBanco: ""
         }));
+
     };
 
-    const inputBaseStyle = "w-full bg-[#161616] backdrop-blur-sm border rounded-lg relative pl-3 pr-10 py-0 text-sm outline-none h-10 transition-all duration-300 appearance-none";
+    const inputBaseStyle =
+        "w-full bg-[#161616] backdrop-blur-md border rounded-lg relative pl-2 pr-3 py-0 text-sm outline-none h-10 transition-all duration-300";
 
     const getBorderStyle = (campo) => {
-        if (erros.includes(campo)) return "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+        if (erros.includes(campo))
+            return "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
+
         return "border-white/5 focus:border-green-500/50 text-neutral-400";
     };
 
-    const isInvestimento = tipoSelecionado === "Investimento";
-    const corFoco = isInvestimento ? "focus:border-green-500/50" : (tipoSelecionado === "Entrada" ? "focus:border-green-500/50" : "focus:border-red-500/50");
-
     return (
+
         <motion.div
             animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
+            style={{ position: "relative", zIndex: 999 }}
             className="w-full max-w-[400px] mx-auto lg:mx-0"
-            onClick={limparErros}
         >
+
             <div className="grid grid-cols-2 gap-3 mb-4">
+
                 <input
                     type="text"
                     className={`${inputBaseStyle} ${getBorderStyle("dataDisplay")}`}
@@ -113,12 +161,15 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
                 <input
                     className={`${inputBaseStyle} ${getBorderStyle("categoria")}`}
-                    placeholder={tipoSelecionado === "Investimento" ? "Tipo de Ativo (CDB...)" : "Categoria"}
+                    placeholder={
+                        tipoSelecionado === "Investimento"
+                            ? "Tipo de Ativo (CDB...)"
+                            : "Categoria"
+                    }
                     value={formData.categoria}
-                    onChange={(e) => {
-                        limparErros();
-                        setFormData({ ...formData, categoria: e.target.value });
-                    }}
+                    onChange={(e) =>
+                        handleChange("categoria", e.target.value)
+                    }
                 />
 
                 <input
@@ -126,102 +177,100 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
                     placeholder="Valor"
                     className={`${inputBaseStyle} ${getBorderStyle("valor")}`}
                     value={formData.valor}
-                    onChange={(e) => {
-                        limparErros();
-                        setFormData({ ...formData, valor: e.target.value });
-                    }}
+                    onChange={(e) =>
+                        handleChange("valor", e.target.value)
+                    }
                 />
 
-                <div className="relative">
-                    <select
-                        className={`${inputBaseStyle} ${getBorderStyle("status")}`}
-                        value={formData.status}
-                        onChange={(e) => {
-                            limparErros();
-                            setFormData({ ...formData, status: e.target.value });
-                        }}
-                    >
-                        <option value="" disabled hidden>{tipoSelecionado === "Investimento" ? "Status" : "Pago/Pendente"}</option>
-                        <option>{tipoSelecionado === "Investimento" ? "Executado" : "Pago"}</option>
-                        <option>{tipoSelecionado === "Investimento" ? "Agendado" : "Pendente"}</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-3 text-neutral-500 pointer-events-none" size={15} />
-                </div>
+                <SelectTreeyo
+                    value={formData.status}
+                    onChange={(v) => handleChange("status", v)}
+                    placeholder={
+                        tipoSelecionado === "Investimento"
+                            ? "Status"
+                            : "Pago/Pendente"
+                    }
+                    options={
+                        tipoSelecionado === "Investimento"
+                            ? ["Executado", "Agendado"]
+                            : ["Pago", "Pendente"]
+                    }
+                />
 
-                <div className="relative">
-                    <select
-                        className={`${inputBaseStyle} ${getBorderStyle("metodo")}`}
-                        value={formData.metodo}
-                        onChange={(e) => {
-                            limparErros();
-                            setFormData({ ...formData, metodo: e.target.value });
-                        }}
-                    >
-                        <option value="" disabled hidden>Form. Pagamento</option>
-                        <option>Pix</option>
-                        <option>Débito</option>
-                        <option>Crédito</option>
-                        <option>Dinheiro</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-3 text-neutral-500 pointer-events-none" size={15} />
-                </div>
-                <div className="relative">
-                    {formData.metodo === "Dinheiro" ? (
+                <SelectTreeyo
+                    value={formData.metodo}
+                    onChange={(v) => handleChange("metodo", v)}
+                    placeholder="Form. Pagamento"
+                    options={["Pix", "Débito", "Crédito", "Dinheiro"]}
+                />
 
-                        <div className={`${inputBaseStyle} border-white/5 flex items-center text-neutral-500 bg-[#0a0a0a] cursor-not-allowed`}>
-                            Espécie
-                        </div>
-                    ) : formData.conta === "Outro" ? (
+                {formData.metodo === "Dinheiro" ? (
 
-                        <input
-                            autoFocus
-                            className={`${inputBaseStyle} ${getBorderStyle("conta")}`}
-                            placeholder="Qual banco?"
-                            value={formData.outroBanco}
-                            onChange={(e) => {
-                                limparErros();
-                                setFormData({ ...formData, outroBanco: e.target.value });
-                            }}
-                        />
-                    ) : (
+                    <div className={`${inputBaseStyle} border-white/5 flex items-center text-neutral-500 bg-[#0a0a0a] cursor-not-allowed`}>
+                        Espécie
+                    </div>
 
-                        <>
-                            <select
-                                className={`${inputBaseStyle} ${getBorderStyle("conta")}`}
-                                value={formData.conta}
-                                onChange={(e) => {
-                                    limparErros();
-                                    setFormData({ ...formData, conta: e.target.value });
-                                }}
-                            >
-                                <option value="" disabled hidden>Banco</option>
-                                <option value="Nubank PJ">Nubank PJ</option>
-                                <option value="Itaú">Itaú</option>
-                                <option value="Banco Inter">Banco Inter</option>
-                                <option value="Bradesco">Bradesco</option>
-                                <option value="C6 Bank">C6 Bank</option>
-                                <option value="Santander">Santander</option>
-                                <option value="Outro">Outro</option>
-                            </select>
-                            <ChevronDown className="absolute right-2 top-3 text-neutral-500 pointer-events-none" size={15} />
-                        </>
-                    )}
-                </div>
+                ) : formData.conta === "Outro" ? (
+
+                    <input
+                        autoFocus
+                        className={`${inputBaseStyle} ${getBorderStyle("conta")}`}
+                        placeholder="Qual banco?"
+                        value={formData.outroBanco}
+                        onChange={(e) =>
+                            handleChange("outroBanco", e.target.value)
+                        }
+                    />
+
+                ) : (
+
+                    <SelectTreeyo
+                        value={formData.conta}
+                        onChange={(v) => handleChange("conta", v)}
+                        placeholder="Banco"
+                        options={[
+                            "Nubank PJ",
+                            "Itaú",
+                            "Banco Inter",
+                            "Bradesco",
+                            "C6 Bank",
+                            "Santander",
+                            "Outro"
+                        ]}
+                    />
+
+                )}
+
             </div>
-            <button
-                onClick={validarEEnviar}
-                className="flex items-center gap-1 float-right hover:opacity-80 transition-all cursor-pointer group relative top-2"
-            >
-                <Check className={erros.length > 0 ? "text-red-500" : "text-green-500"} size={14} />
-                <span className={`text-[11px] font-medium uppercase transition-colors  ${erros.length > 0 ? "text-red-500" : "text-neutral-400 group-hover:text-neutral-200"}`}>
-                    Confirmar {tipoSelecionado}
-                </span>
-            </button>
+
+            <div className="flex items-center justify-center pt-3">
+
+                <button
+                    onClick={validarEEnviar}
+                    className="relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-neutral-200 bg-[#1a1a1a] backdrop-blur-md overflow-hidden group transition-all"
+                >
+
+                    <span
+                        className="absolute inset-0 rounded-xl border border-neutral-700 group-hover:border-[#1fba11] transition-all duration-300 pointer-events-none"
+                    />
+
+                    <Check
+                        size={16}
+                        className="text-[#1fba11] transition-transform group-hover:scale-110"
+                    />
+
+                    <span className="relative">
+                        Confirmar {tipoSelecionado}
+                    </span>
+
+                </button>
+
+            </div>
 
         </motion.div>
 
-
     );
+
 };
 
 export default FormularioLancamento;

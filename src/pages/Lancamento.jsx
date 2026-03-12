@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Sun, Moon, Bell, Search, Trash2, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import FormularioLancamento from "../components/FormularioLancamento";
 import CardLancamento from "../components/CardLancamento";
+import ConfirmModal from "../components/ConfirmModal";
+import { toast } from "react-hot-toast";
 function formatarDataCurta(dataISO) {
     if (!dataISO) return "";
     if (dataISO.includes("/")) return dataISO;
@@ -32,7 +34,10 @@ const itemVariants = {
 };
 
 const Lançamento = () => {
-    const { isCollapsed } = useOutletContext();
+    const navigate = useNavigate();
+    const [modalOpen, setModalOpen] = useState(false);
+    const [itemParaExcluir, setItemParaExcluir] = useState(null);
+
     const [TipoAtivo, setTipoAtivo] = useState("Entrada");
 
     // Estados para o Header Mobile
@@ -79,7 +84,7 @@ const Lançamento = () => {
     };
 
     return (
-        <div className="w-full min-h-screen overflow-y-auto bg-transparent flex flex-col pb-32">
+        <div className="w-full lg:h-screen min-h-screen overflow-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
 
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
@@ -111,19 +116,37 @@ const Lançamento = () => {
                 </div>
             </div>
 
-            {/* SEARCH EXCLUSIVO MOBILE 
-            <div className="md:hidden px-4 mb-6">
+            {/* SEARCH EXCLUSIVO MOBILE    */}
+            <div className="md:hidden flex items-center justify-center mb-6">
             <div className="flex items-center group relative">
-                <Search className="absolute left-3 w-4 h-4 text-neutral-300 group-focus-within:text-green-500 transition-colors" />
+                <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
                 <input
                 type="text"
-                placeholder="Search report..."
-                className="w-full bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 focus:outline-none focus:border-green-500/20 transition-all placeholder:text-neutral-600"
-                />
+                 placeholder="Buscar Lançamento..."
+                            style={{ paddingLeft: "2rem" }}
+                            className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-60 focus:w-72 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                        />
             </div>
             </div>
-            */}
+         
             <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={container}>
+                 <ConfirmModal
+    isOpen={modalOpen}
+    title="Excluir lançamento?"
+    message="Esse item será removido permanentemente."
+    onConfirm={() => {
+        if (itemParaExcluir) {
+            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id)); // remove item
+            setItemParaExcluir(null); // limpa referência
+            setModalOpen(false); // fecha modal
+            toast.success("Item excluído com sucesso!");
+        }
+    }}
+    onCancel={() => {
+        setItemParaExcluir(null); // limpa referência
+        setModalOpen(false); // fecha modal
+    }}
+/>
 
 
                 {/* HEADER DESKTOP (md:flex) */}
@@ -169,7 +192,7 @@ const Lançamento = () => {
 
                 {/* Filtros de Tipo */}
                 <div className="shrink-0  pt-6 md:pt-4 md:px-3 relative z-20">
-                    <motion.div variants={item} className="flex justify-center md:block w-full">
+                    <motion.div variants={item} className="flex justify-center md:justify-center xl:block w-full">
                         <div className="flex md:flex-col flex-col gap-3 items-center md:items-start w-full md:w-fit">
                             {["Entrada", "Saída", "Investimento"].map((tipo) => {
                                 const cores = getCoresDinamicas(tipo);
@@ -188,34 +211,34 @@ const Lançamento = () => {
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full xl:!-mt-48 gap-y-10 xl:gap-y-0">
+                <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full lg:!-mt-48 gap-y-10 xl:gap-y-0">
 
-    {/* BLOCO DO FORMULÁRIO: Topo no iPad/Mobile e Direita no Desktop */}
-    <div className="shrink-0 w-full xl:w-auto">
-        <motion.div variants={itemVariants}>
-            <div className="flex justify-center xl:justify-end w-full px-4 pt-12 xl:px-0 xl:pr-10">
-                <FormularioLancamento
-                    tipoSelecionado={TipoAtivo}
-                    aoConfirmar={(novo) => setLista([novo, ...lista])}
-                />
-            </div>
-        </motion.div>
-    </div>
+                    {/* BLOCO DO FORMULÁRIO: Topo no iPad/Mobile e Direita no Desktop */}
+                    <div className="shrink-0 w-full xl:w-auto">
+                        <motion.div variants={itemVariants}>
+                            <div className="flex justify-center xl:justify-end w-full px-4 pt-12 xl:px-0 xl:pr-10">
+                                <FormularioLancamento
+                                    tipoSelecionado={TipoAtivo}
+                                    aoConfirmar={(novo) => setLista([novo, ...lista])}
+                                />
+                            </div>
+                        </motion.div>
+                    </div>
 
-    {/* BLOCO DO CARD: Centralizado horizontalmente no espaço restante */}
-    <motion.div variants={itemVariants} className="w-full xl:flex-1 ">
-        <div className="flex justify-center w-full py-6 xl:py-12 xl:pl-36">
-            {listaGeral.length > 0 ? (
-                <CardLancamento lancamento={listaGeral[0]} />
-            ) : (
-                <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
-                    Nenhum lançamento de {TipoAtivo} para exibir no card.
+                    {/* BLOCO DO CARD: Centralizado horizontalmente no espaço restante */}
+                    <motion.div variants={itemVariants} className="w-full xl:flex-1 flex justify-center ">
+                        <div className="w-full items-center flex flex-col py-6 xl:py-12 xl:pl-36">
+                            {listaGeral.length > 0 ? (
+                                <CardLancamento lancamento={listaGeral[0]} />
+                            ) : (
+                                <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
+                                    Nenhum lançamento de {TipoAtivo} para exibir no card.
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
+
                 </div>
-            )}
-        </div>
-    </motion.div>
-
-</div>
 
                 <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
 
@@ -223,7 +246,7 @@ const Lançamento = () => {
                         Últimos Lançamentos - {TipoAtivo}
                     </h1>
 
-                    <div className="flex-1 overflow-y-auto custom-scroll relative pt-6 md:pt-4">
+                    <div className="flex-1 overflow-hidden lg:overflow-hidden custom-scroll relative pt-6 md:pt-4">
                         <AnimatePresence mode="popLayout" initial={false}>
                             {listaGeral.length > 0 ? (
                                 listaGeral.map((item) => {
@@ -266,12 +289,12 @@ const Lançamento = () => {
 
                                             <div className="absolute right-6 top-1/2 -translate-y-1/2 lg:relative lg:top-0 lg:translate-y-0 flex items-center justify-end gap-4 lg:gap-10">
                                                 <span className="hidden lg:block text-neutral-400">{item.status}</span>
+
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        if (window.confirm("Deseja excluir este item?")) {
-                                                            setLista(prev => prev.filter(l => l.id !== item.id));
-                                                        }
+                                                        setItemParaExcluir(item);
+                                                        setModalOpen(true);
                                                     }}
                                                     className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
                                                 >
@@ -286,6 +309,7 @@ const Lançamento = () => {
                             )}
                         </AnimatePresence>
                     </div>
+                   
                 </motion.div>
 
             </motion.div>
