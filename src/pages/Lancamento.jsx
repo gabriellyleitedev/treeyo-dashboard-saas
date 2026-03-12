@@ -122,7 +122,7 @@ const Lançamento = () => {
                         type="text"
                         placeholder="Buscar Lançamento..."
                         style={{ paddingLeft: "2rem" }}
-                        className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-80 focus:w-76 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                        className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-82 focus:w-76 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                     />
                 </div>
             </div>
