@@ -117,14 +117,14 @@ const Lançamento = () => {
             </div>
 
             {/* SEARCH EXCLUSIVO MOBILE    */}
-            <div className="md:hidden flex items-center justify-center mb-6">
+            <div className="md:hidden flex items-center justify-center mb-6 ">
             <div className="flex items-center group relative">
                 <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
                 <input
                 type="text"
                  placeholder="Buscar Lançamento..."
                             style={{ paddingLeft: "2rem" }}
-                            className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-60 focus:w-72 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                            className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-80 focus:w-76 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                         />
             </div>
             </div>
