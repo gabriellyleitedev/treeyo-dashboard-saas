@@ -79,7 +79,7 @@ const Lançamento = () => {
     };
 
     return (
-        <div className="w-full h-screen overflow-hidden bg-transparent flex flex-col">
+        <div className="w-full min-h-screen overflow-y-auto bg-transparent flex flex-col pb-32">
 
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
