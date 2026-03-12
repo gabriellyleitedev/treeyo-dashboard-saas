@@ -40,7 +40,6 @@ const Lançamento = () => {
 
     const [TipoAtivo, setTipoAtivo] = useState("Entrada");
 
-    // Estados para o Header Mobile
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [diaSelecionado, setDiaSelecionado] = useState(new Date().getDate());
@@ -96,7 +95,6 @@ const Lançamento = () => {
                 {/* Perfil Mobile */}
                 <div className="md:hidden flex items-center justify-between px-0 py-3 sticky top-0 z-50 ">
                     <div className="flex items-center gap-2">
-                        {/* Botão Voltar */}
                         <button
                             onClick={() => navigate(-1)}
                             className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
@@ -116,38 +114,37 @@ const Lançamento = () => {
                 </div>
             </div>
 
-            {/* SEARCH EXCLUSIVO MOBILE    */}
+            {/* SEARCH EXCLUSIVO MOBILE  */}
             <div className="md:hidden flex items-center justify-center mb-6 ">
-            <div className="flex items-center group relative">
-                <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
-                <input
-                type="text"
-                 placeholder="Buscar Lançamento..."
-                            style={{ paddingLeft: "2rem" }}
-                            className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-80 focus:w-76 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
-                        />
+                <div className="flex items-center group relative">
+                    <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
+                    <input
+                        type="text"
+                        placeholder="Buscar Lançamento..."
+                        style={{ paddingLeft: "2rem" }}
+                        className=" bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-80 focus:w-76 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                    />
+                </div>
             </div>
-            </div>
-         
-            <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={container}>
-                 <ConfirmModal
-    isOpen={modalOpen}
-    title="Excluir lançamento?"
-    message="Esse item será removido permanentemente."
-    onConfirm={() => {
-        if (itemParaExcluir) {
-            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id)); // remove item
-            setItemParaExcluir(null); // limpa referência
-            setModalOpen(false); // fecha modal
-            toast.success("Item excluído com sucesso!");
-        }
-    }}
-    onCancel={() => {
-        setItemParaExcluir(null); // limpa referência
-        setModalOpen(false); // fecha modal
-    }}
-/>
 
+            <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={container}>
+                <ConfirmModal
+                    isOpen={modalOpen}
+                    title="Excluir lançamento?"
+                    message="Esse item será removido permanentemente."
+                    onConfirm={() => {
+                        if (itemParaExcluir) {
+                            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id)); // remove item
+                            setItemParaExcluir(null); // limpa referência
+                            setModalOpen(false); // fecha modal
+                            toast.success("Item excluído com sucesso!");
+                        }
+                    }}
+                    onCancel={() => {
+                        setItemParaExcluir(null); // limpa referência
+                        setModalOpen(false); // fecha modal
+                    }}
+                />
 
                 {/* HEADER DESKTOP (md:flex) */}
                 <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={item}>
@@ -162,7 +159,7 @@ const Lançamento = () => {
                             type="text"
                             placeholder="Buscar Lançamento..."
                             style={{ paddingLeft: "2rem" }}
-                            className="bg-black/20 text-sm text-gray-200 pl-10 pr-4 py-2 rounded-full border border-white/10 w-48 h-8 focus:w-54 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
+                            className="bg-black/20 text-sm text-gray-200 pl-10 pr-4 py-2 rounded-full border border-white/10 w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                         />
                     </div>
                     <div className="ml-auto flex items-center gap-3 ">
@@ -213,7 +210,7 @@ const Lançamento = () => {
 
                 <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full lg:!-mt-48 gap-y-10 xl:gap-y-0">
 
-                    {/* BLOCO DO FORMULÁRIO: Topo no iPad/Mobile e Direita no Desktop */}
+                    {/* BLOCO DO FORMULÁRIO */}
                     <div className="shrink-0 w-full xl:w-auto">
                         <motion.div variants={itemVariants}>
                             <div className="flex justify-center xl:justify-end w-full px-4 pt-12 xl:px-0 xl:pr-10">
@@ -225,7 +222,7 @@ const Lançamento = () => {
                         </motion.div>
                     </div>
 
-                    {/* BLOCO DO CARD: Centralizado horizontalmente no espaço restante */}
+                    {/* BLOCO DO CARD */}
                     <motion.div variants={itemVariants} className="w-full xl:flex-1 flex justify-center ">
                         <div className="w-full items-center flex flex-col py-6 xl:py-12 xl:pl-36">
                             {listaGeral.length > 0 ? (
@@ -309,7 +306,7 @@ const Lançamento = () => {
                             )}
                         </AnimatePresence>
                     </div>
-                   
+
                 </motion.div>
 
             </motion.div>

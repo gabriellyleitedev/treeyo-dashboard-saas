@@ -38,7 +38,7 @@ const CardLancamento = ({ lancamento }) => {
                     </span>
                 </div>
 
-                 <div className="grid grid-cols-2 ">
+                <div className="grid grid-cols-2 ">
                     <div >
                         <p className="text-neutral-500 text-sm font-normal mb-1">
                             {lancamento.tipo === "Investimento" ? "Ativo:" : "Categoria:"}
@@ -49,9 +49,9 @@ const CardLancamento = ({ lancamento }) => {
                     <div>
                         <p className="text-neutral-500 text-sm font-normal mb-1">Conta/Banco</p>
                         <p className="text-neutral-200 text-sm truncate">{lancamento.conta}</p>
-                </div>
+                    </div>
 
-                  <div>
+                    <div>
                         <p className="text-neutral-500 text-sm font-normal mb-1">Form.Pagamento</p>
                         <p className="text-neutral-200 text-sm ">{lancamento.metodo}</p>
                     </div>

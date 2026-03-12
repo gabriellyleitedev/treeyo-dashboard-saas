@@ -102,10 +102,10 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
             setErros(novosErros);
             setShake(true);
 
-setTimeout(() => {
-    toast.error("⚠️ Por favor, preencha todos os campos");
-    setShake(false);
-}, 50);
+            setTimeout(() => {
+                toast.error("⚠️ Por favor, preencha todos os campos");
+                setShake(false);
+            }, 50);
 
             return;
 
