@@ -239,7 +239,7 @@ const Lancamento = () => {
                                     <div
                                         key={tipo}
                                         onClick={() => setTipoAtivo(tipo)}
-                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 min-w-[240px] h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
+                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 w-[240px] h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
                                     >
                                         <span className={`h-6 w-1 flex  rounded-full transition-all duration-300 ${cores.barra}`}></span>
                                         <span className="pl-2 font-normal text-gray-200 select-none">{tipo}</span>
