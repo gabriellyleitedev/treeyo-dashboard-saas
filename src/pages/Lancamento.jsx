@@ -51,6 +51,8 @@ const Lancamento = () => {
         return salvos ? JSON.parse(salvos) : [];
     });
 
+    const [searchAberto, setSearchAberto] = useState(false);
+
     const { adicionarNotificacao } = useNotifications();
 
     useEffect(() => {
@@ -112,46 +114,55 @@ const Lancamento = () => {
         <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
 
             {/* LUZ VERDE TOPO */}
-            <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
+            <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12'></div>
 
             {/* HEADER MOBILE (Exclusivo Mobile) */}
-            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-1 ">
-                <div className="absolute inset-0 -z-10  rounded-md" />
-
-                {/* Perfil Mobile */}
-                <div className="md:hidden flex items-center justify-between px-0 py-3 sticky top-0 z-50 ">
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => navigate(-1)}
-                            className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
+            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-3 ">
+                <AnimatePresence mode="wait">
+                    {!searchAberto ? (
+                        <motion.div
+                            key="header-normal"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="flex items-center justify-between w-full"
                         >
-                            <ArrowLeft size={22} />
-                        </button>
-                        <h1 className="text-gray-200 font-medium text-xl">Lançamentos</h1>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-3">
-                        <NotificationBell modulo="lancamentos" />
-                    </div>
-                </div>
-            </div>
-
-            {/* SEARCH EXCLUSIVO MOBILE  */}
-            <div className="md:hidden flex items-center justify-center mb-6 ">
-                <div className="flex items-center group relative">
-                    <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
-                    <input
-                        autoComplete="off"
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                        type="text"
-                        placeholder="Buscar Lançamento..."
-                        style={{ paddingLeft: "2rem" }}
-                        className="bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pl-10 pr-4 h-10 w-[90vw] max-w-[420px] focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
-                    />
-                </div>
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
+                                    <ArrowLeft size={22} />
+                                </button>
+                                <h1 className="text-gray-200 font-medium text-xl">Lançamentos</h1>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
+                                    <Search size={22} />
+                                </button>
+                                <NotificationBell modulo="lancamentos" />
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="search-active"
+                            initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
+                            className="flex items-center gap-2 w-full"
+                        >
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                                <input
+                                    autoFocus
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
+                                    placeholder="Buscar lançamentos..."
+                                    className="w-full bg-white/5 text-sm text-gray-200 py-2 pl-10 pr-4 rounded-full border border-green-500/30 focus:outline-none"
+                                />
+                            </div>
+                            <button
+                                onClick={() => { setSearchAberto(false); setBusca(""); }}
+                                className="text-xs font-medium text-neutral-400 uppercase px-2"
+                            >
+                                Cancelar
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={container}>
@@ -179,10 +190,10 @@ const Lancamento = () => {
                         }
                     }}
 
-                     onCancel={() => {
-        setModalOpen(false);
-        setItemParaExcluir(null);
-    }}
+                    onCancel={() => {
+                        setModalOpen(false);
+                        setItemParaExcluir(null);
+                    }}
 
                 />
 
@@ -239,7 +250,7 @@ const Lancamento = () => {
                                     <div
                                         key={tipo}
                                         onClick={() => setTipoAtivo(tipo)}
-                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 w-[240px] h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
+                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 w-[300px] h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
                                     >
                                         <span className={`h-6 w-1 flex  rounded-full transition-all duration-300 ${cores.barra}`}></span>
                                         <span className="pl-2 font-normal text-gray-200 select-none">{tipo}</span>
@@ -255,7 +266,7 @@ const Lancamento = () => {
                     {/* BLOCO DO FORMULÁRIO */}
                     <div className="shrink-0 w-full xl:w-auto">
                         <motion.div variants={itemVariants}>
-                            <div className="flex justify-center xl:justify-end w-full px-4 pt-12 xl:px-0 xl:pr-10">
+                            <div className="flex justify-center xl:justify-end w-full px-4 pt-14 xl:px-0 xl:pr-10">
                                 <FormularioLancamento
                                     tipoSelecionado={tipoAtivo}
                                     aoConfirmar={(novo) => {
