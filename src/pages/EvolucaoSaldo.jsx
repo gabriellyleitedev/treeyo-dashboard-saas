@@ -14,7 +14,6 @@ const containerVariants = {
         transition: { staggerChildren: 0.12, delayChildren: 0.1 },
     },
 };
-
 const itemVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
@@ -80,7 +79,7 @@ const EvolucaoSaldo = () => {
                         </div>
                     </div>
                 </div>
-                <NotificationBell />
+                <NotificationBell modulo="saldo" />
             </div>
 
             {/* SEARCH MOBILE */}
@@ -92,7 +91,7 @@ const EvolucaoSaldo = () => {
                         value={busca}
                         onChange={(e) => setBusca(e.target.value)}
                         type="text"
-                        placeholder="Buscar..."
+                        placeholder="Buscar sua Evolução..."
                         style={{ paddingLeft: "2.5rem" }}
                         className="bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pr-4 h-10 w-[90vw] max-w-[420px] focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                     />
@@ -152,7 +151,7 @@ const EvolucaoSaldo = () => {
                                 <Moon size={16} />
                             </button>
                         </div>
-                        <NotificationBell />
+                        <NotificationBell modulo="saldo" />
                     </div>
                 </motion.header>
 

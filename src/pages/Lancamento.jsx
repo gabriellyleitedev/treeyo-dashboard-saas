@@ -133,7 +133,7 @@ const Lancamento = () => {
 
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-3">
-                        <NotificationBell />
+                        <NotificationBell modulo="lancamentos" />
                     </div>
                 </div>
             </div>
@@ -159,21 +159,31 @@ const Lancamento = () => {
                     isOpen={modalOpen}
                     title="Excluir lançamento?"
                     message="Esse item será removido permanentemente."
+
                     onConfirm={() => {
                         if (itemParaExcluir) {
+
                             setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id));
 
                             adicionarNotificacao({
-                                tipo: "erro",
+                                modulo: "lancamentos",
+                                tipo: "aviso",
                                 titulo: "Lançamento removido",
-                                mensagem: `${itemParaExcluir.tipo} de R$ ${itemParaExcluir.valor} foi excluída`
+                                mensagem: `${itemParaExcluir.tipo} de R$ ${itemParaExcluir.valor} foi removido`
                             });
 
                             setItemParaExcluir(null);
                             setModalOpen(false);
+
                             toast.success("Item excluído com sucesso!");
                         }
                     }}
+
+                     onCancel={() => {
+        setModalOpen(false);
+        setItemParaExcluir(null);
+    }}
+
                 />
 
                 {/* HEADER DESKTOP (md:flex) */}
@@ -212,7 +222,7 @@ const Lancamento = () => {
                             </button>
                         </div>
                         <div className="ml-auto flex items-center gap-3 ">
-                            <NotificationBell />
+                            <NotificationBell modulo="lancamentos" />
                         </div>
                     </div>
                 </motion.header>
@@ -229,7 +239,7 @@ const Lancamento = () => {
                                     <div
                                         key={tipo}
                                         onClick={() => setTipoAtivo(tipo)}
-                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 w-40 h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
+                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 min-w-[240px] h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
                                     >
                                         <span className={`h-6 w-1 flex  rounded-full transition-all duration-300 ${cores.barra}`}></span>
                                         <span className="pl-2 font-normal text-gray-200 select-none">{tipo}</span>
@@ -253,19 +263,23 @@ const Lancamento = () => {
                                         setLista(prev => [novo, ...prev]);
 
                                         let tipoNotif = "info";
+
                                         if (novo.tipo === "Entrada") tipoNotif = "sucesso";
                                         if (novo.tipo === "Saída") tipoNotif = "aviso";
                                         if (novo.tipo === "Investimento") tipoNotif = "info";
 
                                         adicionarNotificacao({
+                                            modulo: "lancamentos",
                                             tipo: tipoNotif,
                                             titulo: "Novo lançamento registrado",
-                                            mensagem: `${novo.tipo} de R$ ${novo.valor} adicionada`
+                                            mensagem: `${novo.tipo} de R$ ${Number(novo.valor).toLocaleString("pt-BR")} adicionada`
                                         });
 
-                                    }}
+                                        toast.success("Lançamento registrado!");
 
+                                    }}
                                 />
+
                             </div>
                         </motion.div>
                     </div>

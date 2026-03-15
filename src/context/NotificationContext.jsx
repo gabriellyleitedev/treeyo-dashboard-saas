@@ -4,61 +4,99 @@ const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
 
-  const [notificacoes, setNotificacoes] = useState([]);
+  const [notificacoes, setNotificacoes] = useState({
+    geral: [],
+    lancamentos: [],
+    saldo: []
+  });
 
-  useEffect(() => {
-    const salvas = JSON.parse(localStorage.getItem("@treeyo:notificacoes")) || [];
-    setNotificacoes(salvas);
-  }, []);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem("@treeyo:notificacoes", JSON.stringify(notificacoes));
-  }, [notificacoes]);
+  const adicionarNotificacao = (novaNotif) => {
 
-  const adicionarNotificacao = ({ tipo, titulo, mensagem }) => {
+    const modulo = novaNotif.modulo || "geral";
 
-    const nova = {
-      id: Date.now(),
-      tipo,
-      titulo,
-      mensagem,
+    const notificacaoFormatada = {
+      id: novaNotif.id || Date.now(),
+      titulo: novaNotif.titulo,
+      mensagem: novaNotif.mensagem,
+      tipo: novaNotif.tipo || "info",
       lida: false,
-      data: new Date().toISOString()
+      data: novaNotif.data || new Date().toISOString()
     };
 
-    setNotificacoes((prev) => [nova, ...prev]);
+    setNotificacoes(prev => ({
+      ...prev,
+      [modulo]: [
+        notificacaoFormatada,
+        ...(prev[modulo] || [])
+      ].slice(0, 20)
+    }));
+
   };
 
-  const marcarTodasComoLidas = () => {
-    setNotificacoes((prev) =>
-      prev.map((n) => ({
+  useEffect(() => {
+  const salvas = localStorage.getItem("@treeyo:notificacoes");
+
+  if (salvas) {
+    const dados = JSON.parse(salvas);
+
+    setNotificacoes({
+      geral: dados.geral || [],
+      lancamentos: dados.lancamentos || [],
+      saldo: dados.saldo || []
+    });
+
+  }
+
+  setIsLoaded(true);
+}, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem(
+        "@treeyo:notificacoes",
+        JSON.stringify(notificacoes)
+      );
+    }
+  }, [notificacoes, isLoaded]);
+
+  const marcarTodasComoLidas = (modulo) => {
+
+    setNotificacoes(prev => ({
+      ...prev,
+      [modulo]: prev[modulo].map(n => ({
         ...n,
         lida: true
       }))
-    );
+    }));
+
   };
 
-  const removerNotificacao = (id) => {
-    setNotificacoes((prev) => prev.filter((n) => n.id !== id));
-  };
+  const limparNotificacoes = (modulo) => {
 
-  const limparNotificacoes = () => {
-    setNotificacoes([]);
+    setNotificacoes(prev => ({
+      ...prev,
+      [modulo]: []
+    }));
+
   };
 
   return (
+
     <NotificationContext.Provider
       value={{
         notificacoes,
         adicionarNotificacao,
-        removerNotificacao,
-        limparNotificacoes,
-        marcarTodasComoLidas
+        marcarTodasComoLidas,
+        limparNotificacoes
       }}
     >
       {children}
     </NotificationContext.Provider>
+
   );
+
 };
 
 export const useNotifications = () => {

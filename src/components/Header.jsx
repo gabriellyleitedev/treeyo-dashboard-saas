@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { LayoutDashboard, Bell, Calendar, ChevronDown, Sun, Moon, User, Settings, LogOut } from 'lucide-react';
 import CalendarPicker from './CalendarPicker';
-import { useNotifications } from "../context/NotificationContext";
+import NotificationBell from "./NotificationBell";
 
 
 const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
@@ -11,10 +11,6 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
     const dia = new Date(dateString + 'T00:00:00').getDate();
     setDiaSelecionado(dia);
   };
-
-const { notificacoes } = useNotifications();
-const [abrirNotif, setAbrirNotif] = useState(false);
-
 
   return (
     <header className="sticky top-0 z-50 w-full px-4 md:px-0 pt-4 md:pt-0 md:-mt-8 transition-all duration-300">
@@ -70,52 +66,9 @@ const [abrirNotif, setAbrirNotif] = useState(false);
               </div>
             }
           />
-
-          <div className="relative">
-  <button
-    onClick={() => setAbrirNotif(!abrirNotif)}
-    className="p-1.5 border bg-white/5 rounded-full border-white/10 relative"
-  >
-    <Bell size={22} className="text-gray-200" />
-
-    {notificacoes.length > 0 && (
-      <span className="absolute top-2 right-2 w-2 h-2 bg-[#1fba11] rounded-full border border-[#1fba11]" />
-    )}
-  </button>
-
-  {abrirNotif && (
-    <div className="absolute right-0 mt-3 w-72 max-h-80 overflow-y-auto rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl p-2 z-50">
-
-      <p className="text-xs text-gray-400 px-3 py-2">
-        Notificações
-      </p>
-
-      {notificacoes.length === 0 && (
-        <p className="text-xs text-gray-500 px-3 py-3">
-          Nenhuma notificação
-        </p>
-      )}
-
-      {notificacoes.map((n) => (
-        <div
-          key={n.id}
-          className="px-3 py-3 border-b border-white/5"
-        >
-          <p className="text-sm text-white font-medium">
-            {n.titulo}
-          </p>
-
-          <p className="text-xs text-gray-400 mt-1">
-            {n.mensagem}
-          </p>
+          <NotificationBell modulo="geral" />
         </div>
-      ))}
 
-    </div>
-  )}
-</div>
-
-        </div>
       </div>
 
       {/* ESTRUTURA NOTEBOOK */}
@@ -155,43 +108,7 @@ const [abrirNotif, setAbrirNotif] = useState(false);
             </button>
           </div>
 
-          <div className="relative">
-  <button
-    onClick={() => setAbrirNotif(!abrirNotif)}
-    className="w-10 h-10 rounded-full border bg-white/5 border-white/5 hover:bg-white/5 transition flex items-center justify-center cursor-pointer relative"
-  >
-    <Bell size={20} className="text-gray-200" />
-
-    {notificacoes.length > 0 && (
-      <span className="absolute top-2 right-2.5 w-2 h-2 bg-[#1fba11] rounded-full border border-white/10" />
-    )}
-  </button>
-
-  {abrirNotif && (
-    <div className="absolute right-0 mt-3 w-80 max-h-96 overflow-y-auto rounded-2xl bg-neutral-900 border border-white/10 shadow-2xl p-2 z-50">
-
-      <p className="text-xs text-gray-400 px-3 py-2">
-        Notificações
-      </p>
-
-      {notificacoes.map((n) => (
-        <div
-          key={n.id}
-          className="px-3 py-3 border-b border-white/5"
-        >
-          <p className="text-sm text-white font-medium">
-            {n.titulo}
-          </p>
-
-          <p className="text-xs text-gray-400 mt-1">
-            {n.mensagem}
-          </p>
-        </div>
-      ))}
-
-    </div>
-  )}
-</div>
+          <NotificationBell modulo="geral" />
 
         </div>
       </div>

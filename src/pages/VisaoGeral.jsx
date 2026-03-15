@@ -16,47 +16,39 @@ function VisaoGeral() {
 
     const { adicionarNotificacao } = useNotifications();
 
-React.useEffect(() => {
+    React.useEffect(() => {
+        const lancamentos = JSON.parse(localStorage.getItem("@treeyo:lancamentos")) || [];
+        const perfil = JSON.parse(localStorage.getItem("@treeyo:perfil"));
 
-    const lancamentos = JSON.parse(localStorage.getItem("@treeyo:lancamentos")) || [];
+        // Exemplo: Notificação de Boas-vindas baseada no perfil
+        if (perfil && !sessionStorage.getItem('@treeyo:welcome_notified')) {
+            adicionarNotificacao({
+                id: Date.now(),
+                modulo: 'geral',
+                titulo: `Bem-vinda, ${perfil.nome || 'Gabi'}!`,
+                mensagem: 'Seu dashboard está atualizado com os últimos lançamentos.',
+                tipo: 'info',
+                lida: false,
+                data: new Date().toISOString()
+            });
 
-    if (lancamentos.length === 0) {
-        adicionarNotificacao({
-            tipo: "info",
-            titulo: "Comece seu controle financeiro",
-            mensagem: "Adicione seu primeiro lançamento para iniciar seu histórico."
-        });
-    }
+            // Evita repetir a notificação na mesma sessão
+            sessionStorage.setItem('@treeyo:welcome_notified', 'true');
+        }
 
-    if (lancamentos.length > 0) {
-        adicionarNotificacao({
-            tipo: "sucesso",
-            titulo: "Dados carregados",
-            mensagem: `${lancamentos.length} lançamentos encontrados no sistema.`
-        });
-    }
-
-    const perfil = JSON.parse(localStorage.getItem("@treeyo:perfil"));
-
-    if (!perfil?.foto) {
-        adicionarNotificacao({
-            tipo: "aviso",
-            titulo: "Complete seu perfil",
-            mensagem: "Adicione uma foto de perfil para personalizar sua conta."
-        });
-    }
-
-    const plano = JSON.parse(localStorage.getItem("@treeyo:plano"));
-
-    if (plano?.vencimento) {
-        adicionarNotificacao({
-            tipo: "aviso",
-            titulo: "Plano próximo do vencimento",
-            mensagem: `Seu plano vence em ${plano.vencimento}.`
-        });
-    }
-
-}, []);
+        // Exemplo: Alerta se não houver lançamentos
+        if (lancamentos.length === 0) {
+            adicionarNotificacao({
+                id: 'no-data',
+                modulo: 'lancamentos',
+                titulo: 'Comece a poupar!',
+                mensagem: 'Você ainda não registrou nenhuma movimentação este mês.',
+                tipo: 'warning',
+                lida: false,
+                data: new Date().toISOString()
+            });
+        }
+    }, [adicionarNotificacao]);
 
     return (
         <div className="w-full min-h-screen lg:pb-0 pb-24">
