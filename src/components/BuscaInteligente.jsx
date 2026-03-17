@@ -56,7 +56,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
           
           <motion.div 
             initial={{ scale: 0.95, y: -20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: -20 }}
-            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-sm overflow-hidden"
+            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-xl overflow-hidden"
           >
             {/* Input Header */}
             <div className="flex items-center gap-4 p-8 border-b border-white/5">
@@ -65,7 +65,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                 autoFocus 
                 value={query} 
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="O que deseja encontrar?"
+                placeholder="O que deseja?"
                 className="bg-transparent border-none outline-none w-full text-gray-200 text-xl placeholder:text-neutral-600"
               />
               <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-neutral-500 transition-colors">
@@ -134,8 +134,8 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                       </div>
                     ) : (
                       /* EMPTY STATE INTERATIVO */
-                      <div className="flex flex-col items-center justify-center py-10 border border-dashed border-white/5 rounded-[2rem] bg-white/[0.01]">
-                        <Inbox size={32} className="text-neutral-800 mb-3" />
+                      <div className="flex flex-col items-center justify-center py-6">
+                        <Inbox size={26} className="text-neutral-800 mb-3" />
                         <p className="text-neutral-500 text-sm">Sem buscas recentes por aqui.</p>
                       </div>
                     )}
