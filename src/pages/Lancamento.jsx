@@ -283,7 +283,7 @@ const Lancamento = () => {
                                             modulo: "lancamentos",
                                             tipo: tipoNotif,
                                             titulo: "Novo lançamento registrado",
-                                            mensagem: `${novo.tipo} de R$ ${Number(novo.valor).toLocaleString("pt-BR")} adicionada`
+                                            mensagem: `${novo.tipo} de ${Number(novo.valor || 0).toLocaleString("pt-BR", { style: 'currency', currency: 'BRL' })} adicionada`
                                         });
 
                                         toast.success("Lançamento registrado!");
@@ -347,7 +347,10 @@ const Lancamento = () => {
                                             {/* VALOR */}
                                             <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
                                                 {isEntrada ? '+ ' : isSaida ? '- ' : ''}
-                                                R$ {(Number(item.valor) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                {new Intl.NumberFormat('pt-BR', {
+                                                    style: 'currency',
+                                                    currency: 'BRL'
+                                                }).format(item.valor || 0)}
                                             </span>
 
                                             <span className="text-neutral-400 truncate w-full max-w-[160px]">{item.categoria || "-"}</span>

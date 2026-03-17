@@ -56,15 +56,19 @@ const CardLancamento = ({ lancamento }) => {
                         <p className="text-neutral-200 text-sm ">{lancamento.metodo}</p>
                     </div>
 
-                    <div className="col-span-2 pt-2 border-t border-white/5">
-                        <p className="text-neutral-600 text-[12px] uppercase font-semibold mb-1 ">Valor do Lançamento</p>
-                        <p className={`text-2xl font-semibold tracking-tighter  ${lancamento.tipo === 'Entrada' ? 'text-[#1fba11]' :
-                            lancamento.tipo === 'Investimento' ? 'text-blue-500' : 'text-red-500'
-                            }`}>
-                            {lancamento.tipo === 'Entrada' ? '+ ' : '- '}
-                            R$ {Number(lancamento.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                        </p>
-                    </div>
+                  <div className="col-span-2 pt-2 border-t border-white/5">
+    <p className="text-neutral-600 text-[12px] uppercase font-semibold mb-1">Valor do Lançamento</p>
+    <p className={`text-2xl font-semibold tracking-tighter ${
+        lancamento.tipo === 'Entrada' ? 'text-[#1fba11]' : 
+        lancamento.tipo === 'Investimento' ? 'text-blue-500' : 'text-red-500'
+    }`}>
+        {/* O sinal de + ou - e a formatação profissional */}
+        {new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(lancamento.valor || 0)}
+    </p>
+</div>
                 </div>
             </motion.div>
         </AnimatePresence>
