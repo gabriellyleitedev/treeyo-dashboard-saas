@@ -55,7 +55,7 @@ React.useEffect(() => {
 
     // 3. Marca como checado
     hasChecked.current = true;
-}, [adicionarNotificacao]);
+}, []);
     
 
     return (
