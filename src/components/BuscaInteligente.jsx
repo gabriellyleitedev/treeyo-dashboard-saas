@@ -56,7 +56,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
           
           <motion.div 
             initial={{ scale: 0.95, y: -20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: -20 }}
-            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-xl overflow-hidden"
+            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-sm overflow-hidden"
           >
             {/* Input Header */}
             <div className="flex items-center gap-4 p-8 border-b border-white/5">
@@ -104,7 +104,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                   {/* SUGESTÕES DE ABAS */}
                   <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-neutral-600 font-medium pb-2 pl-1">Sugestões</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {sugestoes.map((aba, i) => (
                         <div key={i} onClick={() => handleSelect(aba)} className="flex items-center gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#4dff00]/30 hover:bg-[#4dff00]/5 cursor-pointer transition-all group">
                           <div className="text-neutral-500 group-hover:text-[#4dff00] transition-colors">{aba.icon}</div>
