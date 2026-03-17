@@ -56,7 +56,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
           
           <motion.div 
             initial={{ scale: 0.95, y: -20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: -20 }}
-            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-sm overflow-hidden"
+            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-3xl overflow-hidden"
           >
             {/* Input Header */}
             <div className="flex items-center gap-4 p-8 border-b border-white/5">
@@ -135,8 +135,8 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                     ) : (
                       /* EMPTY STATE INTERATIVO */
                       <div className="flex flex-col items-center justify-center py-6">
-                        <Inbox size={26} className="text-neutral-800 mb-3" />
-                        <p className="text-neutral-500 text-sm">Sem buscas recentes por aqui.</p>
+                        <Inbox size={26} className="text-neutral-600 mb-3" />
+                        <p className="text-neutral-600 text-sm">Sem buscas recentes por aqui.</p>
                       </div>
                     )}
                   </div>
