@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileDock from './MobileDock';
-import BuscaInteligente from './BuscaInteligente'; 
+import BuscaInteligente from './BuscaInteligente';
 
-const Layout = ({ meusLancamentos = [] }) => { // <--- O PULO DO GATO ESTÁ AQUI
+const Layout = ({ meusLancamentos = [] }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
@@ -26,21 +26,21 @@ const Layout = ({ meusLancamentos = [] }) => { // <--- O PULO DO GATO ESTÁ AQUI
     { name: 'Movimentação', href: '/movimentacao', cat: 'Menu' },
     { name: 'Evolução Saldo', href: '/evolucao-saldo', cat: 'Menu' },
     { name: 'Configurações', href: '/configuracoes', cat: 'Menu' },
-    
-    // Transforma seus dados em itens de busca
+
     ...meusLancamentos.map(l => ({
-      name: l.descricao, 
-      href: '/movimentacao', 
+      name: l.descricao,
+      href: '/movimentacao',
       cat: 'Finanças',
-      // Criamos uma string suja com tudo que o usuário pode digitar
+
       searchData: `${l.descricao} ${l.valor} ${l.data} ${l.categoria}`.toLowerCase()
     }))
   ];
   return (
     <div className="flex h-screen w-full overflow-hidden bg-black">
-      <Sidebar isCollapsed={isCollapsed} 
-        setIsCollapsed={setIsCollapsed} 
-        onOpenSearch={() => setIsSearchOpen(true)}/>
+      <Sidebar isCollapsed={isCollapsed}
+        setIsCollapsed={setIsCollapsed}
+        onOpenSearch={() => setIsSearchOpen(true)}
+      />
 
       <main className="flex-1 transition-all duration-500 flex flex-col h-screen p-0 relative">
 
@@ -55,12 +55,12 @@ const Layout = ({ meusLancamentos = [] }) => { // <--- O PULO DO GATO ESTÁ AQUI
             <Outlet context={{ isCollapsed, meusLancamentos }} />
           </div>
         </div>
-        <MobileDock onOpenSearch={() => setIsSearchOpen(true)}/>
+        <MobileDock onOpenSearch={() => setIsSearchOpen(true)} />
       </main>
 
-    <BuscaInteligente 
-        isOpen={isSearchOpen} 
-        onClose={() => setIsSearchOpen(false)} 
+      <BuscaInteligente
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
         navigate={navigate}
         rotasDoSistema={rotasDoSistema}
       />

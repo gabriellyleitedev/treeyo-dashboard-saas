@@ -6,7 +6,6 @@ const MobileDock = ({ onOpenSearch }) => {
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
 
-
     const navLinks = [
         { icon: Search, label: "Buscar", href: '#', isSearch: true },
         { icon: BarChart2, label: "Visão", href: '/visao-geral' },
@@ -27,10 +26,9 @@ const MobileDock = ({ onOpenSearch }) => {
                     {navLinks.map((link, idx) => {
                         const active = isActive(link.href);
 
-                        // AJUSTE AQUI: Definindo o componente dentro do map
                         const Component = link.isSearch ? 'button' : Link;
-                        const extraProps = link.isSearch 
-                            ? { onClick: onOpenSearch, type: 'button' } 
+                        const extraProps = link.isSearch
+                            ? { onClick: onOpenSearch, type: 'button' }
                             : { to: link.href };
 
                         return (
@@ -48,7 +46,6 @@ const MobileDock = ({ onOpenSearch }) => {
                                     {link.label}
                                 </span>
 
-                                {/* SEU BRILHO (INTACTO): */}
                                 {active && (
                                     <div className="absolute bottom-0 flex flex-col items-center w-full pointer-events-none">
                                         <div className="absolute w-10 h-8 bg-[#1fba11]/30 blur-lg bottom-[-5px]" />

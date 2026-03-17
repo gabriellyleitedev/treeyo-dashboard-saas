@@ -64,21 +64,21 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }) => {
                                 const active = isActive(link.href);
 
                                 // Se for Search, retorna o INPUT
-                               
-if (isSearch) {
-    return (
-        <button
-            key={link.name}
-            onClick={onOpenSearch} 
-            className={`relative group flex items-center gap-0 w-full px-2 py-0.5 rounded-md font-medium transition-all duration-300 bg-white/10 backdrop-blur-md text-white ${isCollapsed ? 'justify-center' : ''}`}
-        >
-            <div className="min-w-[40px] h-10 flex items-center justify-center">
-                <Search className="w-5 h-5 text-gray-200" />
-            </div>
-            {!isCollapsed && <span className="ml-2 text-neutral-400 text-sm italic">Buscar...</span>}
-        </button>
-    );
-}
+
+                                if (isSearch) {
+                                    return (
+                                        <button
+                                            key={link.name}
+                                            onClick={onOpenSearch}
+                                            className={`relative group flex items-center gap-0 w-full px-2 py-0.5 rounded-md font-medium transition-all duration-300 bg-white/10 backdrop-blur-md text-white ${isCollapsed ? 'justify-center' : ''}`}
+                                        >
+                                            <div className="min-w-[40px] h-10 flex items-center justify-center">
+                                                <Search className="w-5 h-5 text-gray-200" />
+                                            </div>
+                                            {!isCollapsed && <span className="ml-2 text-neutral-400 text-sm italic">Buscar...</span>}
+                                        </button>
+                                    );
+                                }
                                 // Se não for Search, retorna o LINK
                                 return (
                                     <Link

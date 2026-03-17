@@ -88,8 +88,8 @@ export default function RemindersPanel() {
               <div className="ml-4 flex flex-col gap-0">
                 <span
                   className={`text-[13px] font-semibold  tracking-wide uppercase ${reminder.completed
-                      ? "line-through text-zinc-600"
-                      : "text-zinc-300"
+                    ? "line-through text-zinc-600"
+                    : "text-zinc-300"
                     }`}
                 >
                   {reminder.title}
@@ -97,8 +97,8 @@ export default function RemindersPanel() {
 
                 <span
                   className={`text-[15px] font-medium ${reminder.completed
-                      ? "line-through text-zinc-700"
-                      : "text-zinc-500"
+                    ? "line-through text-zinc-700"
+                    : "text-zinc-500"
                     }`}
                 >
                   {reminder.description}
