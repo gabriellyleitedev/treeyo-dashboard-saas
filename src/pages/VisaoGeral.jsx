@@ -48,7 +48,7 @@ function VisaoGeral() {
                 data: new Date().toISOString()
             });
         }
-    }, [adicionarNotificacao]);
+    }, []);
 
     return (
         <div className="w-full min-h-screen lg:pb-0 pb-24">

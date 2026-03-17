@@ -36,21 +36,21 @@ export const NotificationProvider = ({ children }) => {
   };
 
   useEffect(() => {
-  const salvas = localStorage.getItem("@treeyo:notificacoes");
+    const salvas = localStorage.getItem("@treeyo:notificacoes");
 
-  if (salvas) {
-    const dados = JSON.parse(salvas);
+    if (salvas) {
+      const dados = JSON.parse(salvas);
 
-    setNotificacoes({
-      geral: dados.geral || [],
-      lancamentos: dados.lancamentos || [],
-      saldo: dados.saldo || []
-    });
+      setNotificacoes({
+        geral: dados.geral || [],
+        lancamentos: dados.lancamentos || [],
+        saldo: dados.saldo || []
+      });
 
-  }
+    }
 
-  setIsLoaded(true);
-}, []);
+    setIsLoaded(true);
+  }, []);
 
   useEffect(() => {
     if (isLoaded) {

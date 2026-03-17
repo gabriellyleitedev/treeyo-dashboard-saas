@@ -85,7 +85,7 @@ const NotificationBell = ({ modulo = "geral" }) => {
 
       {open && (
 
-        <div className="fixed right-4 top-16 w-[92vw] max-w-[360px] max-h-[420px] flex flex-col overflow-hidden bg-black/30 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-[9999]">
+        <div className="fixed right-4 top-16 w-[92vw] max-w-[360px] max-h-[420px] flex flex-col overflow-hidden bg-black/30 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[9999]">
 
           {/* HEADER */}
 

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Sun, Moon, Search, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import NotificationBell from "../components/NotificationBell";
 import ConfirmModal from "../components/ConfirmModal";
@@ -20,11 +20,12 @@ const itemVariants = {
 };
 
 const EvolucaoSaldo = () => {
+    const [searchAberto, setSearchAberto] = useState(false);
     const navigate = useNavigate();
-    
+
     // Estados principais
     const [busca, setBusca] = useState("");
-    const [lista, setLista] = useState([]); 
+    const [lista, setLista] = useState([]);
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
@@ -60,48 +61,64 @@ const EvolucaoSaldo = () => {
 
     return (
         <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
-            
+
             {/* LUZ VERDE TOPO */}
             <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
-            {/* HEADER MOBILE */}
-            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-1 ">
-                <div className="flex items-center gap-2">
-                    <div className="md:hidden flex items-center justify-between px-0 py-3 sticky top-0 z-50 ">
-                        <div className="flex items-center gap-2">
+            {/* HEADER MOBILE (Exclusivo Mobile) */}
+            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-3 ">
+                <AnimatePresence mode="wait">
+                    {!searchAberto ? (
+                        <motion.div
+                            key="header-normal"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="flex items-center justify-between w-full"
+                        >
+                            <div className="flex items-center gap-2">
+                                <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
+                                    <ArrowLeft size={22} />
+                                </button>
+                                <h1 className="text-gray-200 font-medium text-xl">Lançamentos</h1>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
+                                    <Search size={22} />
+                                </button>
+                                <NotificationBell modulo="saldo" />
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="search-active"
+                            initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
+                            className="flex items-center gap-2 w-full"
+                        >
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                                <input
+                                    autoFocus
+                                    value={busca}
+                                    onChange={(e) => setBusca(e.target.value)}
+                                    placeholder="Buscar saldo..."
+                                    className="w-full bg-white/5 text-sm text-gray-200 py-2 pl-10 pr-4 rounded-full border border-green-500/30 focus:outline-none"
+                                />
+                            </div>
                             <button
-                                onClick={() => navigate(-1)}
-                                className="w-9 h-9 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-200"
+                                onClick={() => { setSearchAberto(false); setBusca(""); }}
+                                className="text-xs font-medium text-neutral-400 uppercase px-2"
                             >
-                                <ArrowLeft size={22} />
+                                Cancelar
                             </button>
-                            <h1 className="text-gray-200 font-medium text-xl">Evolução do Saldo</h1>
-                        </div>
-                    </div>
-                </div>
-                <NotificationBell modulo="saldo" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
-            {/* SEARCH MOBILE */}
-            <div className="md:hidden flex items-center justify-center mb-6 ">
-                <div className="flex items-center group relative">
-                    <Search className="absolute left-3 w-4 h-4 text-neutral-200 group-focus-within:text-green-500 transition-colors" />
-                    <input
-                        autoComplete="off"
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                        type="text"
-                        placeholder="Buscar sua Evolução..."
-                        style={{ paddingLeft: "2.5rem" }}
-                        className="bg-black/20 text-sm text-gray-200 py-2 border border-white/10 rounded-full pr-4 h-10 w-[90vw] max-w-[420px] focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
-                    />
-                </div>
-            </div>
 
-            <motion.div 
-                className="w-full h-full flex flex-col" 
-                initial="hidden" 
-                animate="visible" 
+            <motion.div
+                className="w-full h-full flex flex-col"
+                initial="hidden"
+                animate="visible"
                 variants={containerVariants}
             >
                 <ConfirmModal
@@ -122,7 +139,7 @@ const EvolucaoSaldo = () => {
                             <span className="text-neutral-400 font-normal"> Dashboard / </span> Evolução do Saldo
                         </h1>
                     </div>
-                    
+
                     <div className="flex items-center group relative">
                         <Search className="absolute left-3 w-4 h-4 text-gray-200 group-focus-within:text-green-500 transition-colors z-10" />
                         <input
@@ -130,7 +147,7 @@ const EvolucaoSaldo = () => {
                             value={busca}
                             onChange={(e) => setBusca(e.target.value)}
                             type="text"
-                            placeholder="Buscar..."
+                            placeholder="Buscar saldo..."
                             style={{ paddingLeft: "2.5rem" }}
                             className="bg-black/20 text-sm text-gray-200 pr-4 py-2 rounded-full border border-white/10 w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
                         />
@@ -160,7 +177,7 @@ const EvolucaoSaldo = () => {
                 <motion.div variants={itemVariants} className="w-[95%] transition-all duration-500">
                     <SaldoMiniChart />
                 </motion.div>
-                
+
 
                 {/* BLOCO INFERIOR 
                 <div className="mt-8 flex w-full justify-start">

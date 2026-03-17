@@ -261,12 +261,12 @@ const Lancamento = () => {
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col xl:flex-row-reverse items-center xl:items-start justify-between w-full lg:!-mt-48 gap-y-10 xl:gap-y-0">
+                <div className="flex flex-col xl:flex-row-reverse items-center lg:items-start justify-between w-full xl:!-mt-48 gap-y-10 lg:gap-y-0">
 
                     {/* BLOCO DO FORMULÁRIO */}
                     <div className="shrink-0 w-full xl:w-auto">
                         <motion.div variants={itemVariants}>
-                            <div className="flex justify-center xl:justify-end w-full px-4 pt-14 xl:px-0 xl:pr-10">
+                            <div className="flex justify-center xl:justify-end w-full px-4 pt-14 lg:px-0 lg:pr-4 xl:pr-10">
                                 <FormularioLancamento
                                     tipoSelecionado={tipoAtivo}
                                     aoConfirmar={(novo) => {
@@ -296,8 +296,8 @@ const Lancamento = () => {
                     </div>
 
                     {/* BLOCO DO CARD */}
-                    <motion.div variants={itemVariants} className="w-full xl:flex-1 flex justify-center ">
-                        <div className="w-full items-center flex flex-col py-6 xl:py-12 xl:pl-36">
+                    <motion.div variants={itemVariants} className="w-full lg:flex-1 flex justify-center ">
+                        <div className="w-full items-center flex flex-col py-6 lg:py-12 lg:pl-4 xl:pl-36">
                             {listaGeral.length > 0 ? (
                                 <CardLancamento lancamento={listaGeral[0]} />
                             ) : (
