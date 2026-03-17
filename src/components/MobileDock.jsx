@@ -2,13 +2,13 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, BarChart2, Zap, TrendingUp, PieChart, DollarSign, Settings } from 'lucide-react';
 
-const MobileDock = () => {
+const MobileDock = ({ onOpenSearch }) => {
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
 
 
     const navLinks = [
-        { icon: Search, label: "Buscar", href: '/search' },
+        { icon: Search, label: "Buscar", href: '#', isSearch: true },
         { icon: BarChart2, label: "Visão", href: '/visao-geral' },
         { icon: Zap, label: "Lançar", href: '/lancamento' },
         { icon: BarChart2, label: "Mov.", href: '/movimentacao' },
@@ -26,11 +26,18 @@ const MobileDock = () => {
                 <div className="flex flex-nowrap items-center h-full px-4 overflow-x-auto overflow-y-hidden no-scrollbar snap-x touch-pan-x">
                     {navLinks.map((link, idx) => {
                         const active = isActive(link.href);
+
+                        // AJUSTE AQUI: Definindo o componente dentro do map
+                        const Component = link.isSearch ? 'button' : Link;
+                        const extraProps = link.isSearch 
+                            ? { onClick: onOpenSearch, type: 'button' } 
+                            : { to: link.href };
+
                         return (
-                            <Link
+                            <Component
                                 key={idx}
-                                to={link.href}
-                                className="relative flex flex-col items-center justify-center min-w-[60px] h-full snap-center"
+                                {...extraProps}
+                                className="relative flex flex-col items-center justify-center min-w-[60px] h-full snap-center outline-none border-none bg-transparent"
                             >
                                 {/* ICONE */}
                                 <div className={`relative z-10 transition-all duration-300 ${active ? 'text-white scale-110' : 'text-neutral-500'}`}>
@@ -41,7 +48,7 @@ const MobileDock = () => {
                                     {link.label}
                                 </span>
 
-                                {/* BRILHO */}
+                                {/* SEU BRILHO (INTACTO): */}
                                 {active && (
                                     <div className="absolute bottom-0 flex flex-col items-center w-full pointer-events-none">
                                         <div className="absolute w-10 h-8 bg-[#1fba11]/30 blur-lg bottom-[-5px]" />
@@ -54,7 +61,7 @@ const MobileDock = () => {
                                         />
                                     </div>
                                 )}
-                            </Link>
+                            </Component>
                         );
                     })}
                 </div>

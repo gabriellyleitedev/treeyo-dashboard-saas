@@ -11,14 +11,12 @@ export const NotificationProvider = ({ children }) => {
 
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // LOGICA PRESERVADA: Adicionamos apenas o useCallback e a checagem de ID repetido
   const adicionarNotificacao = useCallback((novaNotif) => {
     const modulo = novaNotif.modulo || "geral";
 
     setNotificacoes(prev => {
       const listaAtual = prev[modulo] || [];
-      
-      // Se a notificação já existe na lista (mesmo ID), não faz nada e mantém o estado como está
+
       if (listaAtual.some(n => n.id === novaNotif.id)) {
         return prev;
       }
@@ -37,9 +35,8 @@ export const NotificationProvider = ({ children }) => {
         [modulo]: [notificacaoFormatada, ...listaAtual].slice(0, 20)
       };
     });
-  }, []); // Dependência vazia para a função ser estável
+  }, []); 
 
-  // LOGICA PRESERVADA: Carregamento do LocalStorage
   useEffect(() => {
     const salvas = localStorage.getItem("@treeyo:notificacoes");
     if (salvas) {
@@ -53,7 +50,6 @@ export const NotificationProvider = ({ children }) => {
     setIsLoaded(true);
   }, []);
 
-  // LOGICA PRESERVADA: Salvamento no LocalStorage
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem(

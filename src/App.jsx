@@ -6,13 +6,21 @@ import EvolucaoSaldo from './pages/EvolucaoSaldo'
 import Lancamento from './pages/Lancamento'
 import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "./context/NotificationContext";
+import { useState } from 'react';
 
 function App() {
+
+  const [meusLancamentos, setMeusLancamentos] = useState([
+    { id: 1, descricao: 'Venda de móvel', valor: 1000, data: '17/03', categoria: 'Receita', tipo: 'entrada' },
+    { id: 2, descricao: 'Mercadoria', valor: 1200, data: '17/03', categoria: 'Despesa', tipo: 'saida' },
+    { id: 3, descricao: 'Pisos', valor: 2300, data: '19/02', categoria: 'Receita', tipo: 'entrada' },
+    { id: 4, descricao: 'Novo Lançamento', valor: 4500, data: '17/03', categoria: 'Receita', tipo: 'entrada' },
+  ]);
   return (
     <>
       <NotificationProvider>
         <Routes>
-          <Route element={<Layout />}>
+          <Route element={<Layout meusLancamentos={meusLancamentos} />}>
 
             <Route path="/" element={<Navigate to="/visao-geral" replace />} />
             <Route path="/visao-geral" element={<VisaoGeral />} />

@@ -16,47 +16,44 @@ function VisaoGeral() {
 
     const { adicionarNotificacao } = useNotifications();
 
-   const hasChecked = React.useRef(false);
+    const hasChecked = React.useRef(false);
 
-React.useEffect(() => {
-    // 2. Trava absoluta: se já checou uma vez nesta montagem, ignora tudo
-    if (hasChecked.current) return;
+    React.useEffect(() => {
 
-    const lancamentos = JSON.parse(localStorage.getItem("@treeyo:lancamentos")) || [];
-    const perfil = JSON.parse(localStorage.getItem("@treeyo:perfil"));
+        if (hasChecked.current) return;
 
-    // Notificação de Boas-vindas
-    if (perfil && !sessionStorage.getItem('@treeyo:welcome_notified')) {
-        adicionarNotificacao({
-            id: `welcome-${Date.now()}`,
-            modulo: 'geral',
-            titulo: `Bem-vinda, ${perfil.nome || 'Gabi'}!`,
-            mensagem: 'Seu dashboard está atualizado.',
-            tipo: 'info',
-            lida: false,
-            data: new Date().toISOString()
-        });
-        sessionStorage.setItem('@treeyo:welcome_notified', 'true');
-    }
+        const lancamentos = JSON.parse(localStorage.getItem("@treeyo:lancamentos")) || [];
+        const perfil = JSON.parse(localStorage.getItem("@treeyo:perfil"));
 
-    // Alerta de Lançamentos
-    if (lancamentos.length === 0 && !sessionStorage.getItem('@treeyo:empty_alert_notified')) {
-        adicionarNotificacao({
-            id: 'no-data-alert', // ID fixo evita duplicatas no estado
-            modulo: 'lancamentos',
-            titulo: 'Comece a poupar!',
-            mensagem: 'Você ainda não registrou nenhuma movimentação este mês.',
-            tipo: 'warning',
-            lida: false,
-            data: new Date().toISOString()
-        });
-        sessionStorage.setItem('@treeyo:empty_alert_notified', 'true');
-    }
+        if (perfil && !sessionStorage.getItem('@treeyo:welcome_notified')) {
+            adicionarNotificacao({
+                id: `welcome-${Date.now()}`,
+                modulo: 'geral',
+                titulo: `Bem-vinda, ${perfil.nome || 'Gabi'}!`,
+                mensagem: 'Seu dashboard está atualizado.',
+                tipo: 'info',
+                lida: false,
+                data: new Date().toISOString()
+            });
+            sessionStorage.setItem('@treeyo:welcome_notified', 'true');
+        }
 
-    // 3. Marca como checado
-    hasChecked.current = true;
-}, []);
-    
+        if (lancamentos.length === 0 && !sessionStorage.getItem('@treeyo:empty_alert_notified')) {
+            adicionarNotificacao({
+                id: 'no-data-alert',
+                modulo: 'lancamentos',
+                titulo: 'Comece a poupar!',
+                mensagem: 'Você ainda não registrou nenhuma movimentação este mês.',
+                tipo: 'warning',
+                lida: false,
+                data: new Date().toISOString()
+            });
+            sessionStorage.setItem('@treeyo:empty_alert_notified', 'true');
+        }
+
+        hasChecked.current = true;
+    }, []);
+
 
     return (
         <div className="w-full min-h-screen lg:pb-0 pb-24">

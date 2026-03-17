@@ -111,29 +111,27 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
         }
 
-        // Substitua aquele bloco do valorNumerico por este:
-const valorLimpo = formData.valor.toString()
-    .replace(/R\$/g, "") // Remove o R$ se o cara digitar
-    .replace(/\s/g, "")  // Remove espaços
-    .replace(/\./g, "")  // Remove pontos de milhar (ex: do 1.000)
-    .replace(",", ".");  // Troca a vírgula por ponto pro JS entender
+        const valorLimpo = formData.valor.toString()
+            .replace(/R\$/g, "") // Remove o R$ se o cara digitar
+            .replace(/\s/g, "")  // Remove espaços
+            .replace(/\./g, "")  // Remove pontos de milhar (ex: do 1.000)
+            .replace(",", ".");  // Troca a vírgula por ponto pro JS entender
 
-const valorNumerico = parseFloat(valorLimpo);
+        const valorNumerico = parseFloat(valorLimpo);
 
-// Se o campo estiver vazio ou o cara só digitar letras, não deixa salvar
-if (isNaN(valorNumerico)) {
-    setErros(["valor"]);
-    toast.error("⚠️ Digite um valor válido");
-    return;
-}
+        if (isNaN(valorNumerico)) {
+            setErros(["valor"]);
+            toast.error("⚠️ Digite um valor válido");
+            return;
+        }
 
-aoConfirmar({
-    ...formData,
-    valor: valorNumerico, // Aqui enviamos o número limpo (ex: 1000)
-    conta: bancoFinal,
-    id: Date.now(),
-    tipo: tipoSelecionado
-});
+        aoConfirmar({
+            ...formData,
+            valor: valorNumerico,
+            conta: bancoFinal,
+            id: Date.now(),
+            tipo: tipoSelecionado
+        });
 
         setErros([]);
 
