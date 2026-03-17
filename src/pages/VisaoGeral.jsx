@@ -37,8 +37,8 @@ function VisaoGeral() {
         }
 
         // Exemplo: Alerta se não houver lançamentos
-        if (lancamentos.length === 0) {
-            adicionarNotificacao({
+        if (lancamentos.length === 0 && !sessionStorage.getItem('@treeyo:empty_alert_notified')) {
+            adicionarNotificacao ({
                 id: 'no-data',
                 modulo: 'lancamentos',
                 titulo: 'Comece a poupar!',
@@ -47,8 +47,12 @@ function VisaoGeral() {
                 lida: false,
                 data: new Date().toISOString()
             });
+
+            sessionStorage.setItem('@treeyo:empty_alert_notified', 'true');
         }
+
     }, []);
+    
 
     return (
         <div className="w-full min-h-screen lg:pb-0 pb-24">
