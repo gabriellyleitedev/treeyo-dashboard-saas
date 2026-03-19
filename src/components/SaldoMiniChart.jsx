@@ -51,13 +51,13 @@ export default function SaldoMiniChart() {
         <p className="text-lg md:text-sm text-gray-200 leading-tight italic">{getSaudacao()}</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row md:gap-8 gap-4 items-center w-full">
+      <div className="flex flex-col md:flex-row gap-8 items-center w-full">
 
-        <div className=" w-full h-64 md:h-[160px] relative">
+        <div className=" w-full h-64 lg:h-[160px] md:h-[200px] relative">
 
           <div className="absolute left-0 top-[-30px] bottom-[30px] w-[1.5px] bg-gradient-to-b from-transparent via-white/20 to-transparent z-10" />
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 20, right: 40, left: -40, bottom: 10 }} style={{ overflow: 'visible' }}>
+            <AreaChart data={data} margin={{ top: 10, right: 40, left: -20, bottom: 10 }} style={{ overflow: 'visible' }}>
               <defs>
                 <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1fba11" stopOpacity={0.6} />
@@ -73,7 +73,8 @@ export default function SaldoMiniChart() {
               axisLine={false} 
               tickLine={false} 
               dy={15} 
-              tickFormatter={(val) => range === "30d" && val !== "Hoje" ? `Dia ${val}` : val} />
+              tickFormatter={(val) => range === "30d" && val !== "Hoje" ? `Dia ${val}` : val} 
+              />
               <YAxis hide domain={['dataMin - 1000', 'dataMax + 2000']} />
               <Tooltip content={({ active, payload }) => {
                 if (active && payload && payload.length) {
@@ -92,7 +93,7 @@ export default function SaldoMiniChart() {
         </div>
 
         {/* BOTÕES LATERAIS CORRIGIDOS */}
-        <div className="flex flex-row lg:flex-col gap-6 h-auto lg:h-[160px] md:!-mt-12 w-full lg:w-auto">
+        <div className="flex flex-row md:flex-col gap-6 h-auto lg:h-[160px] md:!-mt-12 w-full lg:w-auto   no-scrollbar pb-2">
           {[
             { id: '7d', label: '7 Dias' },
             { id: '30d', label: '30 Dias' },
