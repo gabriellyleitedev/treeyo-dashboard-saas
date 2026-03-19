@@ -1,105 +1,109 @@
 import React, { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Calendar } from "lucide-react"; // Simulação de ícone
 
-// DADOS FAKE BACKEND //
 const data7d = [
-  { day: "1", saldo: 500 },
-  { day: "2", saldo: 1800 },
-  { day: "3", saldo: 2200 },
-  { day: "4", saldo: 1900 },
-  { day: "5", saldo: 3200 },
-  { day: "6", saldo: 4000 },
-  { day: "7", saldo: 7642.83 },
+  { label: "Seg", saldo: 500 }, { label: "Ter", saldo: 1800 }, { label: "Qua", saldo: 2200 },
+  { label: "Qui", saldo: 1900 }, { label: "Sex", saldo: 3200 }, { label: "Sab", saldo: 4000 },
+  { label: "Hoje", saldo: 7642.83 },
 ];
 
 const data30d = [
-  { day: "1", saldo: 50 },
-  { day: "5", saldo: 1800 },
-  { day: "10", saldo: 4000 },
-  { day: "15", saldo: 2200 },
-  { day: "20", saldo: 5800 },
-  { day: "25", saldo: 7800 },
-  { day: "30", saldo: 7642.83 },
+  { label: "01", saldo: 4000 }, { label: "03", saldo: 3200 }, { label: "05", saldo: 4500 },
+  { label: "08", saldo: 3800 }, { label: "12", saldo: 5200 }, { label: "15", saldo: 4100 },
+  { label: "18", saldo: 6300 }, { label: "22", saldo: 5800 }, { label: "26", saldo: 7200 },
+  { label: "Hoje", saldo: 7642.83 },
 ];
 
 const dataCustom = [
-  { day: "jan", saldo: 2000 },
-  { day: "fev", saldo: 5000 },
-  { day: "mar", saldo: 3000 },
-  { day: "abr", saldo: 9000 },
-  { day: "mai", saldo: 7642.83 },
+  { label: "Jan", saldo: 2000 }, { label: "Fev", saldo: 5000 }, { label: "Mar", saldo: 3000 },
+  { label: "Abr", saldo: 9000 }, { label: "Mai", saldo: 7642.83 },
 ];
 
-// DOT BRILHANTE NO ÚLTIMO PONTO //
 const CustomDot = (props) => {
-  const { cx, cy, index, payload } = props;
-  if (payload.isLast) {
+  const { cx, cy, payload } = props;
+  const isLast = payload.label === "Hoje" || payload.label === "Mai";
+  
+  if (isLast) {
     return (
       <g>
-        <circle cx={cx} cy={cy} r={12} fill="white" fillOpacity="0.3" filter="url(#superGlow)" />
-        <circle cx={cx} cy={cy} r={5} fill="white" />
+        <circle cx={cx} cy={cy} r={16} fill="white" fillOpacity="0.15" filter="url(#superGlow)" />
+        <circle cx={cx} cy={cy} r={6} fill="white" stroke="#1fba11" strokeWidth={2} />
+        <text x={cx} y={cy - 25} fill="white" fontSize="14" fontWeight="bold" textAnchor="middle">
+          R$ {payload.saldo.toLocaleString("pt-BR")}
+        </text>
       </g>
     );
   }
-  return <circle cx={cx} cy={cy} r={3} fill="#1fba11" filter="url(#glow)" />;
+  return null; 
 };
 
-export default function SaldoMiniChart() {
+export default function SaldoFinalChart() {
   const [range, setRange] = useState("30d");
 
   const getData = () => {
-    let base;
-    if (range === "7d") base = data7d;
-    if (range === "30d") base = data30d;
-    if (range === "custom") base = dataCustom;
-
-    // Marca último ponto ( o map é uma pesquisa simples)
-    return base.map((d, i) => ({
-      ...d,
-      isLast: i === base.length - 1,
-    }));
+    if (range === "7d") return data7d;
+    if (range === "30d") return data30d;
+    return dataCustom;
   };
 
   const data = getData();
 
   return (
-    <div className="w-full max-w-[95%] md:w-full p-4 md:p-6 bg-[#161616] rounded-[14px] border border-white/10 text-white font-sans mx-auto pb-6">
-      <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
+    <div className="w-full p-4 md:!mt-4 md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] flex flex-col text-gray-200 font-sans">
+      
+      <div className="mb-10 px-4">
+        <h3 className="text-neutral-400 text-xs font-semibold uppercase tracking-[0.1em] pb-1">Relatório de Evolução</h3>
+        <p className="text-sm text-gray-200 leading-tight">
+          "Boa, Gabrielly! Seu saldo cresceu <span className="text-[#1fba11] font-bold">R$ 840,00</span> esta semana."
+        </p>
+      </div>
 
-        {/* GRÁFICO */}
-        <div className=" w-full h-[230px] md:h-[230px] relative">
+      <div className="flex flex-col lg:flex-row gap-8 items-end ">
+        <div className="flex-1 w-full h-[200px] relative ">
+          
+          {/* Linha Lateral Esquerda - Melhorada com gradiente */}
+          <div className="absolute left-0 top-0 bottom-[40px] w-[2px] bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={data} margin={{ top: 50, right: 40, left: -30, bottom: 10 }}>
               <defs>
-                <pattern id="riscasVerdes" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                  <line x1="0" y1="0" x2="0" y2="4" stroke="rgba(31, 186, 17, 0.9)" strokeWidth="1" />
-                </pattern>
-
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-
-                <filter id="superGlow" >
-                  <feGaussianBlur stdDeviation="6" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
+                <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#1fba11" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#1fba11" stopOpacity={0}/>
+                </linearGradient>
+                <filter id="superGlow"><feGaussianBlur stdDeviation="6" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
               </defs>
 
-              <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis hide dataKey="day" />
-              <YAxis hide domain={['0', 'dataMax + 500']} tickCount={4} />
+              <CartesianGrid vertical={false} strokeDasharray="6 6" stroke="rgba(255,255,255,0.03)" />
+              
+              <XAxis 
+                dataKey="label" 
+                tick={{fill: '#555', fontSize: 11}} 
+                axisLine={false} 
+                tickLine={false}
+                dy={15}
+                tickFormatter={(value) => {
+                  if (range === "30d") return `Dia ${value}`;
+                  if (range === "custom") return `Mês ${value}`;
+                  return value;
+                }}
+              />
+              
+              <YAxis hide domain={['dataMin - 1000', 'dataMax + 1000']} />
 
               <Tooltip
-                formatter={(value) => [`R$ ${value.toLocaleString("pt-BR")}`, "Saldo"]}
-                contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '8px' }}
-                itemStyle={{ color: '#1fba11' }}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-[#111] border border-white/10 p-3 rounded-lg shadow-2xl">
+                        <p className="text-gray-500 text-[9px] font-bold uppercase mb-1">Período: {payload[0].payload.label}</p>
+                        <p className="text-[#1fba11] font-black text-sm">R$ {payload[0].value.toLocaleString("pt-BR")}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
               />
 
               <Area
@@ -107,59 +111,32 @@ export default function SaldoMiniChart() {
                 dataKey="saldo"
                 stroke="#1fba11"
                 strokeWidth={2}
-                fill="url(#riscasVerdes)"
+                fill="url(#colorGreen)"
                 dot={<CustomDot />}
               />
             </AreaChart>
           </ResponsiveContainer>
-
-          {/* LINHA E BOLINHAS */}
-          <div
-            className="absolute border-l border-dashed border-green-500/20 flex flex-col justify-between py-0"
-            style={{
-              left: '30px',
-              top: '15px',
-              bottom: '20px',
-              height: 'calc(100% - 35px)'
-            }}
-          >
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="w-2.5 h-2.5 rounded-full bg-[#1fba11] -translate-x-[5.5px]" style={{ boxShadow: '0 0 10px #1fba11' }} />
-            ))}
-          </div>
-
-            {/* data.length - 1 ainda mais rápido que a pesquisa binária */}
-          <span className="absolute right-0 top-2 text-xs text-neutral-400 font-bold">
-            R$ {data[data.length - 1].saldo.toLocaleString("pt-BR")}
-          </span>
         </div>
 
-        {/* BOTÕES LATERAIS */}
-        <div className="flex flex-col gap-5 w-full md:w-32 ">
-          <button
-            onClick={() => setRange("7d")}
-            className={`h-7 py-2 px-4 rounded-lg text-xs transition 
-              ${range === "7d" ? "bg-[#1fba11]/20 border border-green-500 text-green-400" : "bg-[#2a2a2a] border border-white/5 text-gray-200"}`}
-          >
-            7 Dias
-          </button>
-
-
-          <button
-            onClick={() => setRange("30d")}
-            className={`h-7 py-2 px-4 rounded-lg text-xs transition 
-              ${range === "30d" ? "bg-[#1fba11]/20 border border-green-500 text-green-400" : "bg-[#2a2a2a] border border-white/5 text-gray-400"}`}
-          >
-            30 Dias
-          </button>
-
-          <button
-            onClick={() => setRange("custom")}
-            className={`h-7 py-2 px-4 rounded-lg text-xs italic transition 
-              ${range === "custom" ? "bg-[#1fba11]/20 border border-green-500 text-green-400" : "bg-[#2a2a2a] border border-white/5 text-gray-400"}`}
-          >
-            Personalizado
-          </button>
+        {/* Botões Laterais */}
+        <div className="flex flex-row lg:flex-col gap-2 min-w-[140px] ">
+          {[
+            { id: '7d', label: '7 Dias' },
+            { id: '30d', label: '30 Dias' },
+            { id: 'custom', label: 'Personalizado', icon: true }
+          ].map((btn) => (
+            <button
+              key={btn.id}
+              onClick={() => setRange(btn.id)}
+              className={`h-10 px-6 rounded-xl text-xs font-semibold transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 
+                ${range === btn.id 
+                  ? "bg-[#1fba11]/80 text-gray-200 shadow-[0_10px_20px_rgba(31,186,17,0.2)]" 
+                  : "bg-white/5 text-neutral-400 border border-white/5 hover:bg-white/10"}`}
+            >
+              {btn.icon && <Calendar size={12} />}
+              {btn.label}
+            </button>
+          ))}
         </div>
       </div>
     </div>

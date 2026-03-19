@@ -78,7 +78,7 @@ const EvolucaoSaldo = () => {
                                 <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
                                     <ArrowLeft size={22} />
                                 </button>
-                                <h1 className="text-gray-200 font-medium text-xl">Lançamentos</h1>
+                                <h1 className="text-gray-200 font-medium text-xl">Evolucão do Saldo</h1>
                             </div>
                             <div className="flex items-center gap-3">
                                 <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
