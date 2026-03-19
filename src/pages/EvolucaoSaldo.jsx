@@ -172,19 +172,19 @@ const EvolucaoSaldo = () => {
                     </div>
                 </motion.header>
 
-                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
+                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-0 h-px shrink-0" />
                 {/* GRÁFICO */}
-                <motion.div variants={itemVariants} className="w-[95%] transition-all duration-500">
+                <motion.div variants={itemVariants} className="w-full md:pt-4 flex items-center justify-center transition-all duration-500">
                     <SaldoMiniChart />
                 </motion.div>
 
 
-                {/* BLOCO INFERIOR 
+                {/* BLOCO INFERIOR */}
                 <div className="mt-8 flex w-full justify-start">
                     <div className="p-8 flex flex-col lg:flex-row gap-8 relative top-[6rem] w-full transition-all duration-500">
-                
 
-                        {/* COLUNA ESQUERDA
+
+                        {/* COLUNA ESQUERDA*/}
                         <motion.div
                             variants={itemVariants}
                             className="relative w-full left-7 lg:w-[320px] xl:w-[380px] h-[300px] border border-[#1fba11]/20 rounded-2xl p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
@@ -215,7 +215,7 @@ const EvolucaoSaldo = () => {
                             </div>
                         </motion.div>
 
-                        {/* COLUNA DIREITA - RESULTADO 
+                        {/* COLUNA DIREITA - RESULTADO */}
                         <motion.div
                             variants={itemVariants}
                             className="w-full lg:flex-1 flex flex-col gap-6 transition-all duration-500 "
@@ -240,7 +240,7 @@ const EvolucaoSaldo = () => {
                         </motion.div>
                     </div>
                 </div>
-                   */}
+
             </motion.div>
         </div>
 
