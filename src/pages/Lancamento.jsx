@@ -266,7 +266,7 @@ const Lancamento = () => {
                     {/* BLOCO DO FORMULÁRIO */}
                     <div className="shrink-0 w-full xl:w-auto">
                         <motion.div variants={itemVariants}>
-                            <div className="flex justify-center xl:justify-end w-full px-4 pt-14 lg:px-0 lg:pr-4 xl:pr-10">
+                            <div className="flex justify-center xl:justify-end w-full px-4 pt-14 lg:px-0 lg:pr-4 xl:pr-10 xl:px-4">
                                 <FormularioLancamento
                                     tipoSelecionado={tipoAtivo}
                                     aoConfirmar={(novo) => {
@@ -297,11 +297,11 @@ const Lancamento = () => {
 
                     {/* BLOCO DO CARD */}
                     <motion.div variants={itemVariants} className="w-full lg:flex-1 flex justify-center ">
-                        <div className="w-full items-center flex flex-col py-6 lg:py-12 lg:pl-4 xl:pl-36">
+                        <div className="w-full items-center flex flex-col py-6 lg:py-12 lg:pl-4 xl:pl-44">
                             {listaGeral.length > 0 ? (
                                 <CardLancamento lancamento={listaGeral[0]} />
                             ) : (
-                                <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic">
+                                <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic xl:p-4">
                                     Nenhum lançamento de {tipoAtivo} para exibir no card.
                                 </div>
                             )}
