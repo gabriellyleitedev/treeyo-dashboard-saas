@@ -46,18 +46,18 @@ export default function SaldoMiniChart() {
   return (
     <div className="w-full md:p-4 p-0 flex flex-col text-gray-200 font-sans md:bg-black/20 md:border md:border-[#1fba11]/20 md:rounded-[22px] overflow-hidden">
 
-      <div className="pb-4 pt-0 px-3">
-        <h3 className="text-neutral-500 md:text-xs font-semibold uppercase tracking-[0.1em] pb-1">Evolução do seu saldo</h3>
-        <p className="text-lg md:text-sm text-gray-200 leading-tight italic">{getSaudacao()}</p>
+      <div className="pb-4 md:pt-0 md:px-4 px-1 pt-5">
+        <h3 className="text-neutral-500 md:text-xs text-xs font-semibold uppercase tracking-[0.1em] pb-1">Evolução do seu saldo</h3>
+        <p className="md:text-lg text-xs text-gray-200 leading-tight italic">{getSaudacao()}</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 items-center w-full">
+      <div className="flex flex-col md:flex-row gap-8 items-stretch  w-full">
 
-        <div className=" w-full h-64 lg:h-[160px] md:h-[200px] relative">
+        <div className=" w-full h-64 lg:h-[160px] md:h-[200px] relative overflow-hidden">
 
           <div className="absolute left-0 top-[-30px] bottom-[30px] w-[1.5px] bg-gradient-to-b from-transparent via-white/20 to-transparent z-10" />
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 10, right: 40, left: -20, bottom: 10 }} style={{ overflow: 'visible' }}>
+            <AreaChart data={data} margin={{ top: 20, right: 45, left: 15, bottom: 10 }} >
               <defs>
                 <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1fba11" stopOpacity={0.6} />
@@ -93,7 +93,7 @@ export default function SaldoMiniChart() {
         </div>
 
         {/* BOTÕES LATERAIS CORRIGIDOS */}
-        <div className="flex flex-row md:flex-col gap-6 h-auto lg:h-[160px] md:!-mt-12 w-full lg:w-auto   no-scrollbar pb-2">
+        <div className="flex flex-row md:flex-col overflow-x-auto md:w-auto gap-6 h-auto lg:h-[160px] md:!-mt-6 w-full lg:w-auto lg:px-12  no-scrollbar pb-2">
           {[
             { id: '7d', label: '7 Dias' },
             { id: '30d', label: '30 Dias' },

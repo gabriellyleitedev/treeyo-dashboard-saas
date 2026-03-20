@@ -33,7 +33,7 @@ const Movimentacao = () => {
   return (
     <div className="w-full">
 
-      {/* HEADER */}
+      {/* HEADER 
       <motion.div
         className="w-full"
         initial="hidden"
@@ -73,11 +73,12 @@ const Movimentacao = () => {
             </div>
           </div>
         </motion.header>
+        
 
-        { /* LINHA DIVISORIA */}
+        { /* LINHA DIVISORIA 
         <motion.div variants={item} className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8" />
 
-        {/* MAIN */}
+        {/* MAIN 
         <main className="max-w-[1400px] mx-auto px-6 py-8">
           <motion.div
             variants={container}
@@ -87,10 +88,10 @@ const Movimentacao = () => {
             className="grid grid-cols-1 lg:grid-cols-12 gap-8"
           >
 
-            {/* LEFT */}
+            {/* LEFT 
             <div className="lg:col-span-4 flex flex-col gap-10">
 
-              {/* SALDO */}
+              {/* SALDO 
               <motion.div
                 variants={item}
                 className="bg-[#1A1A1A] border border-white/10 rounded-xl p-8 h-22 w-full max-w-[320px] relative top-5 left-10 overflow-hidden transition-all duration-300 hover:border-green-500/50 group cursor-pointer"
@@ -104,23 +105,23 @@ const Movimentacao = () => {
                 </div>
               </motion.div>
 
-              {/* DADOS E MELHORIAS */}
+              {/* DADOS E MELHORIAS 
               <motion.div
                 variants={item}
                 className="relative top-7 left-10 w-full max-w-[320px]  flex flex-col gap-4"
               >
-                {/* Título da Seção */}
+                {/* Título da Seção 
                 <div className="flex items-center gap-2 px-1">
                   <div className="w-1 h-5 bg-[#1fba11] rounded-full" />
                   <span className="text-sm font-semibold uppercase text-neutral-400">Dados e Melhorias</span>
                 </div>
 
-                {/* LADO ESQUERDO */}
+                {/* LADO ESQUERDO *
                 <motion.div
                   variants={item}
                   className="flex flex-col gap-8 "
                 >
-                  {/* INFO */}
+                  {/* INFO 
                   <div className="bg-[#161616] border border-white/10 rounded-xl p-3 flex items-center gap-4 w-full max-w-[420px] h-12 relative shadow-2xl hover:bg-[#1c1c1c] translate duration-300 cursor-pointer">
                     <div className="relative flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center bg-gray-500 bottom-2 left-2 ">
                       <span className="text-black text-sm font-bold">i</span>
@@ -132,7 +133,7 @@ const Movimentacao = () => {
 
                   </div>
 
-                  {/* SUCCESS */}
+                  {/* SUCCESS 
                   <div className="bg-[#161616] border border-white/10 rounded-xl p-3 flex items-center gap-4 w-full max-w-[420px] h-12 relative shadow-2xl hover:bg-[#1c1c1c] translate duration-300 cursor-pointer">
                     <div className="relative bottom-2 left-2 flex-shrink-0 w-4 h-4 rounded-full bg-[#1fba11] flex items-center justify-center border-t border-white/40">
                       <span className="text-black text-sm font-bold drop-shadow-md">✓</span>
@@ -145,7 +146,7 @@ const Movimentacao = () => {
 
                   </div>
 
-                  {/* WARNING*/}
+                  {/* WARNING
                   <div className="bg-[#161616] border border-white/10 rounded-xl p-3 flex items-center gap-4 w-full max-w-[420px] h-12 relative shadow-2xl hover:bg-[#1c1c1c] translate duration-300 cursor-pointer">
                     <div className="relative bottom-2 left-2 flex-shrink-0 w-5 h-5 flex items-center justify-center">
                       <svg width="36" height="36" viewBox="0 0 24 24" className="drop-shadow-sm">
@@ -173,7 +174,7 @@ const Movimentacao = () => {
 
                   </div>
 
-                  {/* ERROR */}
+                  {/* ERROR 
                   <div className="bg-[#161616] border border-white/10 rounded-xl p-3 flex items-center gap-4 w-full max-w-[420px] h-12 relative shadow-2xl hover:bg-[#1c1c1c] translate duration-300 cursor-pointer">
                     <div className="relative bottom-2 left-2 flex-shrink-0 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center border-t border-white/40">
                       <span className="text-black text-xs font-bold">✕</span>
@@ -185,7 +186,7 @@ const Movimentacao = () => {
                     </div>
                   </div>
 
-                  {/* SUCCESS */}
+                  {/* SUCCESS 
                   <div className="bg-[#161616] border border-white/10 rounded-xl p-3 flex items-center gap-4 w-full max-w-[420px] h-12 relative shadow-2xl hover:bg-[#1c1c1c] translate duration-300 cursor-pointer">
                     <div className="relative bottom-2 left-2 flex-shrink-0 w-4 h-4 rounded-full bg-[#1fba11] flex items-center justify-center border-t border-white/40">
                       <span className="text-black text-sm font-bold drop-shadow-md">✓</span>
@@ -212,7 +213,7 @@ const Movimentacao = () => {
                   Entradas caíram <b className="text-white">10%</b>. Revise suas vendas hoje.
                 </p>
               </motion.div>
-              */}
+           
 
             </div>
 
@@ -284,10 +285,12 @@ const Movimentacao = () => {
               </div>
 
             </motion.div>
-            */}
+            
           </motion.div>
+          
         </main>
       </motion.div>
+        */}
     </div>
   );
 };
