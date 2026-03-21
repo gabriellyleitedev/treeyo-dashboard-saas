@@ -105,8 +105,8 @@ const EvolucaoSaldo = () => {
 
     return (
 
-        <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
-            <div className="max-w-[1400px] flex flex-col mx-auto w-full px-3 sm:px-6 md:px-0 lg:px-8">
+        <div className="w-full flex-1 lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
+            <div className="max-w-[1400px] flex flex-col w-full px-3 sm:px-6 md:px-0 lg:px-8 transition-all duration-500 ease-in-out">
                 {/* LUZ VERDE TOPO */}
                 <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
 
@@ -227,14 +227,14 @@ const EvolucaoSaldo = () => {
 
 
                     {/* BLOCO INFERIOR */}
-                    <div className="mt-8 flex w-full justify-start ">
-                        <div className="lg:p-8 p-0 flex flex-col lg:flex-row gap-12 w-full pt-12 lg:max-w-full transition-all duration-500">
+                    <div className="mt-8 flex w-full ">
+                        <div className="lg:p- p-0 flex flex-col lg:flex-row gap-12 xl:gap-4 w-full pt-12 lg:max-w-full transition-all duration-500">
 
 
                             {/* COLUNA ESQUERDA*/}
                             <motion.div
                                 variants={itemVariants}
-                                className=" relative w-full  lg:w-[320px] xl:w-[380px] min-h-[300px] border border-[#1fba11]/20 rounded-2xl p-4 bg-[#0f0f0f] overflow-hidden shrink-0"
+                                className=" relative w-full  lg:max-w-[360px]  min-h-[300px] border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
                             >
                                 <div className="absolute inset-0 bg-green-500/10 blur-3xl"></div>
                                 <div
@@ -270,7 +270,7 @@ const EvolucaoSaldo = () => {
                             >
                                 <div>
                                     <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-4">Resultado</h3>
-                                    <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-4 ">
+                                    <div className="grid grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-4 ">
 
                                         <StatBox label="Vendas recebidas" value="87" variants={itemVariants} />
                                         <StatBox label="Despesas pagas" value="43" variants={itemVariants} />
@@ -310,11 +310,11 @@ const InsightCard = ({ label, text }) => (
 const StatBox = ({ label, value, span, variants }) => (
     <motion.div
         variants={variants}
-        className="relative bg-[#262626] border border-white/10 px-2 py-3  rounded-xl w-full  cursor-default transition-all duration-500 hover:border-[#1fba11]/30 hover:shadow-[0_0_20px_rgba(31,186,17,0.1)]"
+        className="relative bg-[#262626] border border-white/10 lg:px-3 px-2 py-3 rounded-xl w-full  cursor-default transition-all duration-500 hover:border-[#1fba11]/30 hover:shadow-[0_0_20px_rgba(31,186,17,0.1)]"
     >
 
     {span && (
-        <span className="absolute left-0 md:text-3xl text-2xl text-[#1fba11] px-20 ">
+        <span className="absolute  lg:text-2xl text-2xl text-[#1fba11] lg:px-18 px-20 ">
             {span}
         </span>
     )}

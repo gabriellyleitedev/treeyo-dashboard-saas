@@ -41,14 +41,14 @@ export default function SaldoMiniChart() {
     }
   };
 
-  const data = range === "7d" ? data7d : range === "30d" ? data30d : dataCustom;
+  const data = range === "7d" ? data7d : range === "" ? data30d : dataCustom;
 
   return (
     <div className="w-full md:p-4 p-0 flex flex-col text-gray-200 font-sans md:bg-black/20 md:border md:border-[#1fba11]/20 md:rounded-[22px] overflow-hidden">
 
       <div className="pb-4 md:pt-0 md:px-4 px-1 pt-5">
         <h3 className="text-neutral-500 md:text-xs text-xs font-semibold uppercase tracking-[0.1em] pb-1">Evolução do seu saldo</h3>
-        <p className="md:text-lg text-xs text-gray-200 leading-tight italic">{getSaudacao()}</p>
+        <p className="md:text-xs text-xs text-gray-200 leading-tight italic">{getSaudacao()}</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 items-stretch  w-full">
@@ -93,7 +93,7 @@ export default function SaldoMiniChart() {
         </div>
 
         {/* BOTÕES LATERAIS CORRIGIDOS */}
-        <div className="flex flex-row md:flex-col overflow-x-auto md:w-auto gap-6 h-auto lg:h-[160px] md:!-mt-6 w-full lg:w-auto lg:px-12  no-scrollbar pb-2">
+        <div className="flex flex-row md:flex-col overflow-x-auto md:w-auto gap-6 h-auto lg:h-[160px] md:!-mt-6 w-full lg:w-auto lg:px-14  no-scrollbar pb-2">
           {[
             { id: '7d', label: '7 Dias' },
             { id: '30d', label: '30 Dias' },
