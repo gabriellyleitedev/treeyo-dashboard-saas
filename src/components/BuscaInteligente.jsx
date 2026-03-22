@@ -51,6 +51,9 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
         >
 
           <div onClick={onClose} className="absolute inset-0 bg-black/20 backdrop-blur-md" />
+          {/* --- LUZ VERDE (GLOW) --- */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/25 rounded-full blur-[90px] pointer-events-none" />
+            
 
           <motion.div
             initial={{ scale: 0.95, y: -20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: -20 }}
