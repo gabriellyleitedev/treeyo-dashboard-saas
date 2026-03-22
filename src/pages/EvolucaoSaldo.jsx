@@ -54,10 +54,39 @@ const gerarNotificacoesSaldo = (lista) => {
     return notificacoes;
 };
 
-
-
+const presets = {
+    "7d": {
+        vendas: "18",
+        despesas: "07",
+        total: "4.200",
+        saldo: "3.100",
+        insights: ["Você economizou 200 min esta semana", "Crescimento de 5% vs semana passada"],
+        frases: ["Seu saldo caiu 2% essa semana", "Sábado foi seu melhor dia"]
+    },
+    "30d": {
+        vendas: "87",
+        despesas: "43",
+        total: "7.642",
+        saldo: "3.582",
+        insights: ["Redução de 20% nos custos mensais", "Pix foi o mais usado no mês"],
+        frases: ["Seu saldo caiu 5% em relação ao mês passado", "O dia 10 foi o mais movimentado"]
+    },
+    "custom": {
+        vendas: "--",
+        despesas: "--",
+        total: "0.000",
+        saldo: "0.000",
+        insights: ["Selecione um período", "Aguardando dados..."],
+        frases: ["Período personalizado selecionado"]
+    }
+};
 const EvolucaoSaldo = () => {
     const navigate = useNavigate();
+
+    const [range, setRange] = useState("30d"); // Este cara controla a tela toda agora
+
+    const dadosAtuais = presets[range] || presets["30d"];
+
 
     const [lista, setLista] = useState([]);
     const [busca, setBusca] = useState("");
@@ -217,12 +246,12 @@ const EvolucaoSaldo = () => {
                         </div>
                     </motion.header>
 
-                     <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
+                    <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
-                  <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-0 shrink-0" /> 
+                    <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-0 shrink-0" />
                     {/* GRÁFICO */}
                     <motion.div variants={itemVariants} className="w-full md:pt-4 flex justify-center transition-all duration-500">
-                        <SaldoMiniChart />
+                        <SaldoMiniChart range={range} setRange={setRange} />
                     </motion.div>
 
 
@@ -271,11 +300,10 @@ const EvolucaoSaldo = () => {
                                 <div>
                                     <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-4">Resultado</h3>
                                     <div className="grid grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-4 ">
-
-                                        <StatBox label="Vendas recebidas" value="87" variants={itemVariants} />
-                                        <StatBox label="Despesas pagas" value="43" variants={itemVariants} />
-                                        <StatBox label="Total movimentado" value="7.642" span="$" variants={itemVariants} />
-                                        <StatBox label="Saldo final" value="3.582" span="$" variants={itemVariants} />
+                                        <StatBox label="Vendas recebidas" value={dadosAtuais.vendas} variants={itemVariants} />
+                                        <StatBox label="Despesas pagas" value={dadosAtuais.despesas} variants={itemVariants} />
+                                        <StatBox label="Total movimentado" value={dadosAtuais.total} span="$" variants={itemVariants} />
+                                        <StatBox label="Saldo final" value={dadosAtuais.saldo} span="$" variants={itemVariants} />
                                     </div>
                                 </div>
 
@@ -313,13 +341,13 @@ const StatBox = ({ label, value, span, variants }) => (
         className="relative bg-[#262626] border border-white/10 lg:px-3 px-2 py-3 rounded-xl w-full  cursor-default transition-all duration-500 hover:border-[#1fba11]/30 hover:shadow-[0_0_20px_rgba(31,186,17,0.1)]"
     >
 
-    {span && (
-        <span className="absolute  lg:text-2xl text-2xl text-[#1fba11] lg:px-18 px-20 ">
-            {span}
-        </span>
-    )}
+        {span && (
+            <span className="absolute  lg:text-2xl text-2xl text-[#1fba11] lg:px-18 px-20 ">
+                {span}
+            </span>
+        )}
 
-   
+
         <p className="md:text-[25px] text-2xl font-semibold text-white mb-1 ">{value}</p>
         <p className="tracking-wider text-neutral-400 font-medium ">{label}</p>
 

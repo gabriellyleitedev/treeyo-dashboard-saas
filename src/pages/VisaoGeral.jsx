@@ -1,6 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Sun, Moon, Bell, TrendingUp } from 'lucide-react';
-import CalendarPicker from '../components/CalendarPicker';
+import {  TrendingUp } from 'lucide-react';
 import CardsStack from '../components/CardsStack';
 import MainChart from '../components/MainChart';
 import RemindersPanel from '../components/RemindersPanel';
