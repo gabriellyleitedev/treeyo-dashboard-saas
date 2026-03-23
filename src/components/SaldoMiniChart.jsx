@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Calendar, X } from "lucide-react";
+import { a } from "framer-motion/client";
 
 // --- FORMULÁRIO DE CALENDÁRIO (Consertado e Estilizado) ---
 function CalendarPicker({ onSelect }) {
@@ -89,9 +90,10 @@ const data7d = [
 ];
 
 const data30d = [
-  { label: "Jan", day: "Janeiro", saldo: 4000 },
-  { label: "Fev", day: "Fevereiro", saldo: 5200 },
-  { label: "Mar", day: "Março", saldo: 7642.83 }
+  { label: "Sem 1", day: "Semana 1", saldo: 4000 },
+  { label: "Sem 2", day: "Semana 2", saldo: 5200 },
+  { label: "Sem 3", day: "Semana 3", saldo: 6478 },
+  { label: "Sem 4", day: "Semana 4", saldo: 7642.83 }
 ];
 
 const dataCustomOriginal = [
@@ -139,14 +141,133 @@ export default function SaldoMiniChart({ range, setRange }) {
 
   const data = range === "7d" ? data7d : range === "30d" ? data30d : filteredCustomData;
 
-  const getSaudacao = () => {
-    switch (range) {
-      case "7d": return <>"Boa, Gabrielly! Seu saldo cresceu <span className="text-[#1fba11] font-bold">R$ 840,00</span> esta semana."</>;
-      case "30d": return <>"Incrível! Nos últimos 30 dias você faturou <span className="text-[#1fba11] font-bold">R$ 2.450,00</span> acima da média."</>;
-      case "custom": return <>"Período personalizado selecionado: <span className="text-[#1fba11] font-bold">{customLabel}</span>"</>;
-      default: return "";
+  
+  const [hoverData, setHoverData] = useState(null);
+  const [activeData, setActiveData] = useState(null);
+
+  const hasData = data && data.length > 0;
+  
+
+const getSaudacao = () => {
+
+  // 🔥 7 DIAS (VOLTA PRO ESTILO BOM)
+  if (range === "7d") {
+    return (
+      <>
+        Boa, Gabrielly. Seu saldo fechou em{" "}
+        <span className="text-[#1fba11] font-bold">
+          {formatCurrency(data[data.length - 1].saldo)}
+        </span>. Continue nesse ritmo.
+      </>
+    );
+  }
+
+  // 🔥 30 DIAS (AGORA SIM: DIFERENTE + AÇÃO)
+  if (range === "30d") {
+
+    if (activeData && activeData.label) {
+
+      const index = data.findIndex(d => d.label === activeData.label);
+      const prev = data[index - 1];
+      const diff = prev ? activeData.saldo - prev.saldo : 0;
+
+      // 🚀 SEMANA 1
+      if (index === 0) {
+        return (
+          <>
+            Início forte:{" "}
+            <span className="text-[#1fba11] font-bold">
+              {formatCurrency(activeData.saldo)}
+            </span>. Agora valide o que mais vende.
+          </>
+        );
+      }
+
+      // 🚀 SEMANA 2
+      if (index === 1) {
+        return diff >= 0 ? (
+          <>
+            Boa evolução. Repita o que funcionou e corte o que travou.
+          </>
+        ) : (
+          <>
+            Queda detectada. Revise gastos e segure saídas agora.
+          </>
+        );
+      }
+
+      // 🚀 SEMANA 3
+      if (index === 2) {
+        return diff >= 0 ? (
+          <>
+            Ritmo consistente. Hora de escalar o que deu retorno.
+          </>
+        ) : (
+          <>
+            Oscilação. Ajuste rápido antes de impactar o mês.
+          </>
+        );
+      }
+
+      // 🚀 SEMANA 4
+      if (index === 3) {
+        return diff >= 0 ? (
+          <>
+            Fechamento forte. Mantenha esse padrão no próximo mês.
+          </>
+        ) : (
+          <>
+            Final fraco. Revise estratégia antes do novo ciclo.
+          </>
+        );
+      }
     }
-  };
+
+    // 🧠 FRASE PADRÃO (ANTES DE INTERAGIR)
+    return (
+      <>
+        Incrível. Você gerou{" "}
+        <span className="text-[#1fba11] font-bold">
+          {formatCurrency(data[data.length - 1].saldo)}
+        </span> nos últimos 30 dias.
+      </>
+    );
+  }
+
+  if (range === "custom") {
+
+  const start = filteredCustomData[0];
+  const middle = filteredCustomData[1];
+  const end = filteredCustomData[2];
+
+  if (start && end) {
+    const diff = end.saldo - start.saldo;
+
+    if (diff > 0) {
+      return <>
+        De {customLabel}: crescimento de {formatCurrency(diff)}. 
+        Continue nesse ritmo!
+      </>;
+    }
+
+    if (diff < 0) {
+      return <>
+         De {customLabel}: queda de {formatCurrency(Math.abs(diff))}. 
+        Revise gastos nesse período.
+      </>;
+    }
+
+    return <>
+      De {customLabel}: saldo estável. 
+      Hora de testar melhorias.
+    </>;
+  }
+
+  return <> Período selecionado: {customLabel}</>;
+}
+
+  return "";
+};
 
   return (
     <div className="w-full md:p-4 p-0 flex flex-col text-gray-200 font-sans md:bg-black/20 md:border md:border-[#1fba11]/20 md:rounded-[22px] overflow-hidden">
@@ -161,7 +282,10 @@ export default function SaldoMiniChart({ range, setRange }) {
           <div className="absolute left-7 top-[-30px] bottom-[30px] w-[1.5px] bg-gradient-to-b from-transparent via-white/20 to-transparent z-10" />
          
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 20, right: 45, left: 30, bottom: 10 }}>
+            <AreaChart data={data} margin={{ top: 20, right: 45, left: 30, bottom: 10 }}
+
+           
+>
               <defs>
                 <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1fba11" stopOpacity={0.6} />
@@ -176,7 +300,11 @@ export default function SaldoMiniChart({ range, setRange }) {
               <Tooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
+
                     const currentData = payload[0].payload;
+                    if (currentData !==activeData?.label) {
+                      setActiveData(currentData);
+                    }
                     const index = data.indexOf(currentData);
                     const previousValue = data[index - 1]?.saldo;
                     const diff = previousValue ? ((currentData.saldo - previousValue) / previousValue) * 100 : null;
@@ -214,7 +342,7 @@ export default function SaldoMiniChart({ range, setRange }) {
         <div className="flex flex-row md:flex-col overflow-x-auto md:w-auto gap-6 h-auto lg:h-[160px] md:!-mt-6 w-full lg:w-auto lg:px-14 no-scrollbar pb-2">
           {[
             { id: '7d', label: '7 Dias' },
-            { id: '30d', label: '30 Dias' },
+            { id: '30d', label: 'Mensal' },
             { id: 'custom', label: customLabel, icon: true }
           ].map((btn) => (
             <button

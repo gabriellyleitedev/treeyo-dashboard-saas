@@ -152,7 +152,7 @@ const EvolucaoSaldo = () => {
                                     <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
                                         <ArrowLeft size={22} />
                                     </button>
-                                    <h1 className="text-gray-200 font-medium text-xl">Evolucão do Saldo</h1>
+                                    <h1 className="text-gray-200 font-medium text-lg">Evolucão do Saldo</h1>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
@@ -250,20 +250,21 @@ const EvolucaoSaldo = () => {
 
                     <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-0 shrink-0" />
                     {/* GRÁFICO */}
-                    <motion.div variants={itemVariants} className="w-full md:pt-4 flex justify-center transition-all duration-500">
+                    <motion.div variants={itemVariants} className="w-full md:pt-4 pt-2 flex justify-center transition-all duration-500">
                         <SaldoMiniChart range={range} setRange={setRange} />
                     </motion.div>
 
 
                     {/* BLOCO INFERIOR */}
                     <div className="mt-8 flex w-full ">
-                        <div className="lg:p- p-0 flex flex-col lg:flex-row gap-12 xl:gap-4 w-full pt-12 lg:max-w-full transition-all duration-500">
+                        <div className=" flex flex-col lg:flex-row gap-12 xl:gap-4 w-full pt-16 lg:max-w-full transition-all duration-500">
 
 
                             {/* COLUNA ESQUERDA*/}
                             <motion.div
                                 variants={itemVariants}
-                                className=" relative w-full  lg:max-w-[360px]  min-h-[300px] border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
+                                className=" relative w-full  md:max-w-[360px] 
+                                min-h-[300px] border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
                             >
                                 <div className="absolute inset-0 bg-green-500/10 blur-3xl"></div>
                                 <div
@@ -295,7 +296,7 @@ const EvolucaoSaldo = () => {
                             {/* COLUNA DIREITA - RESULTADO */}
                             <motion.div
                                 variants={itemVariants}
-                                className="w-full lg:flex-1 flex flex-col gap-6 transition-all duration-500 "
+                                className="w-full lg:flex-1 flex flex-col pt-6 gap-6 transition-all duration-500 "
                             >
                                 <div>
                                     <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-4">Resultado</h3>
@@ -307,7 +308,7 @@ const EvolucaoSaldo = () => {
                                     </div>
                                 </div>
 
-                                <motion.div variants={itemVariants} className="text-sm text-neutral-400 space-y-2 cursor-pointer">
+                                <motion.div variants={itemVariants} className="text-sm text-neutral-400 space-y-2  cursor-pointer">
                                     <p className="hover:text-gray-200 transition-all duration-300">• Seu saldo caiu 5% em relação ao mês passado</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• Você perdeu dinheiro entre os dias 23 e 27 deste mês</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• Pix foi o pagamento mais usado</p>
@@ -325,8 +326,8 @@ const EvolucaoSaldo = () => {
 };
 
 const InsightCard = ({ label, text }) => (
-    <div className="group bg-white/[0.03] border border-white/10 lg:p-2 p-2 rounded-xl min-h-[80px] w-full flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
-        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-[0.1em] mb-1 ">
+    <div className="group bg-white/[0.03]  border border-white/10 md:p-2 p-2 rounded-xl min-h-[80px] w-full flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
+        <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.1em] mb-1 ">
             {label}
         </p>
         <p className="text-sm font-medium text-gray-200 leading-tight group-hover:text-white transition-colors ">
@@ -334,24 +335,52 @@ const InsightCard = ({ label, text }) => (
         </p>
     </div>
 );
+const StatBox = ({ label, value, span, variants }) => {
+  // Define o que é considerado "vazio" para um sistema novo
+  const isEmpty = value === "0.000" || value === "--" || value === 0 || !value;
 
-const StatBox = ({ label, value, span, variants }) => (
+  // Frases personalizadas e mais profissionais
+  const getEmptyState = (label) => {
+    const map = {
+      "Vendas recebidas": "Sem dados",
+      "Despesas pagas": "Sem dados",
+      "Total movimentado": "Sem registros",
+      "Saldo final": "Nenhuma movimentação",
+    };
+    return map[label] || "Aguardando dados";
+  };
+
+  return (
     <motion.div
-        variants={variants}
-        className="relative bg-[#262626] border border-white/10 lg:px-3 px-2 py-3 rounded-xl w-full  cursor-default transition-all duration-500 hover:border-[#1fba11]/30 hover:shadow-[0_0_20px_rgba(31,186,17,0.1)]"
+      variants={variants}
+      className="relative bg-[#262626] border border-white/5 h-[80px] flex flex-col justify-center px-2 rounded-2xl w-full cursor-default transition-all duration-500 hover:border-green-500/20"
     >
-
-        {span && (
-            <span className="absolute  lg:text-2xl text-2xl text-[#1fba11] lg:px-18 px-20 ">
-                {span}
-            </span>
-        )}
-
-
-        <p className="md:text-[25px] text-2xl font-semibold text-white mb-1 ">{value}</p>
-        <p className="tracking-wider text-neutral-400 font-medium ">{label}</p>
-
+      {isEmpty ? (
+        <div className="flex flex-col">
+          <span className="text-neutral-500 text-lg font-medium italic leading-tight">
+            {getEmptyState(label)}
+          </span>
+          {/* O label original fica bem pequeno e discreto em baixo */}
+          <span className="text-[10px] uppercase text-neutral-600 mt-1 tracking-tighter">
+            {label}
+          </span>
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1">
+             <p className="text-2xl md:text-3xl font-semibold text-gray-200 tracking-tight">
+              {value}
+            </p>
+            {span && <span className="text-[#1fba11] text-2xl md:text-3xl font-medium">{span}</span>}
+          </div>
+          <p className="text-[10px] md:text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">
+            {label}
+          </p>
+        </div>
+      )}
     </motion.div>
-);
+  );
+};
+
 
 export default EvolucaoSaldo;
