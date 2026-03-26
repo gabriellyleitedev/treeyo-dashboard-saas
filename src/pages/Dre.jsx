@@ -3,6 +3,7 @@ import { Sun, Moon, Search, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../components/NotificationBell';
+import DRECard from '../components/DRE/DRECard';
 
 // --- Componentes Auxiliares (Caso não estejam em arquivos separados) ---
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => (
@@ -34,8 +35,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1 }
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
 };
 
 const Dre = () => {
@@ -69,7 +70,7 @@ const Dre = () => {
     };
 
     return (
-        <div className="w-full flex-1 lg:h-screen min-h-screen overflow-x-hidden flex flex-col lg:pb-0 pb-24 transition-colors duration-300">
+        <div className="w-full flex-1 lg:h-screen min-h-screen overflow-x-hidden flex flex-col lg:pb-0 pb-24 transition-all duration-500 ease-in-out">
             <div className="max-w-[1400px] flex flex-col w-full px-3 sm:px-6 md:px-0 lg:px-8 relative mx-auto">
 
                 {/* LUZ VERDE TOPO */}
@@ -181,8 +182,39 @@ const Dre = () => {
                     <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
 
-                    {/* O CONTEÚDO DO RELATÓRIO ENTRA AQUI */}
-   
+                    {/* CONTENT */}
+
+                    {/* SEÇÃO DE CARDS */}
+                    <motion.div  variants={itemVariants} className="w-full flex flex-col gap-4 md:gap-6">
+<div className="grid grid-cols-2 gap-4 md:gap-4 max-w-[640px] md:pt-4 pt-6 ">
+    <DRECard 
+        title="Entradas" 
+        
+        value="R$ 12.235" 
+        type="entry" 
+        percentage="+14%" 
+    />
+    <DRECard 
+        title="Impostos" 
+        value="R$ 6.813" 
+        type="exit" 
+        percentage="-2%" 
+    />
+    <DRECard 
+        title="Lucro" 
+        value="R$ 5.422" 
+        type="profit" 
+        percentage="+8%" 
+    />
+    <DRECard 
+        title="Saúde" 
+        value="44,3%" 
+        type="health" 
+        percentage="Excelente" 
+    />
+</div>
+
+                    </motion.div>
                 </motion.div>
             </div>
         </div>
