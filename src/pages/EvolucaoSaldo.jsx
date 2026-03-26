@@ -6,7 +6,6 @@ import NotificationBell from "../components/NotificationBell";
 import ConfirmModal from "../components/ConfirmModal";
 import SaldoMiniChart from "../components/SaldoMiniChart";
 
-// Variantes de animação idênticas às enviadas
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -188,7 +187,6 @@ const EvolucaoSaldo = () => {
                     </AnimatePresence>
                 </div>
 
-
                 <motion.div
                     className="w-full h-full flex flex-col"
                     initial="hidden"
@@ -206,7 +204,7 @@ const EvolucaoSaldo = () => {
                         onClose={() => setModalOpen(false)}
                     />
 
-                    {/* HEADER DESKTOP - EXATAMENTE COMO O ENVIADO */}
+                    {/* HEADER DESKTOP */}
                     <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={itemVariants}>
                         <div>
                             <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
@@ -257,14 +255,14 @@ const EvolucaoSaldo = () => {
 
                     {/* BLOCO INFERIOR */}
                     <div className="mt-8 flex w-full ">
-                        <div className=" flex flex-col lg:flex-row gap-12 xl:gap-4 w-full pt-16 lg:max-w-full transition-all duration-500">
+                        <div className=" flex flex-col lg:flex-row gap-12 xl:gap-4 w-full pt-16 items-center  transition-all duration-500">
 
 
                             {/* COLUNA ESQUERDA*/}
                             <motion.div
                                 variants={itemVariants}
                                 className=" relative w-full  md:max-w-[360px] 
-                                min-h-[300px] border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
+                                h-fit border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
                             >
                                 <div className="absolute inset-0 bg-green-500/10 blur-3xl"></div>
                                 <div
@@ -284,7 +282,7 @@ const EvolucaoSaldo = () => {
                                     </h2>
 
 
-                                    <div className="grid grid-cols-2 sm:grid-cols-2  gap-4 font-semibold cursor-default">
+                                    <div className="grid grid-cols-2 gap-4 font-semibold cursor-default">
                                         <InsightCard label="Fluxo" text="Você identificou onde mais gastou dinheiro" />
                                         <InsightCard label="Custos" text="Você reduziu 20% dos seus gastos" />
                                         <InsightCard label="Despesas" text="Você economizou 15% nas suas despesas" />
@@ -296,11 +294,11 @@ const EvolucaoSaldo = () => {
                             {/* COLUNA DIREITA - RESULTADO */}
                             <motion.div
                                 variants={itemVariants}
-                                className="w-full lg:flex-1 flex flex-col pt-6 gap-6 transition-all duration-500 "
+                                className="w-full lg:flex-1 flex flex-col justify-between pt-6 md:pt-0 gap-6 transition-all duration-500 "
                             >
                                 <div>
-                                    <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-4">Resultado</h3>
-                                    <div className="grid grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-4 ">
+                                    <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-2 ">Resultado</h3>
+                                    <div className="grid grid-cols-2  2xl:grid-cols-4 gap-4 ">
                                         <StatBox label="Vendas recebidas" value={dadosAtuais.vendas} variants={itemVariants} />
                                         <StatBox label="Despesas pagas" value={dadosAtuais.despesas} variants={itemVariants} />
                                         <StatBox label="Total movimentado" value={dadosAtuais.total} span="$" variants={itemVariants} />
@@ -308,7 +306,7 @@ const EvolucaoSaldo = () => {
                                     </div>
                                 </div>
 
-                                <motion.div variants={itemVariants} className="text-sm text-neutral-400 space-y-2  cursor-pointer">
+                                <motion.div variants={itemVariants} className="text-sm mt-auto text-neutral-400 space-y-2  cursor-pointer">
                                     <p className="hover:text-gray-200 transition-all duration-300">• Seu saldo caiu 5% em relação ao mês passado</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• Você perdeu dinheiro entre os dias 23 e 27 deste mês</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• Pix foi o pagamento mais usado</p>
@@ -326,7 +324,7 @@ const EvolucaoSaldo = () => {
 };
 
 const InsightCard = ({ label, text }) => (
-    <div className="group bg-white/[0.03]  border border-white/10 md:p-2 p-2 rounded-xl min-h-[80px] w-full flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
+    <div className="group bg-white/[0.03]  border border-white/10 md:p-2 p-2 rounded-xl min-h-[80px] hyphens-auto w-full flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
         <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.1em] mb-1 ">
             {label}
         </p>
@@ -336,50 +334,48 @@ const InsightCard = ({ label, text }) => (
     </div>
 );
 const StatBox = ({ label, value, span, variants }) => {
-  // Define o que é considerado "vazio" para um sistema novo
-  const isEmpty = value === "0.000" || value === "--" || value === 0 || !value;
+    const isEmpty = value === "0.000" || value === "--" || value === 0 || !value;
 
-  // Frases personalizadas e mais profissionais
-  const getEmptyState = (label) => {
-    const map = {
-      "Vendas recebidas": "Sem dados",
-      "Despesas pagas": "Sem dados",
-      "Total movimentado": "Sem registros",
-      "Saldo final": "Nenhuma movimentação",
+    const getEmptyState = (label) => {
+        const map = {
+            "Vendas recebidas": "Sem dados",
+            "Despesas pagas": "Sem dados",
+            "Total movimentado": "Sem registros",
+            "Saldo final": "Nenhuma movimentação",
+        };
+        return map[label] || "Aguardando dados";
     };
-    return map[label] || "Aguardando dados";
-  };
 
-  return (
-    <motion.div
-      variants={variants}
-      className="relative bg-[#262626] border border-white/5 h-[80px] flex flex-col justify-center px-2 rounded-2xl w-full cursor-default transition-all duration-500 hover:border-green-500/20"
-    >
-      {isEmpty ? (
-        <div className="flex flex-col">
-          <span className="text-neutral-500 text-lg font-medium italic leading-tight">
-            {getEmptyState(label)}
-          </span>
-          {/* O label original fica bem pequeno e discreto em baixo */}
-          <span className="text-[10px] uppercase text-neutral-600 mt-1 tracking-tighter">
-            {label}
-          </span>
-        </div>
-      ) : (
-        <div className="flex flex-col">
-          <div className="flex items-center gap-1">
-             <p className="text-2xl md:text-3xl font-semibold text-gray-200 tracking-tight">
-              {value}
-            </p>
-            {span && <span className="text-[#1fba11] text-2xl md:text-3xl font-medium">{span}</span>}
-          </div>
-          <p className="text-[10px] md:text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">
-            {label}
-          </p>
-        </div>
-      )}
-    </motion.div>
-  );
+    return (
+        <motion.div
+            variants={variants}
+            className="relative bg-[#262626] border border-white/5 h-[100px] flex flex-col justify-center px-2 rounded-2xl w-full cursor-default transition-all duration-500 hover:border-green-500/20 md:pb-6 "
+        >
+            {isEmpty ? (
+                <div className="flex flex-col">
+                    <span className="text-neutral-500 text-lg font-medium italic leading-tight">
+                        {getEmptyState(label)}
+                    </span>
+
+                    <span className="text-[10px] uppercase text-neutral-600 mt-1 tracking-tighter">
+                        {label}
+                    </span>
+                </div>
+            ) : (
+                <div className="flex flex-col">
+                    <div className="flex items-center gap-1">
+                        <p className="text-2xl md:text-3xl font-semibold text-gray-200 tracking-tight">
+                            {value}
+                        </p>
+                        {span && <span className="text-[#1fba11] text-2xl md:text-3xl font-medium">{span}</span>}
+                    </div>
+                    <p className="text-[10px] md:text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">
+                        {label}
+                    </p>
+                </div>
+            )}
+        </motion.div>
+    );
 };
 
 

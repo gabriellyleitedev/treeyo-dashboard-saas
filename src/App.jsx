@@ -4,6 +4,7 @@ import VisaoGeral from './pages/VisaoGeral'
 import Movimentacao from './pages/Movimentacao'
 import EvolucaoSaldo from './pages/EvolucaoSaldo'
 import Lancamento from './pages/Lancamento'
+import Dre from './pages/Dre'
 import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "./context/NotificationContext";
 import { useState } from 'react';
@@ -28,7 +29,7 @@ function App() {
 
             <Route path="/lancamento" element={<Lancamento />} />
             <Route path="/evolucao-saldo" element={<EvolucaoSaldo />} />
-            <Route path='/resultado' element={<div className="text-white p-10">Página Resultado em breve...</div>} />
+            <Route path='/resultado' element={<Dre/>} />
             <Route path='/fluxo-projetado' element={<div className="text-white p-10">Página Fluxo de Caixa Projetado em breve...</div>} />
             <Route path='/configuracoes' element={<div className="text-white p-10">Página Configurações em breve...</div>} />
           </Route>

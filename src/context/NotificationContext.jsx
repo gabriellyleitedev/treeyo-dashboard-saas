@@ -6,7 +6,8 @@ export const NotificationProvider = ({ children }) => {
   const [notificacoes, setNotificacoes] = useState({
     geral: [],
     lancamentos: [],
-    saldo: []
+    saldo: [],
+    dre: []
   });
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -44,7 +45,8 @@ export const NotificationProvider = ({ children }) => {
       setNotificacoes({
         geral: dados.geral || [],
         lancamentos: dados.lancamentos || [],
-        saldo: dados.saldo || []
+        saldo: dados.saldo || [],
+        dre: dados.dre || []
       });
     }
     setIsLoaded(true);
@@ -80,7 +82,7 @@ export const NotificationProvider = ({ children }) => {
     <NotificationContext.Provider
       value={{
         notificacoes,
-        adicionarNotificacao,
+        adicionarNotificacao, 
         marcarTodasComoLidas,
         limparNotificacoes
       }}

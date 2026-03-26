@@ -3,12 +3,9 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Calendar, X } from "lucide-react";
 import { a } from "framer-motion/client";
 
-// --- FORMULÁRIO DE CALENDÁRIO (Consertado e Estilizado) ---
 function CalendarPicker({ onSelect }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-
-  // Função para aplicar máscara de data (dd/mm/aaaa) conforme digita
   const handleDateChange = (value, setter) => {
     const v = value.replace(/\D/g, '').slice(0, 8);
     if (v.length >= 5) setter(`${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`);
@@ -29,17 +26,17 @@ function CalendarPicker({ onSelect }) {
       <div className="flex flex-col gap-2 text-left">
         <label className="text-[11px] text-neutral-500 uppercase font-semibold tracking-widest">A partir do dia:</label>
         <div className="relative">
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="00/00/0000"
             value={startDate}
             onChange={(e) => handleDateChange(e.target.value, setStartDate)}
             className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#1fba11] transition-all cursor-pointer"
           />
-          {/* Luz ao redor do ícone */}
+
           <div className="absolute right-4 top-3 pointer-events-none">
-             <div className="absolute inset-0 bg-[#1fba11]/40 blur-[8px] rounded-full" />
-             <Calendar className="relative text-[#1fba11]" size={18} />
+            <div className="absolute inset-0 bg-[#1fba11]/40 blur-[8px] rounded-full" />
+            <Calendar className="relative text-[#1fba11]" size={18} />
           </div>
         </div>
       </div>
@@ -47,22 +44,22 @@ function CalendarPicker({ onSelect }) {
       <div className="flex flex-col gap-2 text-left">
         <label className="text-[11px] text-neutral-500 uppercase font-semibold tracking-widest">Até o dia:</label>
         <div className="relative">
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="00/00/0000"
             value={endDate}
             onChange={(e) => handleDateChange(e.target.value, setEndDate)}
             className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#1fba11] transition-all cursor-pointer"
           />
-          {/* Luz ao redor do ícone */}
+
           <div className="absolute right-4 top-3 pointer-events-none">
-             <div className="absolute inset-0 bg-[#1fba11]/40 blur-[8px] rounded-full" />
-             <Calendar className="relative text-[#1fba11]" size={18} />
+            <div className="absolute inset-0 bg-[#1fba11]/40 blur-[8px] rounded-full" />
+            <Calendar className="relative text-[#1fba11]" size={18} />
           </div>
         </div>
       </div>
 
-      <button 
+      <button
         onClick={handleAplicar}
         className="w-full py-4 mt-2 bg-[#1fba11] text-black font-semibold rounded-2xl hover:shadow-[0_0_20px_rgba(31,186,17,0.2)] transition-all duration-300 cursor-pointer active:scale-95"
       >
@@ -72,7 +69,6 @@ function CalendarPicker({ onSelect }) {
   );
 }
 
-// --- CONFIGURAÇÕES E DADOS ---
 const formatCurrency = (value) =>
   value.toLocaleString("pt-BR", {
     style: "currency",
@@ -97,7 +93,7 @@ const data30d = [
 ];
 
 const dataCustomOriginal = [
-  { label: "Jan", day: "Janeiro", saldo: 4000 }, 
+  { label: "Jan", day: "Janeiro", saldo: 4000 },
   { label: "Jun", day: "Junho", saldo: 7642.83 }
 ];
 
@@ -129,145 +125,135 @@ export default function SaldoMiniChart({ range, setRange }) {
   const handleDateSelection = (start, end) => {
     setCustomLabel(`${start} - ${end}`);
     setRange("custom");
-    
+
     setFilteredCustomData([
       { label: start, day: "Início", saldo: 3500 },
       { label: "...", day: "Período Selecionado", saldo: 5200 },
       { label: end, day: "Fim", saldo: 7642.83 }
     ]);
-    
+
     handleClose();
   };
 
   const data = range === "7d" ? data7d : range === "30d" ? data30d : filteredCustomData;
 
-  
   const [hoverData, setHoverData] = useState(null);
   const [activeData, setActiveData] = useState(null);
 
   const hasData = data && data.length > 0;
-  
 
-const getSaudacao = () => {
+  const getSaudacao = () => {
 
-  // 🔥 7 DIAS (VOLTA PRO ESTILO BOM)
-  if (range === "7d") {
-    return (
-      <>
-        Boa, Gabrielly. Seu saldo fechou em{" "}
-        <span className="text-[#1fba11] font-bold">
-          {formatCurrency(data[data.length - 1].saldo)}
-        </span>. Continue nesse ritmo.
-      </>
-    );
-  }
-
-  // 🔥 30 DIAS (AGORA SIM: DIFERENTE + AÇÃO)
-  if (range === "30d") {
-
-    if (activeData && activeData.label) {
-
-      const index = data.findIndex(d => d.label === activeData.label);
-      const prev = data[index - 1];
-      const diff = prev ? activeData.saldo - prev.saldo : 0;
-
-      // 🚀 SEMANA 1
-      if (index === 0) {
-        return (
-          <>
-            Início forte:{" "}
-            <span className="text-[#1fba11] font-bold">
-              {formatCurrency(activeData.saldo)}
-            </span>. Agora valide o que mais vende.
-          </>
-        );
-      }
-
-      // 🚀 SEMANA 2
-      if (index === 1) {
-        return diff >= 0 ? (
-          <>
-            Boa evolução. Repita o que funcionou e corte o que travou.
-          </>
-        ) : (
-          <>
-            Queda detectada. Revise gastos e segure saídas agora.
-          </>
-        );
-      }
-
-      // 🚀 SEMANA 3
-      if (index === 2) {
-        return diff >= 0 ? (
-          <>
-            Ritmo consistente. Hora de escalar o que deu retorno.
-          </>
-        ) : (
-          <>
-            Oscilação. Ajuste rápido antes de impactar o mês.
-          </>
-        );
-      }
-
-      // 🚀 SEMANA 4
-      if (index === 3) {
-        return diff >= 0 ? (
-          <>
-            Fechamento forte. Mantenha esse padrão no próximo mês.
-          </>
-        ) : (
-          <>
-            Final fraco. Revise estratégia antes do novo ciclo.
-          </>
-        );
-      }
+    if (range === "7d") {
+      return (
+        <>
+          Boa, Gabrielly. Seu saldo fechou em{" "}
+          <span className="text-[#1fba11] font-bold">
+            {formatCurrency(data[data.length - 1].saldo)}
+          </span>. Continue nesse ritmo.
+        </>
+      );
     }
 
-    // 🧠 FRASE PADRÃO (ANTES DE INTERAGIR)
-    return (
-      <>
-        Incrível. Você gerou{" "}
-        <span className="text-[#1fba11] font-bold">
-          {formatCurrency(data[data.length - 1].saldo)}
-        </span> nos últimos 30 dias.
-      </>
-    );
-  }
+    if (range === "30d") {
 
-  if (range === "custom") {
+      if (activeData && activeData.label) {
 
-  const start = filteredCustomData[0];
-  const middle = filteredCustomData[1];
-  const end = filteredCustomData[2];
+        const index = data.findIndex(d => d.label === activeData.label);
+        const prev = data[index - 1];
+        const diff = prev ? activeData.saldo - prev.saldo : 0;
 
-  if (start && end) {
-    const diff = end.saldo - start.saldo;
+        if (index === 0) {
+          return (
+            <>
+              Início forte:{" "}
+              <span className="text-[#1fba11] font-bold">
+                {formatCurrency(activeData.saldo)}
+              </span>. Agora valide o que mais vende.
+            </>
+          );
+        }
 
-    if (diff > 0) {
-      return <>
-        De {customLabel}: crescimento de {formatCurrency(diff)}. 
-        Continue nesse ritmo!
-      </>;
+        if (index === 1) {
+          return diff >= 0 ? (
+            <>
+              Boa evolução. Repita o que funcionou e corte o que travou.
+            </>
+          ) : (
+            <>
+              Queda detectada. Revise gastos e segure saídas agora.
+            </>
+          );
+        }
+
+        if (index === 2) {
+          return diff >= 0 ? (
+            <>
+              Ritmo consistente. Hora de escalar o que deu retorno.
+            </>
+          ) : (
+            <>
+              Oscilação. Ajuste rápido antes de impactar o mês.
+            </>
+          );
+        }
+
+        if (index === 3) {
+          return diff >= 0 ? (
+            <>
+              Fechamento forte. Mantenha esse padrão no próximo mês.
+            </>
+          ) : (
+            <>
+              Final fraco. Revise estratégia antes do novo ciclo.
+            </>
+          );
+        }
+      }
+
+      return (
+        <>
+          Incrível. Você gerou{" "}
+          <span className="text-[#1fba11] font-bold">
+            {formatCurrency(data[data.length - 1].saldo)}
+          </span> nos últimos 30 dias.
+        </>
+      );
     }
 
-    if (diff < 0) {
-      return <>
-         De {customLabel}: queda de {formatCurrency(Math.abs(diff))}. 
-        Revise gastos nesse período.
-      </>;
+    if (range === "custom") {
+
+      const start = filteredCustomData[0];
+      const middle = filteredCustomData[1];
+      const end = filteredCustomData[2];
+
+      if (start && end) {
+        const diff = end.saldo - start.saldo;
+
+        if (diff > 0) {
+          return <>
+            De {customLabel}: crescimento de {formatCurrency(diff)}.
+            Continue nesse ritmo!
+          </>;
+        }
+
+        if (diff < 0) {
+          return <>
+            De {customLabel}: queda de {formatCurrency(Math.abs(diff))}.
+            Revise gastos nesse período.
+          </>;
+        }
+
+        return <>
+          De {customLabel}: saldo estável.
+          Hora de testar melhorias.
+        </>;
+      }
+
+      return <> Período selecionado: {customLabel}</>;
     }
-
-    return <>
-      De {customLabel}: saldo estável. 
-      Hora de testar melhorias.
-    </>;
-  }
-
-  return <> Período selecionado: {customLabel}</>;
-}
-
-  return "";
-};
+    return "";
+  };
 
   return (
     <div className="w-full md:p-4 p-0 flex flex-col text-gray-200 font-sans md:bg-black/20 md:border md:border-[#1fba11]/20 md:rounded-[22px] overflow-hidden">
@@ -278,14 +264,10 @@ const getSaudacao = () => {
 
       <div className="flex flex-col md:flex-row gap-8 items-stretch w-full">
         <div className="w-full h-64 lg:h-[160px] md:h-[200px] relative overflow-hidden">
-
           <div className="absolute left-7 top-[-30px] bottom-[30px] w-[1.5px] bg-gradient-to-b from-transparent via-white/20 to-transparent z-10" />
-         
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 20, right: 45, left: 30, bottom: 10 }}
 
-           
->
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data} margin={{ top: 20, right: 45, left: 30, bottom: 10 }}>
               <defs>
                 <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1fba11" stopOpacity={0.6} />
@@ -302,7 +284,7 @@ const getSaudacao = () => {
                   if (active && payload && payload.length) {
 
                     const currentData = payload[0].payload;
-                    if (currentData !==activeData?.label) {
+                    if (currentData !== activeData?.label) {
                       setActiveData(currentData);
                     }
                     const index = data.indexOf(currentData);
@@ -321,7 +303,7 @@ const getSaudacao = () => {
                           </p>
                           {diff !== null && (
                             <p className={`text-[11px] font-bold flex items-center gap-1 ${diff >= 0 ? "text-[#1fba11]" : "text-red-500"}`}>
-                              {diff >= 0 ? "↑" : "↓"} {Math.abs(diff).toFixed(1)}% 
+                              {diff >= 0 ? "↑" : "↓"} {Math.abs(diff).toFixed(1)}%
                               <span className="text-neutral-400 font-normal">{comparativoTexto}</span>
                             </p>
                           )}
@@ -364,9 +346,9 @@ const getSaudacao = () => {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={handleClose} />
           <div className="relative z-10 w-full max-w-md bg-[#161616]/20 backdrop-blur-md border border-white/10 rounded-[32px] p-6 shadow-2xl">
+
             {/* --- LUZ VERDE (GLOW) --- */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/25 rounded-full blur-[90px] pointer-events-none" />
-            
             <div className="flex justify-between items-center mb-6 px-2">
               <div className="text-left">
                 <h4 className="text-gray-200 font-medium md:text-xl">Filtrar Períodos</h4>
