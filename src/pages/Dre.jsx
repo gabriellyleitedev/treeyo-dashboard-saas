@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../components/NotificationBell';
 import DRECard from '../components/DRE/DRECard';
+import DREChart from '../components/DRE/DREChart';
 
 // --- Componentes Auxiliares (Caso não estejam em arquivos separados) ---
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => (
@@ -181,38 +182,42 @@ const Dre = () => {
 
                     <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
-
-                    {/* CONTENT */}
-
                     {/* SEÇÃO DE CARDS */}
-                    <motion.div  variants={itemVariants} className="w-full flex flex-col gap-4 md:gap-6">
-<div className="grid grid-cols-2 gap-4 md:gap-4 max-w-[640px] md:pt-4 pt-6 ">
-    <DRECard 
-        title="Entradas" 
-        
-        value="R$ 12.235" 
-        type="entry" 
-        percentage="+14%" 
-    />
-    <DRECard 
-        title="Impostos" 
-        value="R$ 6.813" 
-        type="exit" 
-        percentage="-2%" 
-    />
-    <DRECard 
-        title="Lucro" 
-        value="R$ 5.422" 
-        type="profit" 
-        percentage="+8%" 
-    />
-    <DRECard 
-        title="Saúde" 
-        value="44,3%" 
-        type="health" 
-        percentage="Excelente" 
-    />
-</div>
+                    <motion.div variants={itemVariants} className="w-full flex flex-col gap-4 md:gap-6">
+
+                        <div className="flex flex-col lg:flex-row gap-6 w-full items-stretch">
+
+                        <div className="grid grid-cols-2 gap-4 md:gap-4 max-w-[640px] md:pt-4 pt-6 ">
+                            <DRECard
+                                title="Entradas"
+                                value="R$ 12.235"
+                                type="entry"
+                                percentage="+14%"
+                            />
+                            <DRECard
+                                title="Impostos"
+                                value="R$ 6.813"
+                                type="exit"
+                                percentage="-2%"
+                            />
+                            <DRECard
+                                title="Lucro"
+                                value="R$ 5.422"
+                                type="profit"
+                                percentage="+8%"
+                            />
+                            <DRECard
+                                title="Saúde"
+                                value="44,3%"
+                                type="health"
+                                percentage="Excelente"
+                            />
+                        </div>
+
+          <div className="w-full h-full flex-1 ">
+        <DREChart />
+    </div>
+    </div>
 
                     </motion.div>
                 </motion.div>
