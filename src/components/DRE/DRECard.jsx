@@ -46,6 +46,14 @@ const DRECard = ({ title, value, type, percentage }) => {
             {/* Glow de fundo */}
             <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl opacity-10 ${currentStyle.bg}`} />
 
+            <div className="absolute inset-0 z-0 opacity-20"
+                style={{
+                    backgroundImage: `radial-gradient(circle, #ffffff 0.8px, transparent 0.8px)`,
+                    backgroundSize: '24px 24px',
+                    maskImage: 'radial-gradient(circle at center, black, transparent 90%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 90%)'
+                }}
+            />
             <div className="flex flex-col md:gap-0 gap-4 !-mt-2">
                 <div className="flex items-center justify-between">
                     <span className="text-neutral-400 text-[10px] md:text-xs font-medium uppercase tracking-widest leading-none ">

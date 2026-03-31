@@ -18,8 +18,7 @@ function formatarDataCurta(dataISO) {
 }
 
 const container = {
-    hidden: { opacity: 0 },
-    visible: {
+    hidden: { opacity: 0 }, visible: {
         opacity: 1,
         transition: { staggerChildren: 0.12, delayChildren: 0.1 },
     },
@@ -41,12 +40,12 @@ const Lancamento = () => {
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
 
     const [tipoAtivo, setTipoAtivo] = useState("Entrada");
-    const [busca, setBusca] = useState("");
+    const [busca, setBusca] = useState(""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    const [isDarkMode, setIsDarkMode] = useState(true); // Guarda se a tela está no modo claro ou escuro
     const [diaSelecionado, setDiaSelecionado] = useState(new Date().getDate());
 
-    const [lista, setLista] = useState(() => {
+    const [lista, setLista] = useState(() => { // Array (gaveta) mais importante!
         const salvos = localStorage.getItem("@treeyo:lancamentos");
         return salvos ? JSON.parse(salvos) : [];
     });
@@ -66,7 +65,7 @@ const Lancamento = () => {
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-    const listaGeral = React.useMemo(() => {
+    const listaGeral = React.useMemo(() => { // UseMemo é como uma memória de rascunho
         return lista
             .filter((item) => {
 
@@ -271,7 +270,7 @@ const Lancamento = () => {
                                     tipoSelecionado={tipoAtivo}
                                     aoConfirmar={(novo) => {
 
-                                        setLista(prev => [novo, ...prev]);
+                                        setLista(prev => [novo, ...prev]); // Inserção (inserido) no array é o O(n)
 
                                         let tipoNotif = "info";
 
@@ -325,6 +324,7 @@ const Lancamento = () => {
                     <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll relative pt-6 md:pt-4">
                         <AnimatePresence mode="popLayout" initial={false}>
                             {listaGeral.length > 0 ? (
+
                                 listaGeral.map((item) => {
                                     const isEntrada = item.tipo === 'Entrada';
                                     const isSaida = item.tipo === 'Saída';
