@@ -215,9 +215,9 @@ const Dre = () => {
                                 />
                             </div>
 
-                            <div className="w-full h-full flex-1 ">
+                              <motion.div variants={itemVariants} className="w-full md:pt-4 pt-2 flex-1 h-full transition-all duration-500">  
                                 <DREChart />
-                            </div>
+                            </motion.div>
 
                         </div>
 
