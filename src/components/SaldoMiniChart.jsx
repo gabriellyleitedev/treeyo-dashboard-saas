@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Calendar, X } from "lucide-react";
-import { a } from "framer-motion/client";
 
 function CalendarPicker({ onSelect }) {
   const [startDate, setStartDate] = useState('');

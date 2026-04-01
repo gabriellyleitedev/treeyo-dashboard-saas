@@ -1,7 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip } from "recharts";
 import { Cell } from "recharts";
+
+const mesAtual = new Date().getMonth() // Obtém o mês atual (0-11) Array
+
+const cores = {
+    atual: "#1fba11",
+    passado: "#4ade80",
+    futuro: "#2a2a2a"
+}
 
 const data = [
     { mes: "Jan", saldo: 2000 },
@@ -10,7 +18,20 @@ const data = [
     { mes: "Abr", saldo: 3000 },
 ]
 
+const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="bg-gray-800 text-white p-2 rounded">
+                <p className="text-xs text-neutral-400">{label}</p>
+                <p className="text-sm text-gray-200 font-semibold">
+                    R$ {payload[0].value}</p>
+            </div>
+        )
+    }
+    return null
+}
 const DREChart = () => {
+
     return (
         <div className="flex flex-col overflow-hidden w-full">
             <div className="text-gray-200 text-xs">
@@ -27,16 +48,39 @@ const DREChart = () => {
                             left: 20,
                             bottom: 5
                         }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="mes" />
-                        <YAxis />
 
-                        <Bar dataKey="saldo">
-                            
+                        <defs>
+                            <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.1} />
+                                <stop offset="95%" stopColor="#22c55e" stopOpacity={0.2} />
+                            </linearGradient>
+                        </defs>
+                        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+
+                        <XAxis
+                            dataKey="mes"
+                            stroke="#777"
+                            tickLine={false} // Remove "tracinhos" inúteis
+                            axisLine={false} // Remove linha base feia (eixo X)
+                        />
+                        <YAxis
+                            stroke="#777"
+                            tickLine={false}
+                            axisLine={false}
+                        />
+
+                        <Tooltip content={<CustomTooltip />} cursor={false} />
+
+                        <Bar dataKey="saldo" radius={[6, 6, 0, 0]} barSize={60} isAnimationActive={true} animationDuration={800}>
+                            {data.map((entry, index) => (
+                                <Cell key={index} fill={ // Define a cor da barra com base no mês atual
+                                    index === mesAtual ? "url(#colorGreen)" : index > mesAtual ? cores.futuro : cores.passado
+                                } />
+                            ))}
+
                         </Bar>
-                        
 
-                    </BarChart> 
+                    </BarChart>
                 </ResponsiveContainer>
             </div>
         </div>
