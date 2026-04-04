@@ -2,8 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, LabelList, ResponsiveContainer, CartesianGrid, Tooltip } from "recharts";
 import { Cell } from "recharts";
-import { style } from "framer-motion/client";
-import { pt } from "date-fns/locale";
+
 
 const mesAtual = new Date().getMonth() // Obtém o mês atual (0-11) Array
 
@@ -14,10 +13,11 @@ const cores = {
 }
 
 const data = [
-    { mes: "Jan", saldo: 2100 }, { mes: "Fev", saldo: 2500 }, { mes: "Mar", saldo: 1800 },
-    { mes: "Abr", saldo: 2800 }, { mes: "Mai", saldo: 2200 }, { mes: "Jun", saldo: 2600 },
-    { mes: "Jul", saldo: 2300 }, { mes: "Ago", saldo: 2500 }, { mes: "Set", saldo: 2100 },
-    { mes: "Out", saldo: 2400 }, { mes: "Nov", saldo: 2700 }, { mes: "Dez", saldo: 3000 },
+    { mes: "Jan", saldo: 2100 },
+    { mes: "Fev", saldo: 2500 },
+    { mes: "Mar", saldo: 1800 },
+    { mes: "Abr", saldo: 2800 },
+    { mes: "Mai", saldo: 2200 },
 ]
 
 const mesAtivoIndex = 3;
@@ -38,17 +38,20 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 // Componente para renderizar o ponto de luz (DOT) 
 const RenderCustomLabel = (props) => {
-    const { x, y, width, index } = props;
+    const { x, y, width, index, value } = props;
     if (index !== mesAtivoIndex) return null;
 
     return (
         <g>
-            {/* Brilho externo (glow) */}
-            <circle cx={x + width / 2} cy={y + 10} r={6} fill="#1fba11" filter="url(#dotGlow)" />
-            {/* Ponto branco central nítido */}
-            <circle cx={x + width / 2} cy={y + 10} r={2.5} fill="white" />
+            {/* O círculo branco precisa ser pequeno (r=2 ou 3) para parecer um brilho real */}
+            <circle cx={x + width / 2} cy={y} r={3} fill="white" filter="url(#dotGlow)" />
 
+            {/* Texto fixo: Comunicação direta sem depender de hover */}
+            <text x={x + width / 2} y={y - 15} fill="white" fontSize="12" textAnchor="middle" fontWeight="bold">
+                R$ {value.toLocaleString()}
+            </text>
         </g>
+
     )
 }
 const DREChart = () => {
@@ -77,8 +80,8 @@ const DREChart = () => {
                                 <stop offset="100%" stopColor="#1fba11" stopOpacity={0} />
                             </linearGradient>
 
-                            <filter id="glow" x="-50%" y="-20%" width="200%" height="160%">
-                                <feGaussianBlur stdDeviation="6" result="blur" />
+                            <filter id="dotGlow" x="-50%" y="-20%" width="200%" height="160%">
+                                <feGaussianBlur stdDeviation="2" result="blur" />
                                 <feMerge>
                                     <feMergeNode in="blur" />
                                     <feMergeNode in="SourceGraphic" />
@@ -96,12 +99,12 @@ const DREChart = () => {
 
                         <Tooltip content={<CustomTooltip />} cursor={false} />
 
-                        <Bar dataKey="saldo" radius={[6, 6, 0, 0]} barSize={40} isAnimationActive={true} animationDuration={800}>
-                            {data.map((entry, index) => (
+                        <Bar dataKey="saldo" radius={[8, 8, 0, 0]} barSize={48}>
+                            {/* O Recharts vai iterar sobre os dados e passar as coordenadas para sua função */}
+                            <LabelList content={<RenderCustomLabel  />} />
 
-                                <Cell key={index}
-                                    // ID correto aqui: barGradient
-                                    fill={index === mesAtivoIndex ? "url(#barGradient)" : "rgba(255,255,255,0.05)"}
+                            {data.map((entry, index) => (
+                                <Cell key={index} fill={index === mesAtivoIndex ? "url(#barGradient)" : "rgba(255,255,255,0.05)"}
                                     stroke={index === mesAtivoIndex ? "none" : "rgba(255,255,255,0.02)"}
                                     strokeWidth={1}
                                     style={{
@@ -109,8 +112,8 @@ const DREChart = () => {
                                         transition: "all 0.5s ease"
                                     }}
                                 />
-                            ))}
 
+                            ))}
                         </Bar>
 
                     </BarChart>

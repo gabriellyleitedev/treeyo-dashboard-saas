@@ -54,7 +54,7 @@ export default function CardsStack() {
 
   return (
     <div className="relative w-full md:max-w-[360px] max-w-[320px] h-full transition-all duration-300 ease-in-out">
-      <div className="px-2  md:px-2 p-6 pt-0 md:p-3.5">
+      <div className="px-2 md:px-2 p-6 pt-0 md:p-3.5">
         <h1 className="text-gray-200 font-normal text-2xl ">
           Fila Inteligente
         </h1>

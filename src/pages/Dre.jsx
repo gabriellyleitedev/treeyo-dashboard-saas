@@ -185,9 +185,9 @@ const Dre = () => {
                     {/* SEÇÃO DE CARDS */}
                     <motion.div variants={itemVariants} className="w-full flex flex-col gap-4 md:gap-6">
 
-                        <div className="flex flex-col lg:flex-row gap-6 w-full ">
+                        <div className="flex flex-col lg:flex-cols-2 gap-12 w-full ">
 
-                            <div className="grid grid-cols-2 gap-4 md:gap-4 md:pt-4 pt-6 w-full md:max-w-[700px] lg:w-[450px] justify-center">
+                            <div className="grid grid-cols-4 gap-4 md:gap-4 md:pt-4 pt-6 w-full justify-center">
     
                                 <DRECard
                                     title="Entradas"

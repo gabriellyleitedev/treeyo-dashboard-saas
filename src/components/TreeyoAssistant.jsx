@@ -3,12 +3,12 @@ import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {
     return (
-        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-4 lg:pt-6 ">
+        <div className="flex flex-col md:justify-start w-full md:items-start items-center p-6">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden  w-full
+            <div className="relative overflow-hidden w-full
             md:max-w-[300px] md:min-h-[360px] 
-            lg:w-[310px] lg:min-h-[330px] 
+            lg:w-[310px] lg:min-h-[320px] 
             max-w-[280px] 
             min-h-[340px] 
 
@@ -29,15 +29,15 @@ const TreeyoAssistant = () => {
 
                 <div className="relative z-10 flex flex-col h-full">
 
-                    <div className="flex-1 flex flex-col justify-end py-4 px-4 lg:px-5 lg:py-6">
+                    <div className="flex-1 flex flex-col justify-end py-4 px-4 lg:px-5 lg:py-5">
                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1fba11] to-[#0d5c08] flex items-center justify-center shadow-[0_0_30px_rgba(31,186,17,0.5)]">
                             <Sparkles className="text-white w-7 h-7" />
                         </div>
                     </div>
 
                     {/* TEXTO */}
-                    <div className="mt-auto md:py-6 md:px-5 px-4 pb-4 lg:py-3 lg:pt-0">
-                        <h3 className="text-white text-xl font-bold leading-tight">
+                    <div className="mt-auto md:py-6 md:px-5 px-5 pb-4 lg:py-3 lg:pt-0">
+                        <h3 className="text-white text-xl md:!-mt-1 pt-1 font-bold leading-tight">
                             <h1>Smart IA Assistente</h1>
                             <span className="text-[#1fba11] ">Sem Complicação</span>
                         </h3>

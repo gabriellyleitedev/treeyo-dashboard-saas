@@ -134,10 +134,9 @@ function VisaoGeral() {
                         <CardsStack />
                     </div>
 
-                
-
-                    <div className="lg:col-span-4 flex flex-col self-start lg:pt-[12rem] pt-[14rem] md:pt-4">
-                      
+                    {/* COLUNA DIREITA */}
+                    <div className="lg:col-span-4 flex flex-col lg:!-mt-16 pt-[16rem] self-start md:pt-4 lg:!ml-8 items-center lg:items-start gap-16 lg:gap-0">
+                        <RemindersPanel />
                         <TreeyoAssistant />
                     </div>
 
