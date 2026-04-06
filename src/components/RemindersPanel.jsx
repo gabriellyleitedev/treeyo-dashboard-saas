@@ -40,7 +40,7 @@ export default function RemindersPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-[300px] !ml-4">
+    <div className="flex flex-col gap-4 w-full max-w-[300px] md:max-w-[320px]  md:pl-3 mx-auto md:mx-0">
 
       {/* HEADER */}
       <div className="flex items-center justify-between px-1">
@@ -48,7 +48,7 @@ export default function RemindersPanel() {
           Lembretes
         </span>
 
-        <button className="text-gray-400 hover:text-white transition duration-300">
+        <button className="text-gray-200 hover:text-[#1fba11] transition duration-300 border border-gray-200 hover:border-[#1fba11] rounded-md w-6 h-6 flex items-center justify-center">
           <Plus size={14} />
         </button>
       </div>

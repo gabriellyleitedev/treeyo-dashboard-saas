@@ -69,7 +69,7 @@ function VisaoGeral() {
             <section className="md:px-8 pt-6 w-full max-w-[1600px] mx-auto">
 
                 {/* TÍTULO */}
-                <div className="block pb-6 md:pb-4 px-4">
+                <div className="block pb-6 md:pb-4 md:p-0 px-4">
                     <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px]">
                         Visão Geral
                     </h1>
@@ -84,7 +84,7 @@ function VisaoGeral() {
                         <div className="flex flex-col  md:flex-row gap-6 lg:gap-16 w-full items-center md:items-start">
 
                             <div className=" 
-                           w-full max-w-[320px] md:max-w-[280px] lg:max-w-[320px] h-[180px] mx-auto md:mx-0 flex-shrink-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
+                                w-full max-w-[320px] md:max-w-[280px] lg:max-w-[300px] h-[180px] mx-auto md:mx-0 flex-shrink-0 rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
                                 <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
                                 <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
                                 <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
@@ -117,7 +117,7 @@ function VisaoGeral() {
                             </div>
 
                             {/* FILA INTELIGENTE */}
-                            <div className="hidden md:flex flex-col flex-auto min-w-[320px] max-w-[360px] lg:translate-x-6 md:-translate-y-16 lg:-translate-y-15">
+                            <div className="hidden md:flex flex-col flex-1 min-w-[300px] lg:translate-x-6 md:-translate-y-16 lg:-translate-y-15">
                                 <CardsStack />
                             </div>
                         </div>
@@ -135,7 +135,7 @@ function VisaoGeral() {
                     </div>
 
                     {/* COLUNA DIREITA */}
-                    <div className="lg:col-span-4 flex flex-col lg:!-mt-16 pt-[16rem] self-start md:pt-4 lg:!ml-8 items-center lg:items-start gap-16 lg:gap-0">
+                    <div className="lg:col-span-4 flex flex-col lg:flex-col flex-1 md:flex-row self-start lg:!-mt-16 pt-[16rem] items-center md:items-start md:pt-4 md:gap-0 gap-12 lg:pl-6">
                         <RemindersPanel />
                         <TreeyoAssistant />
                     </div>
