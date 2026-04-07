@@ -22,7 +22,7 @@ const DRECard = ({ title, value, type, percentage }) => {
         },
         profit: {
             icon: <DollarSign size={18} />,
-            color: "text-[#1fba11]",
+            color: "text-[#1fba11]/50",
             bg: "bg-green-500/10",
             border: "group-hover:border-green-500/50",
             label: "Lucro Líquido"
@@ -71,7 +71,7 @@ const DRECard = ({ title, value, type, percentage }) => {
             </div>
 
             <div className="mt-2">
-                <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-none">
+                <h2 className="text-xl md:text-3xl font-semibold text-white tracking-tight leading-none">
                     {value}
                 </h2>
                 {percentage && (

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../components/NotificationBell';
 import DRECard from '../components/DRE/DRECard';
 import DREChart from '../components/DRE/DREChart';
+import DRELine from '../components/DRE/DRELine';    
 
 // --- Componentes Auxiliares (Caso não estejam em arquivos separados) ---
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => (
@@ -218,14 +219,19 @@ const Dre = () => {
                               <motion.div variants={itemVariants} className="w-full md:pt-4 pt-2 flex-grow h-full transition-all duration-500">  
                                 <DREChart />
                             </motion.div>
-
                         </div>
-
+                        
+                        <motion.div variants={itemVariants} className="w-full flex flex-col gap-4">
+                            <DRELine />
+                        </motion.div>
+                  
                     </motion.div>
                 </motion.div>
+            
             </div>
         </div>
     );
-};
+}
+
 
 export default Dre;
