@@ -26,48 +26,42 @@ const mesAtivoIndex = 3;
 
 
 const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    const dateStr = `${label} 23, 2026`; 
-    const cashflow = payload[0].value;
-    
-    return (
-      <div className="relative z-[9999] ml-6">
-        {/* AJUSTE DA LUZ: 
-           1. bg-[#1c1c1e]/80 para o blur passar melhor.
-           2. shadow-white/5 cria o "halo" de luz branca.
-           3. ring-1 ring-white/10 dá o brilho na borda.
-        */}
-        <div className="relative
-  bg-[#0d0d0e]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 
+    if (active && payload && payload.length) {
+        const dateStr = `${label} 23, 2026`;
+        const cashflow = payload[0].value;
+
+        return (
+            <div className="relative z-[9999] ml-6">
+                  <div className="relative bg-[#0d0d0e]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 
                         shadow-[0_-20px_80px_-20px_rgba(255,255,255,0.20)]">
-          
-          <p className="text-[11px] text-neutral-500 font-medium mb-3 tracking-tight">
-            {dateStr}
-          </p>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center gap-6">
-              <span className="text-[12px] text-neutral-400">Cashflow</span>
-              <span className="text-[13px] text-white font-bold tracking-tight">
-                ${cashflow.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-              </span>
+                    <p className="text-[11px] text-neutral-500 font-medium mb-3 tracking-tight">
+                        {dateStr}
+                    </p>
+
+                    <div className="flex flex-col gap-2">
+                        <div className="flex justify-between items-center gap-6">
+                            <span className="text-[12px] text-neutral-400">Cashflow</span>
+                            <span className="text-[13px] text-white font-bold tracking-tight">
+                                ${cashflow.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                            </span>
+                        </div>
+
+                        <div className="flex justify-between items-center gap-6">
+                            <span className="text-[12px] text-neutral-400">Inflow</span>
+                            <span className="text-[12px] text-red-400 font-medium">
+                                -$7,456.00
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Seta com a mesma cor do fundo para não parecer solta */}
+                <div className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-[#1c1c1e] border-l border-b border-white/10 rotate-45" />
             </div>
-
-            <div className="flex justify-between items-center gap-6">
-              <span className="text-[12px] text-neutral-400">Inflow</span>
-              <span className="text-[12px] text-red-400 font-medium">
-                -$7,456.00
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Seta com a mesma cor do fundo para não parecer solta */}
-        <div className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-[#1c1c1e] border-l border-b border-white/10 rotate-45" />
-      </div>
-    );
-  }
-  return null;
+        );
+    }
+    return null;
 };
 
 const RenderCustomLabel = (props) => {
@@ -113,9 +107,9 @@ const DREChart = () => {
                             left: 10,
                             bottom: 10
                         }}
-                        
-                        >
-                        
+
+                    >
+
 
                         <defs>
                             <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
@@ -146,13 +140,13 @@ const DREChart = () => {
                             axisLine={false} // Remove linha base feia (eixo X)
                         />
 
-                  <Tooltip
+                        <Tooltip
                             content={<CustomTooltip />}
                             cursor={{ fill: "none" }}
                             wrapperStyle={{ outline: "none" }}
                             filterNull={true}
 
-/>
+                        />
 
                         <Bar dataKey="saldo" radius={[8, 8, 0, 0]} barSize={48}>
                             {/* O Recharts vai iterar sobre os dados e passar as coordenadas para sua função */}

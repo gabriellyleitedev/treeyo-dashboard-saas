@@ -184,11 +184,12 @@ const Dre = () => {
                     <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
                     {/* SEÇÃO DE CARDS */}
-                    <motion.div variants={itemVariants} className="w-full flex flex-col gap-4 md:gap-6">
+                    <motion.div variants={itemVariants} className="w-full flex lg:flex-row
+                     flex-col gap-4 md:gap-6">
 
-                        <div className="flex gap-12 w-full lg:flex-row flex-col">
+                        <div className="flex gap-12 w-full flex-col">
 
-                            <div className="grid grid-cols-2 gap-4 md:gap-4 md:pt-4 pt-6 w-full justify-center">
+                            <div className="grid grid-cols-2 gap-4 md:gap-0 md:pt-4 pt-6 w-full rounded-2xl border border-white/10 overflow-hidden justify-center">
     
                                 <DRECard
                                     title="Entradas"

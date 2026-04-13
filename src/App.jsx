@@ -8,6 +8,8 @@ import Dre from './pages/Dre'
 import { Toaster } from "react-hot-toast";
 import { NotificationProvider } from "./context/NotificationContext";
 import { useState } from 'react';
+import { Analytics } from '@vercel/analytics/react';
+
 
 function App() {
 
@@ -35,6 +37,8 @@ function App() {
           </Route>
         </Routes>
       </NotificationProvider>
+
+      <Analytics />
 
       {/* Toast global */}
       <Toaster

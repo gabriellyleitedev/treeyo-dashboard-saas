@@ -14,7 +14,7 @@ const DRECard = ({ title, value, type, percentage }) => {
             label: "Faturamento Bruto"
         },
         exit: {
-            icon: <ArrowDownRight size={18} />,
+            icon: <ArrowDownRight size={18}  />,
             color: "text-red-400",
             bg: "bg-red-500/10",
             border: "group-hover:border-red-500/50",
@@ -41,7 +41,7 @@ const DRECard = ({ title, value, type, percentage }) => {
     return (
         <motion.div
             whileHover={{ y: -3 }}
-            className={`group p-4 rounded-[22px] w-full bg-[#1a1a1a]/40 backdrop-blur-md border border-white/5 transition-all duration-300 ${currentStyle.border} relative overflow-hidden flex flex-col justify-between`}
+            className={`group p-6 w-full bg-[#121212]/50 backdrop-blur-md border-r border-b border-white/5 transition-all duration-300 ${currentStyle.border} relative overflow-hidden flex flex-col justify-between`}
         >
             {/* Glow de fundo */}
             <div className={`absolute -right-4 -top-4 w-16 h-16 rounded-full blur-2xl opacity-10 ${currentStyle.bg}`} />
