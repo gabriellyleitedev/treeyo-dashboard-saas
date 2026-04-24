@@ -38,7 +38,7 @@ function App() {
         </Routes>
       </NotificationProvider>
 
-      <Analytics />
+      <Analytics /> 
 
       {/* Toast global */}
       <Toaster

@@ -3,7 +3,7 @@ import { Sun, Moon, Search, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../components/NotificationBell';
-import DRECard from '../components/DRE/DRECard';
+import DRECard from '../components/DRE/DRECard'; 
 import DREChart from '../components/DRE/DREChart';
 import DRELine from '../components/DRE/DRELine';    
 
@@ -142,7 +142,7 @@ const Dre = () => {
                     />
 
                     {/* HEADER DESKTOP */}
-                    <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={itemVariants}>
+                    <motion.header className="sticky top-2 z-50 flex flex-row items-center justify-between w-[calc(100%-1rem)] mx-auto h-16 px-6 rounded-2xl border border-white/5 bg-[#121212]/60 backdrop-blur-xl shadow-xl transition-all duration-300" variants={itemVariants}>
                         <div>
                             <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
                                 <span className="text-neutral-400 font-normal"> Dashboard / </span> Relatório de Resultado
@@ -189,31 +189,36 @@ const Dre = () => {
 
                         <div className="flex gap-12 w-full flex-col">
 
-                            <div className="grid grid-cols-2 gap-4 md:gap-0 md:pt-4 pt-6 w-full rounded-2xl border border-white/10 overflow-hidden justify-center">
+                            <div className="grid grid-cols-2 gap-4 md:gap-0 md:pt-4 pt-6 w-full rounded-2xl justify-center">
+
     
                                 <DRECard
                                     title="Entradas"
                                     value="R$ 12.235"
                                     type="entry"
                                     percentage="+14%"
+                                    position="top-left"
                                 />
                                 <DRECard
                                     title="Impostos"
                                     value="R$ 6.813"
                                     type="exit"
                                     percentage="-2%"
+                                    position="top-right"
                                 />
                                 <DRECard
                                     title="Lucro"
                                     value="R$ 5.422"
                                     type="profit"
                                     percentage="+8%"
+                                    position="bottom-left"
                                 />
                                 <DRECard
                                     title="Saúde"
                                     value="44,3%"
                                     type="health"
                                     percentage="Excelente"
+                                    position="bottom-right"
                                 />
                             </div>
 

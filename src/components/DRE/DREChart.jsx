@@ -91,10 +91,6 @@ const DREChart = () => {
                     <h1 className="text-gray-200 font-medium">Saldo liquído</h1>
                     <p className="text-neutral-400 text-xs">Saldo Liquído da DRE</p>
                 </div>
-                <div>
-                    <h1 className="text-gray-200 text-2xl md:text-3xl px-4"><span className="text-[#1fba11]">$ </span>5.422,00</h1>
-                </div>
-
             </div>
 
             <div className="w-full h-[200px] ">
