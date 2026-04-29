@@ -1,4 +1,4 @@
-# Treeyo - Dashboard SaaS 🚀
+# Treeyo - Dashboard SaaS 
 
 A Treeyo é um ecossistema financeiro projetado para simplificar a vida do Microempreendedor Individual. O foco é transformar a complexidade da gestão de fluxo de caixa, faturamento, entradas e saídas em uma experiência visual intuitiva e eficiente.
 
@@ -40,12 +40,9 @@ O que você encontrará aqui agora:
 
 ### 📅 Roadmap de Desenvolvimento (Back-end)
 A próxima fase do projeto consistirá na transformação da interface em uma aplicação Full Stack:
-- [ ] **Integração com .NET / C#:** Construção de uma API robusta para gerenciamento de dados.
+- [ ] **Integração com Node.JS:** Construção de uma API robusta para gerenciamento de dados.
 - [ ] **Autenticação:** Sistema de login seguro e controle de permissões.
 - [ ] **Persistência:** Modelagem e integração com banco de dados SQL.
 
 ---
 
-### 📫 Contato
-[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](SEU_LINK_DO_LINKEDIN)
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/SEU_USER)
