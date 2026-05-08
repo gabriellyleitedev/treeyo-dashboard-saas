@@ -19,7 +19,9 @@ const DRECard = ({ value, type, percentage, isMain }) => {
                 ${isMain 
                     ? 'bg-gradient-to-br from-[#1fba11]/60 backdrop-blur-md  to-[#168a0d] shadow-[0_20px_40px_rgba(31,186,17,0.25)]' 
                     : 'bg-black/20 border border-white/10 shadow-[0_10px_20px_rgba(0,0,0,0.04)]'
-                }`}
+                }`
+                
+            }
         >
             {/* Conteúdo Superior */}
             <div className="p-5">

@@ -5,12 +5,14 @@ import NotificationBell from "./NotificationBell";
 
 
 const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
-  const [diaSelecionado, setDiaSelecionado] = useState(new Date().getDate());
+  const [dataSelecionada, setDataSelecionada] = useState(new Date());
 
   const handleDateChange = (dateString) => {
-    const dia = new Date(dateString + 'T00:00:00').getDate();
-    setDiaSelecionado(dia);
+    const novaData = new Date(dateString + 'T00:00:00');
+    setDataSelecionada(novaData);
   };
+
+  const diaParaExibir = dataSelecionada.getDate();
 
   return (
     <header className="sticky top-0 z-50 w-full px-4 md:px-0 pt-4 md:pt-0 md:-mt-8 transition-all duration-300">
@@ -33,7 +35,8 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
             </div>
             <div className="flex items-center gap-1">
               <span className="text-white font-base text-sm">Olá Gabi!</span>
-              <ChevronDown size={16} className={`text-neutral-400 border border-white/10 rounded-full w-5 h-5 transition-transform hover:scale-110 ${isMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={16}
+                className={`text-neutral-400 border border-white/10 rounded-full w-5 h-5 transition-transform hover:scale-110 ${isMenuOpen ? 'rotate-180' : ''}`} />
             </div>
           </button>
 
@@ -61,7 +64,7 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
               <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 relative">
                 <Calendar size={24} className="text-gray-200" strokeWidth={1.5} />
                 <span className="absolute top-[50%] text-[9px] font-bold text-[#1fba11]/90 leading-none tracking-tighter">
-                  {diaSelecionado}
+                  {diaParaExibir}
                 </span>
               </div>
             }
@@ -72,7 +75,7 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
       </div>
 
       {/* ESTRUTURA NOTEBOOK */}
-      <div className="hidden md:flex items-center justify-between bg-transparent px-0 py-4">
+      <div className="hidden md:flex items-center justify-between border border-white/10 rounded-full bg-[#1a1a1a]/10 backdrop-blur-md px-4 py-4">
         <div className="flex items-center gap-2">
           <div className="bg-[#1fba11]/10 p-2 rounded-lg">
             <LayoutDashboard size={28} className="text-[#1fba11]" />
@@ -87,7 +90,7 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
           <div className='relative'>
             <CalendarPicker
               onChange={handleDateChange}
-              value={`2026-02-${String(diaSelecionado).padStart(2, '0')}`}
+              value={dataSelecionada.toISOString().split('T')[0]}
             />
           </div>
         </div>

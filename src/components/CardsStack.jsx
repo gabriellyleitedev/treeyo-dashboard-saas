@@ -54,8 +54,8 @@ export default function CardsStack() {
 
   return (
     <div className="relative w-full md:max-w-[360px] max-w-[320px] h-full transition-all duration-300 ease-in-out">
-      <div className="px-2 md:px-2 p-6 pt-0 md:p-3.5">
-        <h1 className="text-gray-200 font-normal text-2xl ">
+      <div className="px-4 md:px-0 p-6 md:p-4">
+        <h1 className="text-gray-200 font-normal text-2xl">
           Fila Inteligente
         </h1>
       </div>
@@ -126,7 +126,7 @@ function ActionBlock({ icon, title, status, action, color, isTop }) {
     <div
       className={`
         relative rounded-2xl border border-white/10 bg-[#0b0b0b] transition-all duration-300
-        ${isTop ? "p-2 h-auto" : "p-3 h-[64px] sm:h-[56px] opacity-40"} 
+        ${isTop ? "p-2 h-auto" : "p-4 h-[64px] sm:h-[56px] opacity-70"} 
       `}
       style={{
         boxShadow: isTop
@@ -146,10 +146,10 @@ function ActionBlock({ icon, title, status, action, color, isTop }) {
         }}
       />
 
-      <div className="relative z-10 flex flex-col gap-2">
+      <div className="relative z-10 flex flex-col gap-4">
 
         {/* Header */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div
             className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{ backgroundColor: `${color}22`, color }}
@@ -157,7 +157,7 @@ function ActionBlock({ icon, title, status, action, color, isTop }) {
             {icon}
           </div>
 
-          <h3 className="text-white font-semibold text-base ">
+          <h3 className="text-white font-semibold text-base">
             {title}
           </h3>
         </div>
@@ -165,18 +165,18 @@ function ActionBlock({ icon, title, status, action, color, isTop }) {
         {/* Conteúdo — só aparece no card ativo */}
         {isTop && (
           <>
-            <div className="flex flex-col gap-3 text-sm text-zinc-400 ">
+            <div className="flex flex-col gap-2 text-sm text-zinc-400">
               {Array.isArray(status)
                 ? status.map((line, i) => <p key={i}>{line}</p>)
                 : <p>{status}</p>}
             </div>
 
             <button
-              className="mt-2 flex items-center gap-3 text-sm font-medium transform  duration-300 transition-transform cursor-pointer"
+              className="mt-4 flex items-center gap-4 text-sm font-medium transform duration-300 transition-transform cursor-pointer"
               style={{ color }}
             >
 
-              <span className="flex items-center  ">{action}</span>
+              <span className="flex items-center">{action}</span>
               <ArrowRight size={16} />
             </button>
           </>
