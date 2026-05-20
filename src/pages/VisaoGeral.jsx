@@ -13,9 +13,7 @@ function VisaoGeral() {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
     const { adicionarNotificacao } = useNotifications();
-
     const hasChecked = React.useRef(false);
 
     React.useEffect(() => {
@@ -121,12 +119,11 @@ function VisaoGeral() {
 
                     <div className="lg:col-span-4 flex flex-col gap-12 md:gap-2 pt-12 lg:pt-12 lg:!-mt-24">
 
-                        {/* VERSÃO MOBILE (Flex no mobile, escondido a partir de lg) */}
+                        {/* VERSÃO MOBILE */}
                         <div className="flex lg:hidden justify-center pb-64 ">
                             <CardsStack />
                         </div>
 
-                        {/* Os outros componentes seguem a ordem natural abaixo do Card no Mobile */}
                         <RemindersPanel />
                         <TreeyoAssistant />
                     </div>

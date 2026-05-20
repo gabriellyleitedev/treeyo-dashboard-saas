@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../components/NotificationBell';
 import DRECard from '../components/DRE/DRECard';
 import DREChart from '../components/DRE/DREChart';
-import DRELine from '../components/DRE/DRELine';
+import DRETable from '../components/DRE/DRETable';
 
-// --- Componentes Auxiliares (Caso não estejam em arquivos separados) ---
 const ConfirmModal = ({ isOpen, onClose, onConfirm, title, message }) => (
     <AnimatePresence>
         {isOpen && (
@@ -43,8 +42,6 @@ const itemVariants = {
 
 const Dre = () => {
     const navigate = useNavigate();
-
-    // --- Estados ---
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [searchAberto, setSearchAberto] = useState(false);
     const [busca, setBusca] = useState("");
@@ -221,7 +218,7 @@ const Dre = () => {
 
 
                         <motion.div variants={itemVariants} className="w-full flex flex-col gap-4">
-                            <DRELine />
+                            <DRETable />
                         </motion.div>
 
                     </motion.div>

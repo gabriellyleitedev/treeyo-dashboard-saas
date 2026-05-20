@@ -33,7 +33,7 @@ export default function RemindersPanel() {
 
   const handleSaveReminder = (newReminder) => {
     setReminders((prev) => [newReminder, ...prev]);
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
 
   const toggleReminder = (e, id) => {
@@ -56,8 +56,8 @@ export default function RemindersPanel() {
         </button>
       </div>
 
-      <div className="relative flex-1 bg-[#121212]/60 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
-        <div className="h-full overflow-y-auto p-5 pr-2 custom-scrollbar flex flex-col gap-3 pb-24">
+      <div className="relative flex-1 bg-[#121212]/60 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
+        <div className="h-full overflow-y-auto p-5 pr-5 custom-scrollbar flex flex-col gap-3 pb-24">
           <AnimatePresence mode="popLayout" initial={false}>
             {reminders.length > 0 ? (
               reminders.map((reminder) => (
@@ -67,24 +67,24 @@ export default function RemindersPanel() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className={`relative cursor-pointer rounded-2xl border p-4 transition-all ${reminder.completed ? "bg-zinc-900/20 border-white/5 opacity-30" : "bg-white/[0.03] border-white/5 hover:border-white/10"
+                  className={`relative cursor-pointer rounded-xl border p-4 transition-all ${reminder.completed ? "bg-zinc-900/20 border-white/5 opacity-30" : "bg-white/[0.03] border-white/5 hover:border-white/10"
                     }`}
                   onClick={() => setExpandedId(expandedId === reminder.id ? null : reminder.id)}
                 >
                   <div
-                    className="absolute left-0 top-1/2 -translate-y-1/2 h-10 w-[3px] rounded-r-full"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 h-10 w-[3px] rounded-full"
                     style={{ backgroundColor: reminder.completed ? "#27272a" : (reminder.color || "#1fba11") }}
                   />
 
                   <div className="flex flex-col gap-1 ml-2">
-                    <div className="flex justify-between items-start w-full gap-2 text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">
-                     
+                    <div className="flex justify-between items-start w-full gap-2 text-[10px] font-medium text-neutral-400 uppercase tracking-wider mb-1">
+
                       {/* MOSTRA DATA E HORA SE EXISTIREM */}
                       <span>{reminder.date ? reminder.date.split('-').reverse().join('/') : ''}</span>
                       <span>{reminder.time || ''}</span>
                     </div>
 
-                    <span className={`text-[11px] font-bold uppercase break-anywhere leading-tight ${reminder.completed ? "text-zinc-600" : "text-[#1fba11]"} ${expandedId === reminder.id ? "" : "truncate"}`}>
+                    <span className={`text-[11px] font-medium uppercase break-anywhere leading-tight ${reminder.completed ? "text-zinc-600" : "text-[#1fba11]"} ${expandedId === reminder.id ? "" : "truncate"}`}>
                       {reminder.title}
                     </span>
 
@@ -108,8 +108,6 @@ export default function RemindersPanel() {
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0e0e0e] to-transparent pointer-events-none z-10" />
       </div>
 
-
-      {/* Substitua todo o bloco {isModalOpen && (...)} por apenas isso: */}
       <ReminderForm
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

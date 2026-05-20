@@ -1,172 +1,106 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { BarChart, Bar, XAxis, LabelList, ResponsiveContainer, CartesianGrid, Tooltip, YAxis } from "recharts";
-import { Cell } from "recharts";
-import { X } from "lucide-react";
-
-
-const mesAtual = new Date().getMonth() // Obtém o mês atual (0-11) Array
-
-const cores = {
-    atual: "#1fba11",
-    passado: "#4ade80",
-    futuro: "#2a2a2a"
-}
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, Cell } from 'recharts';
 
 const data = [
-    { mes: "Jan", saldo: 2100 },
-    { mes: "Fev", saldo: 2500 },
-    { mes: "Mar", saldo: 1800 },
-    { mes: "Abr", saldo: 2800 },
-    { mes: "Mai", saldo: 2200 },
-]
+  { mes: 'Jan', saldo: 1800 },
+  { mes: 'Fev', saldo: 2400 },
+  { mes: 'Mar', saldo: 1900 },
+  { mes: 'Abr', saldo: 2800 },
+  { mes: 'Mai', saldo: 2300 },
+  { mes: 'Jun', saldo: 3400 },
+];
 
-const mesAtivoIndex = 3;
+const maxSaldo = Math.max(...data.map(d => d.saldo));
+const activeIndex = data.findIndex(d => d.saldo === maxSaldo);
 
-
-
-const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-        const dateStr = `${label} 23, 2026`;
-        const cashflow = payload[0].value;
-
-        return (
-            <div className="relative z-[9999] ml-6">
-                  <div className="relative bg-[#0d0d0e]/80 backdrop-blur-md border border-white/10 rounded-2xl p-4 
-                        shadow-[0_-20px_80px_-20px_rgba(255,255,255,0.20)]">
-
-                    <p className="text-[11px] text-neutral-500 font-medium mb-3 tracking-tight">
-                        {dateStr}
-                    </p>
-
-                    <div className="flex flex-col gap-2">
-                        <div className="flex justify-between items-center gap-6">
-                            <span className="text-[12px] text-neutral-400">Cashflow</span>
-                            <span className="text-[13px] text-white font-bold tracking-tight">
-                                ${cashflow.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </span>
-                        </div>
-
-                        <div className="flex justify-between items-center gap-6">
-                            <span className="text-[12px] text-neutral-400">Inflow</span>
-                            <span className="text-[12px] text-red-400 font-medium">
-                                -$7,456.00
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Seta com a mesma cor do fundo para não parecer solta */}
-                <div className="absolute top-1/2 -left-1.5 -translate-y-1/2 w-3 h-3 bg-[#1c1c1e] border-l border-b border-white/10 rotate-45" />
-            </div>
-        );
-    }
-    return null;
+const CustomCursor = (props) => {
+  const { x, y, width } = props;
+  return (
+    <g>
+      <circle cx={x + width / 2} cy={y} r={6} fill="#fff" filter="drop-shadow(0 0 8px #1fba11)" />
+      <rect x={x} y={y} width={width} height={400} fill="rgba(255,255,255,0.02)" />
+    </g>
+  );
 };
 
-const RenderCustomLabel = (props) => {
-    const { x, y, width, index, value } = props;
-    if (index !== mesAtivoIndex) return null;
-
-    return (
-        <g>
-            {/* O círculo branco precisa ser pequeno (r=2 ou 3) para parecer um brilho real */}
-            <circle cx={x + width / 2} cy={y} r={3} fill="white" filter="url(#dotGlow)" />
-
-            {/* Texto fixo: Comunicação direta sem depender de hover */}
-            <text x={x + width / 2} y={y - 15} fill="white" fontSize="12" textAnchor="middle" fontWeight="bold">
-                R$ {value.toLocaleString()}
-            </text>
-        </g>
-
-    )
-}
-
 const DREChart = () => {
-
-    return (
-        <div className="flex flex-col overflow-hidden w-full bg-black/20 border border-white/5 rounded-[22px] p-4 ">
-            <div className="flex justify-between items-center pb-4">
-                <div>
-                    <h1 className="text-gray-200 font-medium">Saldo liquído</h1>
-                    <p className="text-neutral-400 text-xs">Saldo Liquído da DRE</p>
-                </div>
+  return (
+    <div className="w-full h-full rounded-[32px] border border-white/5 bg-[#0d0f10] p-8 shadow-2xl overflow-hidden">
+      <div className="mb-10 flex items-start justify-between">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-[3px] text-gray-500">Cash Flow</span>
+          <div className="mt-2 flex items-center gap-4">
+            <h2 className="text-4xl font-bold text-white">R$ 540.323,45</h2>
+            <div className="flex items-center gap-1 rounded-full bg-[#1fba11]/10 px-2 py-1 text-[10px] font-bold text-[#1fba11]">
+              <span>+12.5%</span>
             </div>
-
-            <div className="w-full h-[200px] ">
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                        data={data}
-                        margin={{
-                            top: 30,
-                            right: 20,
-                            left: 10,
-                            bottom: 10
-                        }}
-
-                    >
-
-
-                        <defs>
-                            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#1fba11" stopOpacity={1} />
-                                <stop offset="50%" stopColor="#1fba11" stopOpacity={0.2} />
-                                <stop offset="100%" stopColor="#1fba11" stopOpacity={0} />
-                            </linearGradient>
-
-                            <linearGradient id="offGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor="#fff" stopOpacity={0.15} />
-                                <stop offset="100%" stopColor="#fff" stopOpacity={0} />
-                            </linearGradient>
-
-                            <filter id="dotGlow" x="-50%" y="-20%" width="200%" height="160%">
-                                <feGaussianBlur stdDeviation="2" result="blur" />
-                                <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                            </filter>
-                        </defs>
-                        <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
-
-                        <XAxis
-                            dataKey="mes"
-                            stroke="#777"
-                            tickLine={false} // Remove "tracinhos" inúteis
-                            axisLine={false} // Remove linha base feia (eixo X)
-                        />
-
-                        <Tooltip
-                            content={<CustomTooltip />}
-                            cursor={{ fill: "none" }}
-                            wrapperStyle={{ outline: "none" }}
-                            filterNull={true}
-
-                        />
-
-                        <Bar dataKey="saldo" radius={[8, 8, 0, 0]} barSize={48}>
-                            {/* O Recharts vai iterar sobre os dados e passar as coordenadas para sua função */}
-                            <LabelList dataKey="saldo" content={<RenderCustomLabel />} />
-
-                            {data.map((entry, index) => (
-                                <Cell
-                                    fill={index === mesAtivoIndex ? "url(#barGradient)" : "url(#offGradient)"}
-                                    stroke={index === mesAtivoIndex ? "none" : "url(#offGradient)"}
-                                    strokeWidth={1}
-                                    style={{
-                                        filter: index === mesAtivoIndex ? "url(#glow)" : "none",
-                                        transition: "all 0.5s ease"
-                                    }}
-                                />
-
-                            ))}
-                        </Bar>
-
-                    </BarChart>
-                </ResponsiveContainer>
-            </div>
+          </div>
         </div>
-    )
-}
+
+        <div className="flex gap-2 rounded-xl bg-white/5 p-1">
+          <button className="rounded-lg px-4 py-2 text-[11px] font-bold text-gray-400">Monthly</button>
+          <button className="rounded-lg bg-[#1fba11] px-4 py-2 text-[11px] font-bold text-white shadow-[0_0_20px_rgba(31,186,17,0.4)]">Yearly</button>
+        </div>
+      </div>
+
+      <div className="h-[320px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 20, right: 0, left: -45, bottom: 0 }}>
+            <defs>
+              {/* GRADIENTE DA BARRA ATIVA: MAIS VOLUME E BRILHO */}
+              <linearGradient id="treeyoActiveGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1fba11" stopOpacity={1} />
+                <stop offset="40%" stopColor="#1fba11" stopOpacity={0.6} />
+                <stop offset="100%" stopColor="#1fba11" stopOpacity={0.05} />
+              </linearGradient>
+
+              {/* GRADIENTE DAS BARRAS INATIVAS */}
+              <linearGradient id="treeyoInactiveGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.15)" stopOpacity={1} />
+                <stop offset="100%" stopColor="rgba(255,255,255,0.02)" stopOpacity={1} />
+              </linearGradient>
+
+              {/* FILTRO DE GLOW (BRILHO EXTERNO) */}
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
+
+            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.03)" strokeDasharray="0" />
+
+            <XAxis
+              dataKey="mes"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: '#4b5563', fontSize: 12, fontWeight: 600 }}
+              dy={15}
+            />
+
+            <YAxis axisLine={false} tickLine={false} hide />
+
+            <Tooltip
+              cursor={<CustomCursor />}
+              content={() => null}
+            />
+            {/* BARRAS */}
+            <Bar dataKey="saldo" radius={[12, 12, 0, 0]} barSize={55}>
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={index === activeIndex ? 'url(#treeyoActiveGradient)' : 'url(#treeyoInactiveGradient)'}
+                  style={{
+                    filter: index === activeIndex ? 'url(#glow)' : 'none',
+                    transition: 'all 0.4s ease'
+                  }}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
 
 export default DREChart;

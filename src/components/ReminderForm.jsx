@@ -89,7 +89,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }) {
         className="bg-backdrop-blur-md border border-white/10 rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative z-10"
       >
         {/* --- LUZ VERDE (GLOW) --- */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/25 rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/20 rounded-full blur-[90px] pointer-events-none" />
         <div className="flex justify-between items-center pb-4">
           <h3 className=" text-gray-200 font-medium md:text-xl">Novo Lembrete</h3>
           <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors"><X size={20} /></button>
