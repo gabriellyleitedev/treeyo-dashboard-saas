@@ -2,9 +2,10 @@
 
 A Treeyo é um ecossistema financeiro projetado para simplificar a vida do Microempreendedor Individual. O foco é transformar a complexidade da gestão de fluxo de caixa, faturamento, entradas e saídas em uma experiência visual intuitiva e eficiente.
 
-### 🔗 Demonstração
+### Link do projeto:
 (https://treeyo-main-v2.vercel.app/)
-<img width="1919" height="902" alt="Captura de tela 2026-04-29 153203" src="https://github.com/user-attachments/assets/f0b69f1d-50ae-48f8-99e9-ae63aac47aa7" />
+<img width="1918" height="906" alt="image" src="https://github.com/user-attachments/assets/a98753c5-903b-4fe3-bd7a-69e4ef05db9f" />
+
 
 ---
 
