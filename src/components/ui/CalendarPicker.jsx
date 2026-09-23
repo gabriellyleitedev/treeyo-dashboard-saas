@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -13,33 +13,41 @@ const months = [
 
 const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
+// "2026-09-23" -> { year: 2026, month: 8, day: 23 } (null se inválida)
+function parseISO(value) {
+  if (!value) return null;
+  const parts = value.split('-');
+  if (parts.length !== 3) return null;
+  const [year, month, day] = [Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])];
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+  return { year, month, day };
+}
+
 export default function CalendarPicker({
   value,
   onChange,
-  isEditable = false,
   customTrigger
 }) {
-  const today = new Date();
   const ref = useRef(null);
+  const inicial = parseISO(value);
+  const today = new Date();
 
   const [open, setOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(today.getDate());
-  const [month, setMonth] = useState(today.getMonth());
-  const [year, setYear] = useState(today.getFullYear());
+  const [selectedDay, setSelectedDay] = useState(inicial?.day ?? today.getDate());
+  const [month, setMonth] = useState(inicial?.month ?? today.getMonth());
+  const [year, setYear] = useState(inicial?.year ?? today.getFullYear());
 
-  useEffect(() => {
-    if (!value) return;
-    const parts = value.split('-');
-    if (parts.length !== 3) return;
-    const y = Number(parts[0]);
-    const m = Number(parts[1]) - 1;
-    const d = Number(parts[2]);
-    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
-      setYear(y);
-      setMonth(m);
-      setSelectedDay(d);
+  // Quando o `value` vem de fora e muda, sincroniza o calendário
+  const [valueAnterior, setValueAnterior] = useState(value);
+  if (value !== valueAnterior) {
+    setValueAnterior(value);
+    const novo = parseISO(value);
+    if (novo) {
+      setYear(novo.year);
+      setMonth(novo.month);
+      setSelectedDay(novo.day);
     }
-  }, [value]);
+  }
 
   useEffect(() => {
     function handleClickOutside(e) {

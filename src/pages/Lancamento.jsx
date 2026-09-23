@@ -1,71 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Sun, Moon, Search, Trash2, ArrowLeft } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-hot-toast";
 import FormularioLancamento from '@/features/lancamentos/FormularioLancamento';
 import CardLancamento from '@/features/lancamentos/CardLancamento';
 import ConfirmModal from '@/components/ui/ConfirmModal';
-import { toast } from "react-hot-toast";
+import GlowTopo from '@/components/ui/GlowTopo';
+import { PageHeaderMobile, PageHeaderDesktop } from '@/components/layout/PageHeader';
 import { useNotifications } from '@/context/NotificationContext';
-import NotificationBell from '@/components/ui/NotificationBell';
-function formatarDataCurta(dataISO) {
-    if (!dataISO) return "";
-    if (dataISO.includes("/")) return dataISO;
-    const partes = dataISO.split("-");
-    if (partes.length !== 3) return dataISO;
-    const [ano, mes, dia] = partes;
-    return `${dia}/${mes}`;
-}
+import { useLancamentos } from '@/context/LancamentosContext';
+import { containerVariants, itemVariants, itemVariantsSutil } from '@/utils/animations';
+import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
 
-const container = {
-    hidden: { opacity: 0 }, visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.12, delayChildren: 0.1 },
-    },
-};
-
-const item = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
-};
+const TIPO_NOTIFICACAO = { "Entrada": "sucesso", "Saída": "aviso", "Investimento": "info" };
 
 const Lancamento = () => {
-    const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState(null);
 
     const [tipoAtivo, setTipoAtivo] = useState("Entrada");
     const [busca, setBusca] = useState(""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
-    const [isDarkMode, setIsDarkMode] = useState(true); // Guarda se a tela está no modo claro ou escuro
-    const [diaSelecionado, setDiaSelecionado] = useState(new Date().getDate());
-
-    const [lista, setLista] = useState(() => { // Array (gaveta) mais importante!
-        const salvos = localStorage.getItem("@treeyo:lancamentos");
-        return salvos ? JSON.parse(salvos) : [];
-    });
-
-    const [searchAberto, setSearchAberto] = useState(false);
-
+    const { lancamentos: lista, adicionarLancamento, removerLancamento } = useLancamentos();
     const { adicionarNotificacao } = useNotifications();
 
-    useEffect(() => {
-        localStorage.setItem("@treeyo:lancamentos", JSON.stringify(lista));
-    }, [lista]);
-
-    const handleDateChange = (dateString) => {
-        const dia = new Date(dateString + 'T00:00:00').getDate();
-        setDiaSelecionado(dia);
-    };
-
-    const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
-    const listaGeral = React.useMemo(() => { // UseMemo é como uma memória de rascunho
+    const listaGeral = useMemo(() => { // UseMemo é como uma memória de rascunho
         return lista
             .filter((item) => {
 
@@ -112,59 +71,17 @@ const Lancamento = () => {
     return (
         <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
 
-            {/* LUZ VERDE TOPO */}
-            <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12'></div>
+            <GlowTopo />
 
-            {/* HEADER MOBILE (Exclusivo Mobile) */}
-            <div className="md:hidden flex items-center justify-between px-4 py-0 relative pt-3 ">
-                <AnimatePresence mode="wait">
-                    {!searchAberto ? (
-                        <motion.div
-                            key="header-normal"
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="flex items-center justify-between w-full"
-                        >
-                            <div className="flex items-center gap-2">
-                                <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
-                                    <ArrowLeft size={22} />
-                                </button>
-                                <h1 className="text-gray-200 font-medium text-xl">Lançamentos</h1>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
-                                    <Search size={22} />
-                                </button>
-                                <NotificationBell modulo="lancamentos" />
-                            </div>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="search-active"
-                            initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-                            className="flex items-center gap-2 w-full"
-                        >
-                            <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
-                                <input
-                                    autoFocus
-                                    value={busca}
-                                    onChange={(e) => setBusca(e.target.value)}
-                                    placeholder="Buscar lançamentos..."
-                                    className="w-full bg-white/5 text-sm text-gray-200 py-2 pl-10 pr-4 rounded-full border border-green-500/30 focus:outline-none"
-                                />
-                            </div>
-                            <button
-                                onClick={() => { setSearchAberto(false); setBusca(""); }}
-                                className="text-xs font-medium text-neutral-400 uppercase px-2"
-                            >
-                                Cancelar
-                            </button>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
+            <PageHeaderMobile
+                titulo="Lançamentos"
+                busca={busca}
+                onBuscaChange={setBusca}
+                placeholder="Buscar lançamentos..."
+                modulo="lancamentos"
+            />
 
-            <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={container}>
+            <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={containerVariants}>
                 <ConfirmModal
                     isOpen={modalOpen}
                     title="Excluir lançamento?"
@@ -173,13 +90,13 @@ const Lancamento = () => {
                     onConfirm={() => {
                         if (itemParaExcluir) {
 
-                            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id));
+                            removerLancamento(itemParaExcluir.id);
 
                             adicionarNotificacao({
                                 modulo: "lancamentos",
                                 tipo: "aviso",
                                 titulo: "Lançamento removido",
-                                mensagem: `${itemParaExcluir.tipo} de R$ ${itemParaExcluir.valor} foi removido`
+                                mensagem: `${itemParaExcluir.tipo} de ${formatarMoeda(itemParaExcluir.valor)} foi removido`
                             });
 
                             setItemParaExcluir(null);
@@ -196,52 +113,20 @@ const Lancamento = () => {
 
                 />
 
-                {/* HEADER DESKTOP (md:flex) */}
-                <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={item}>
-                    <div>
-                        <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
-                            <span className="text-neutral-400 font-normal"> Dashboard / </span> Lançamento
-                        </h1>
-                    </div>
-                    <div className="flex items-center group relative">
-                        <Search className="absolute left-3 w-4 h-4 text-gray-200 group-focus-within:text-green-500 transition-colors z-10" />
-                        <input
-                            autoComplete="off"
-                            value={busca}
-                            onChange={(e) => setBusca(e.target.value)}
-                            type="text"
-                            placeholder="Buscar Lançamento..."
-                            style={{ paddingLeft: "2rem" }}
-                            className="bg-black/20 text-sm text-gray-200 pl-10 pr-4 py-2 rounded-full border border-white/10 w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
-                        />
-                    </div>
-                    <div className="ml-auto flex items-center gap-3 ">
+                <PageHeaderDesktop
+                    titulo="Lançamento"
+                    busca={busca}
+                    onBuscaChange={setBusca}
+                    placeholder="Buscar Lançamento..."
+                    modulo="lancamentos"
+                    variants={itemVariants}
+                />
 
-                        <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10 ">
-                            <button
-                                onClick={() => !isDarkMode && toggleTheme()}
-                                className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${!isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
-                            >
-                                <Sun size={16} />
-                            </button>
-                            <button
-                                onClick={() => isDarkMode && toggleTheme()}
-                                className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
-                            >
-                                <Moon size={16} />
-                            </button>
-                        </div>
-                        <div className="ml-auto flex items-center gap-3 ">
-                            <NotificationBell modulo="lancamentos" />
-                        </div>
-                    </div>
-                </motion.header>
-
-                <motion.div variants={item} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
+                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 
                 {/* Filtros de Tipo */}
                 <div className="shrink-0  pt-6 md:pt-4 md:px-3 relative z-20">
-                    <motion.div variants={item} className="flex justify-center md:justify-center xl:block w-full">
+                    <motion.div variants={itemVariants} className="flex justify-center md:justify-center xl:block w-full">
                         <div className="flex flex-col gap-3 items-center md:items-start w-full md:w-fit">
                             {["Entrada", "Saída", "Investimento"].map((tipo) => {
                                 const cores = getCoresDinamicas(tipo);
@@ -264,25 +149,19 @@ const Lancamento = () => {
 
                     {/* BLOCO DO FORMULÁRIO */}
                     <div className="shrink-0 w-full xl:w-auto">
-                        <motion.div variants={itemVariants}>
+                        <motion.div variants={itemVariantsSutil}>
                             <div className="flex justify-center xl:justify-end w-full px-4 pt-14 lg:px-0 lg:pr-4 xl:pr-10 xl:px-4">
                                 <FormularioLancamento
                                     tipoSelecionado={tipoAtivo}
                                     aoConfirmar={(novo) => {
 
-                                        setLista(prev => [novo, ...prev]); // Inserção (inserido) no array é o O(n)
-
-                                        let tipoNotif = "info";
-
-                                        if (novo.tipo === "Entrada") tipoNotif = "sucesso";
-                                        if (novo.tipo === "Saída") tipoNotif = "aviso";
-                                        if (novo.tipo === "Investimento") tipoNotif = "info";
+                                        adicionarLancamento(novo);
 
                                         adicionarNotificacao({
                                             modulo: "lancamentos",
-                                            tipo: tipoNotif,
+                                            tipo: TIPO_NOTIFICACAO[novo.tipo] || "info",
                                             titulo: "Novo lançamento registrado",
-                                            mensagem: `${novo.tipo} de ${Number(novo.valor || 0).toLocaleString("pt-BR", { style: 'currency', currency: 'BRL' })} adicionada`
+                                            mensagem: `${novo.tipo} de ${formatarMoeda(novo.valor)} adicionada`
                                         });
 
                                         toast.success("Lançamento registrado!");
@@ -295,7 +174,7 @@ const Lancamento = () => {
                     </div>
 
                     {/* BLOCO DO CARD */}
-                    <motion.div variants={itemVariants} className="w-full lg:flex-1 flex justify-center ">
+                    <motion.div variants={itemVariantsSutil} className="w-full lg:flex-1 flex justify-center ">
                         <div className="w-full items-center flex flex-col py-6 lg:py-12 lg:pl-4 xl:pl-44">
                             {listaGeral.length > 0 ? (
                                 <CardLancamento lancamento={listaGeral[0]} />
@@ -309,7 +188,7 @@ const Lancamento = () => {
 
                 </div>
 
-                <motion.div variants={itemVariants} className="w-full flex-1 min-h-0 flex flex-col px-0">
+                <motion.div variants={itemVariantsSutil} className="w-full flex-1 min-h-0 flex flex-col px-0">
 
                     <h1 className="text-gray-200 mb-6 font-medium tracking-wider uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
                         Últimos Lançamentos
@@ -347,10 +226,7 @@ const Lancamento = () => {
                                             {/* VALOR */}
                                             <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
                                                 {isEntrada ? '+ ' : isSaida ? '- ' : ''}
-                                                {new Intl.NumberFormat('pt-BR', {
-                                                    style: 'currency',
-                                                    currency: 'BRL'
-                                                }).format(item.valor || 0)}
+                                                {formatarMoeda(item.valor)}
                                             </span>
 
                                             <span className="text-neutral-400 truncate w-full max-w-[160px]">{item.categoria || "-"}</span>

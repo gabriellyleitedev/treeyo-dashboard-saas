@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, ArrowRight, History, BarChart2, Zap, Settings, Inbox } from "lucide-react";
+import { Search, X, ArrowRight, History, Inbox } from "lucide-react";
+import { NAV_ITEMS } from "@/constants/navigation";
+import { STORAGE_KEYS, lerStorage, salvarStorage } from "@/utils/storage";
+
+// Abas de sugestão
+const sugestoes = NAV_ITEMS
+  .filter((item) => item.sugestao)
+  .map((item) => ({ name: item.name, href: item.href, icon: <item.icon size={18} /> }));
 
 export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSistema = [] }) {
   const [query, setQuery] = useState("");
-  const [history, setHistory] = useState([]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("treeyo-history");
-    if (saved) setHistory(JSON.parse(saved));
-  }, []);
-
-  // Abas de sugestão 
-  const sugestoes = [
-    { name: 'Visão Geral', href: '/visao-geral', icon: <BarChart2 size={18} /> },
-    { name: 'Lançamento', href: '/lancamento', icon: <Zap size={18} /> },
-    { name: 'Configurações', href: '/configuracoes', icon: <Settings size={18} /> },
-  ];
+  const [history, setHistory] = useState(() => lerStorage(STORAGE_KEYS.historicoBusca, []));
 
   // LÓGICA DE VARREDURA TOTAL 
   const results = useMemo(() => {
@@ -36,7 +31,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
     const searchTerm = item.name || query;
     const newHistory = [searchTerm, ...history.filter(h => h !== searchTerm)].slice(0, 5);
     setHistory(newHistory);
-    localStorage.setItem("treeyo-history", JSON.stringify(newHistory));
+    salvarStorage(STORAGE_KEYS.historicoBusca, newHistory);
 
     setQuery("");
     onClose();
@@ -122,7 +117,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                     <div className="flex items-center justify-between pb-2 pl-1 pt-4">
                       <p className="text-xs uppercase tracking-[0.2em] text-neutral-600 font-medium">Recentes</p>
                       {history.length > 0 && (
-                        <button onClick={() => { setHistory([]); localStorage.removeItem("treeyo-history"); }} className="text-xs font-medium text-neutral-500 hover:text-red-500 uppercase transform-all duration-300 cursor-pointer">Limpar</button>
+                        <button onClick={() => { setHistory([]); localStorage.removeItem(STORAGE_KEYS.historicoBusca); }} className="text-xs font-medium text-neutral-500 hover:text-red-500 uppercase transform-all duration-300 cursor-pointer">Limpar</button>
                       )}
                     </div>
 

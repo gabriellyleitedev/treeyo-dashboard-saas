@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileDock from './MobileDock';
-import BuscaInteligente from '@/components/ui/BuscaInteligente'; 
+import BuscaInteligente from '@/components/ui/BuscaInteligente';
+import { NAV_ITEMS, ROUTES } from '@/constants/navigation';
+import { useLancamentos } from '@/context/LancamentosContext';
+import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
 
-const Layout = ({ meusLancamentos = [] }) => {
+const Layout = () => {
+  const { lancamentos } = useLancamentos();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
@@ -21,20 +25,17 @@ const Layout = ({ meusLancamentos = [] }) => {
     return () => window.removeEventListener('keydown', handleK);
   }, []);
 
-  const rotasDoSistema = [
-    { name: 'Visão Geral', href: '/visao-geral', cat: 'Menu' },
-    { name: 'Lançamento', href: '/lancamento', cat: 'Menu' },
-    { name: 'Movimentação', href: '/movimentacao', cat: 'Menu' },
-    { name: 'Evolução Saldo', href: '/evolucao-saldo', cat: 'Menu' },
-    { name: 'Configurações', href: '/configuracoes', cat: 'Menu' },
-    
-    ...meusLancamentos.map(l => ({
-      name: l.descricao, 
-      href: '/movimentacao', 
-      cat: 'Finanças',
-      searchData: `${l.descricao} ${l.valor} ${l.data} ${l.categoria}`.toLowerCase()
+  // Itens pesquisáveis no Ctrl+K: telas do menu + lançamentos cadastrados
+  const rotasDoSistema = useMemo(() => [
+    ...NAV_ITEMS.map(item => ({ name: item.name, href: item.href, cat: 'Menu' })),
+
+    ...lancamentos.map(l => ({
+      name: `${l.categoria} · ${formatarMoeda(l.valor)}`,
+      href: ROUTES.lancamento,
+      cat: `${l.tipo} · ${formatarDataCurta(l.data)}`,
+      searchData: `${l.tipo} ${l.categoria} ${l.valor} ${l.data} ${l.metodo} ${l.conta} ${l.status}`.toLowerCase()
     }))
-  ];
+  ], [lancamentos]);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-neutral-950">
@@ -45,12 +46,7 @@ const Layout = ({ meusLancamentos = [] }) => {
         onOpenSearch={() => setIsSearchOpen(true)}
       />
 
-      <main 
-        className={`
-          flex-1 transition-all duration-500 flex flex-col h-screen p-0 relative
-          ${isCollapsed ? 'md:ml-0' : 'md:ml-0'} // Ajuste conforme a largura da sua sidebar
-        `}
-      >
+      <main className="flex-1 transition-all duration-500 flex flex-col h-screen p-0 relative">
         {/* O PAINEL COM A BORDA QUE VOCÊ QUERIA */}
         <div className="
           flex-1 bg-[#111111] 
@@ -61,7 +57,7 @@ const Layout = ({ meusLancamentos = [] }) => {
         ">
           {/* Espaçamento interno do conteúdo */}
           <div className="px-4 md:px-10 h-full pb-28 md:pb-6 pt-2">
-            <Outlet context={{ isCollapsed, meusLancamentos }} />
+            <Outlet />
           </div>
         </div>
 

@@ -1,16 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Calendar, X } from "lucide-react";
+import { formatarMoeda } from "@/utils/formatters";
+import { mascaraData } from "@/utils/masks";
 
-function CalendarPicker({ onSelect }) {
+// Seletor de período (datas digitadas DD/MM/AAAA)
+function PeriodoPicker({ onSelect }) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const handleDateChange = (value, setter) => {
-    const v = value.replace(/\D/g, '').slice(0, 8);
-    if (v.length >= 5) setter(`${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`);
-    else if (v.length >= 3) setter(`${v.slice(0, 2)}/${v.slice(2)}`);
-    else setter(v);
-  };
+  const handleDateChange = (value, setter) => setter(mascaraData(value));
 
   const handleAplicar = () => {
     if (startDate.length === 10 && endDate.length === 10) {
@@ -68,12 +66,6 @@ function CalendarPicker({ onSelect }) {
   );
 }
 
-const formatCurrency = (value) =>
-  value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-
 const data7d = [
   { label: "Seg", day: "Segunda", saldo: 3100 },
   { label: "Ter", day: "Terça", saldo: 1800 },
@@ -105,7 +97,7 @@ function CustomDot(props) {
         <circle cx={cx} cy={cy} r={16} fill="white" fillOpacity="0.15" filter="url(#superGlow)" />
         <circle cx={cx} cy={cy} r={6} fill="white" stroke="#1fba11" strokeWidth={2} />
         <text x={cx} y={cy - 25} fill="white" fontSize="14" fontWeight="bold" textAnchor="middle" className="drop-shadow-md">
-          {formatCurrency(payload.saldo)}
+          {formatarMoeda(payload.saldo)}
         </text>
       </g>
     );
@@ -136,10 +128,7 @@ export default function SaldoMiniChart({ range, setRange }) {
 
   const data = range === "7d" ? data7d : range === "30d" ? data30d : filteredCustomData;
 
-  const [hoverData, setHoverData] = useState(null);
   const [activeData, setActiveData] = useState(null);
-
-  const hasData = data && data.length > 0;
 
   const getSaudacao = () => {
 
@@ -148,7 +137,7 @@ export default function SaldoMiniChart({ range, setRange }) {
         <>
           Boa, Gabrielly. Seu saldo fechou em{" "}
           <span className="text-[#1fba11] font-bold">
-            {formatCurrency(data[data.length - 1].saldo)}
+            {formatarMoeda(data[data.length - 1].saldo)}
           </span>. Continue nesse ritmo.
         </>
       );
@@ -167,7 +156,7 @@ export default function SaldoMiniChart({ range, setRange }) {
             <>
               Início forte:{" "}
               <span className="text-[#1fba11] font-bold">
-                {formatCurrency(activeData.saldo)}
+                {formatarMoeda(activeData.saldo)}
               </span>. Agora valide o que mais vende.
             </>
           );
@@ -214,7 +203,7 @@ export default function SaldoMiniChart({ range, setRange }) {
         <>
           Incrível. Você gerou{" "}
           <span className="text-[#1fba11] font-bold">
-            {formatCurrency(data[data.length - 1].saldo)}
+            {formatarMoeda(data[data.length - 1].saldo)}
           </span> nos últimos 30 dias.
         </>
       );
@@ -223,7 +212,6 @@ export default function SaldoMiniChart({ range, setRange }) {
     if (range === "custom") {
 
       const start = filteredCustomData[0];
-      const middle = filteredCustomData[1];
       const end = filteredCustomData[2];
 
       if (start && end) {
@@ -231,14 +219,14 @@ export default function SaldoMiniChart({ range, setRange }) {
 
         if (diff > 0) {
           return <>
-            De {customLabel}: crescimento de {formatCurrency(diff)}.
+            De {customLabel}: crescimento de {formatarMoeda(diff)}.
             Continue nesse ritmo!
           </>;
         }
 
         if (diff < 0) {
           return <>
-            De {customLabel}: queda de {formatCurrency(Math.abs(diff))}.
+            De {customLabel}: queda de {formatarMoeda(Math.abs(diff))}.
             Revise gastos nesse período.
           </>;
         }
@@ -298,7 +286,7 @@ export default function SaldoMiniChart({ range, setRange }) {
                         </p>
                         <div className="flex flex-col gap-0.5">
                           <p className="text-white font-bold text-base">
-                            {formatCurrency(currentData.saldo)}
+                            {formatarMoeda(currentData.saldo)}
                           </p>
                           {diff !== null && (
                             <p className={`text-[11px] font-bold flex items-center gap-1 ${diff >= 0 ? "text-[#1fba11]" : "text-red-500"}`}>
@@ -358,7 +346,7 @@ export default function SaldoMiniChart({ range, setRange }) {
               </button>
             </div>
             <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-              <CalendarPicker onSelect={handleDateSelection} />
+              <PeriodoPicker onSelect={handleDateSelection} />
             </div>
           </div>
         </div>

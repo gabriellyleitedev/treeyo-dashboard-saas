@@ -1,4 +1,3 @@
-import React from 'react';
 import { Activity, TrendingUp, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 const rows = [
@@ -43,7 +42,7 @@ const DRETable = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, index) => (
+                        {rows.map((row) => (
                             <tr
                                 key={row.id}
                                 className="border-b border-[rgba(255,255,255,0.04)] transition-colors hover:bg-[rgba(255,255,255,0.02)]"

@@ -1,58 +1,11 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { Sun, Moon, Search, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import NotificationBell from '@/components/ui/NotificationBell';
-import ConfirmModal from '@/components/ui/ConfirmModal';
+import { useState } from "react";
+import { motion } from "framer-motion";
 import SaldoMiniChart from '@/features/saldo/SaldoMiniChart';
+import GlowTopo from '@/components/ui/GlowTopo';
+import { PageHeaderMobile, PageHeaderDesktop } from '@/components/layout/PageHeader';
+import { containerVariants, itemVariants } from '@/utils/animations';
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.12, delayChildren: 0.1 },
-    },
-};
-const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
-const gerarInsightsIA = (lista) => {
-    if (!lista || lista.length === 0) return [];
-
-    const entradas = lista.filter(l => l.tipo === "entrada");
-    const saidas = lista.filter(l => l.tipo === "saida");
-
-    const totalEntradas = entradas.reduce((acc, l) => acc + Number(l.valor), 0);
-    const totalSaidas = saidas.reduce((acc, l) => acc + Number(l.valor), 0);
-
-    const insights = [];
-
-    if (totalEntradas > totalSaidas) insights.push("Seu saldo está crescendo");
-    if (totalSaidas > totalEntradas) insights.push("Você está gastando mais do que ganha");
-
-    const maiorGasto = saidas.sort((a, b) => b.valor - a.valor)[0];
-    if (maiorGasto) insights.push(`Maior gasto: ${maiorGasto.categoria}`);
-
-    return insights;
-};
-
-const gerarNotificacoesSaldo = (lista) => {
-    if (!lista) return [];
-
-    const notificacoes = [];
-
-    if (lista.length > 10) {
-        notificacoes.push({
-            tipo: "info",
-            mensagem: "Você já tem bastante dados registrados"
-        });
-    }
-
-    return notificacoes;
-};
-
+// Números fixos por período até existir cálculo real a partir dos lançamentos
 const presets = {
     "7d": {
         vendas: "18",
@@ -80,112 +33,26 @@ const presets = {
     }
 };
 const EvolucaoSaldo = () => {
-    const navigate = useNavigate();
-
-    const [range, setRange] = useState("30d"); // Este cara controla a tela toda agora
+    const [range, setRange] = useState("30d");
+    const [busca, setBusca] = useState("");
 
     const dadosAtuais = presets[range] || presets["30d"];
-
-
-    const [lista, setLista] = useState([]);
-    const [busca, setBusca] = useState("");
-    const [isDarkMode, setIsDarkMode] = useState(true);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [itemParaExcluir, setItemParaExcluir] = useState(null);
-    const [searchAberto, setSearchAberto] = useState(false);
-
-    const insightsIA = useMemo(() => gerarInsightsIA(lista), [lista]);
-    const notificacoesSaldo = useMemo(() => gerarNotificacoesSaldo(lista), [lista]);
-
-    const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
-    const formatarDataCurta = (dataISO) => {
-        if (!dataISO) return "";
-        const partes = dataISO.split("-");
-        if (partes.length !== 3) return dataISO;
-        const [ano, mes, dia] = partes;
-        return `${dia}/${mes}`;
-    };
-
-    // Lógica de Busca (Única mantida conforme pedido)
-    const listaFiltrada = useMemo(() => {
-        if (!lista) return [];
-        return lista
-            .filter((item) => {
-                if (!busca) return true;
-                const termo = busca.toLowerCase();
-                const dataFormatada = formatarDataCurta(item.data);
-
-                return (
-                    item.tipo?.toLowerCase().includes(termo) ||
-                    item.categoria?.toLowerCase().includes(termo) ||
-                    String(item.valor).includes(termo) ||
-                    dataFormatada.includes(termo)
-                );
-            })
-            .sort((a, b) => new Date(b.data) - new Date(a.data));
-    }, [lista, busca]);
-
-    useEffect(() => {
-        // futura IA real
-        // fetch('/api/insights')
-    }, []);
 
     return (
 
         <div className="w-full flex-1 lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
             <div className="max-w-[1400px] flex flex-col w-full px-3 sm:px-6 md:px-0 lg:px-8 transition-all duration-500 ease-in-out">
-                {/* LUZ VERDE TOPO */}
-                <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
+                <GlowTopo />
 
-                {/* HEADER MOBILE (Exclusivo Mobile) */}
-                <div className="md:hidden flex items-center justify-between px-1 py-0 relative pt-3 ">
-                    <AnimatePresence mode="wait">
-                        {!searchAberto ? (
-                            <motion.div
-                                key="header-normal"
-                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                                className="flex items-center justify-between w-full"
-                            >
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
-                                        <ArrowLeft size={22} />
-                                    </button>
-                                    <h1 className="text-gray-200 font-medium text-lg">Evolucão do Saldo</h1>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
-                                        <Search size={22} />
-                                    </button>
-                                    <NotificationBell modulo="saldo" notificacoes={notificacoesSaldo} />
-                                </div>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="search-active"
-                                initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}
-                                className="flex items-center gap-2 w-full"
-                            >
-                                <div className="relative flex-1">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
-                                    <input
-                                        autoFocus
-                                        value={busca}
-                                        onChange={(e) => setBusca(e.target.value)}
-                                        placeholder="Buscar saldo..."
-                                        className="w-full bg-white/5 text-sm text-gray-200 py-2 pl-10 pr-4 rounded-full border border-green-500/30 focus:outline-none"
-                                    />
-                                </div>
-                                <button
-                                    onClick={() => { setSearchAberto(false); setBusca(""); }}
-                                    className="text-xs font-medium text-neutral-400 uppercase px-2"
-                                >
-                                    Cancelar
-                                </button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                <PageHeaderMobile
+                    titulo="Evolução do Saldo"
+                    busca={busca}
+                    onBuscaChange={setBusca}
+                    placeholder="Buscar saldo..."
+                    modulo="saldo"
+                    tamanhoTitulo="text-lg"
+                    className="px-1"
+                />
 
                 <motion.div
                     className="w-full h-full flex flex-col"
@@ -193,56 +60,14 @@ const EvolucaoSaldo = () => {
                     animate="visible"
                     variants={containerVariants}
                 >
-                    <ConfirmModal
-                        isOpen={modalOpen}
-                        title="Excluir item?"
-                        message="Essa ação não pode ser desfeita."
-                        onConfirm={() => {
-                            setLista(prev => prev.filter(l => l.id !== itemParaExcluir.id));
-                            setModalOpen(false);
-                        }}
-                        onClose={() => setModalOpen(false)}
+                    <PageHeaderDesktop
+                        titulo="Evolução do Saldo"
+                        busca={busca}
+                        onBuscaChange={setBusca}
+                        placeholder="Buscar saldo..."
+                        modulo="saldo"
+                        variants={itemVariants}
                     />
-
-                    {/* HEADER DESKTOP */}
-                    <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={itemVariants}>
-                        <div>
-                            <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
-                                <span className="text-neutral-400 font-normal"> Dashboard / </span> Evolução do Saldo
-                            </h1>
-                        </div>
-
-                        <div className="flex items-center group relative">
-                            <Search className="absolute left-3 w-4 h-4 text-gray-200 group-focus-within:text-green-500 transition-colors z-10" />
-                            <input
-                                autoComplete="off"
-                                value={busca}
-                                onChange={(e) => setBusca(e.target.value)}
-                                type="text"
-                                placeholder="Buscar saldo..."
-                                style={{ paddingLeft: "2.5rem" }}
-                                className="bg-black/20 text-sm text-gray-200 pr-4 py-2 rounded-full border border-white/10  w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-neutral-600 cursor-pointer"
-                            />
-                        </div>
-
-                        <div className="ml-auto flex items-center gap-3">
-                            <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10 ">
-                                <button
-                                    onClick={() => !isDarkMode && toggleTheme()}
-                                    className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${!isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
-                                >
-                                    <Sun size={16} />
-                                </button>
-                                <button
-                                    onClick={() => isDarkMode && toggleTheme()}
-                                    className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
-                                >
-                                    <Moon size={16} />
-                                </button>
-                            </div>
-                            <NotificationBell modulo="saldo" notificacoes={notificacoesSaldo} />
-                        </div>
-                    </motion.header>
 
                     <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
 

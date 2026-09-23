@@ -8,12 +8,7 @@ import {
   CartesianGrid,
   Tooltip
 } from "recharts";
-
-const formatCurrency = (value) =>
-  value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
+import { formatarMoeda } from "@/utils/formatters";
 
 const data = [
   { day: "Seg", saldo: 2100 }, { day: "", saldo: 3500 },
@@ -114,7 +109,7 @@ export default function MainChart() {
                       <p className="text-neutral-400 uppercase text-[10px] mb-1 font-bold">
                         {payload[0].payload.day || "Análise"}
                       </p>
-                      <p className="text-gray-200 font-bold text-sm">{formatCurrency(current)}</p>
+                      <p className="text-gray-200 font-bold text-sm">{formatarMoeda(current)}</p>
                       {diff !== null && (
                         <p className={`mt-1 font-medium ${diff >= 0 ? "text-[#1fba11]" : "text-red-500"}`}>
                           {diff >= 0 ? "+" : ""}{diff.toFixed(1)}% vs anterior
@@ -149,13 +144,13 @@ export default function MainChart() {
         <div>
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Melhor dia</h3>
           <p className="text-[#1fba11] font-semibold text-normal">
-            {highest.day || "Hoje"} • {formatCurrency(highest.saldo)}
+            {highest.day || "Hoje"} • {formatarMoeda(highest.saldo)}
           </p>
         </div>
         <div className="px-2">
           <h3 className="text-neutral-500 text-normal uppercase font-semibold mb-1">Pior dia</h3>
           <p className="text-red-500 font-semibold text-normal">
-            {lowest.day || "Seg"} • {formatCurrency(lowest.saldo)}
+            {lowest.day || "Seg"} • {formatarMoeda(lowest.saldo)}
           </p>
         </div>
       </div>

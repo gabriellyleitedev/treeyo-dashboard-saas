@@ -1,10 +1,15 @@
-import React, { useState, useRef } from 'react';
-import { LayoutDashboard, Bell, Calendar, ChevronDown, Sun, Moon, User, Settings, LogOut } from 'lucide-react';
+import { useState } from 'react';
+import { LayoutDashboard, Calendar, ChevronDown, Sun, Moon, User, LogOut } from 'lucide-react';
 import CalendarPicker from '@/components/ui/CalendarPicker';
 import NotificationBell from '@/components/ui/NotificationBell';
+import ThemeToggle from '@/components/ui/ThemeToggle';
+import { useTheme } from '@/context/ThemeContext';
+import { USUARIO } from '@/constants/usuario';
 
 
-const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
+const Header = () => {
+  const { isDarkMode, toggleTheme } = useTheme();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
 
   const handleDateChange = (dateString) => {
@@ -31,10 +36,10 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
             className='flex items-center gap-1 bg-transparent border-none outline-none'
           >
             <div className="w-10 h-10 rounded-full border-[1.5px] border-[#1fba11] p-[1.5px] shrink-0">
-              <img src="https://github.com/gabriellyleitedev.png" className="w-full h-full rounded-full object-cover" alt="Perfil" />
+              <img src={USUARIO.avatar} className="w-full h-full rounded-full object-cover" alt="Perfil" />
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-white font-base text-sm">Olá Gabi!</span>
+              <span className="text-white font-base text-sm">Olá {USUARIO.apelido}!</span>
               <ChevronDown size={16}
                 className={`text-neutral-400 border border-white/10 rounded-full w-5 h-5 transition-transform hover:scale-110 ${isMenuOpen ? 'rotate-180' : ''}`} />
             </div>
@@ -82,7 +87,7 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
           </div>
           <div className="flex flex-col">
             <h1 className="text-2xl font-semibold text-gray-200 leading-[0.9] tracking-tight">Dashboard</h1>
-            <p className="text-sm text-[#1fba11] font-medium mt-1">Olá Gabrielly, que bom te ver!</p>
+            <p className="text-sm text-[#1fba11] font-medium mt-1">Olá {USUARIO.nome}, que bom te ver!</p>
           </div>
         </div>
 
@@ -96,20 +101,7 @@ const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {
         </div>
 
         <div className="flex items-center gap-5">
-          <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10 relative">
-            <button
-              onClick={() => !isDarkMode && toggleTheme()}
-              className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${!isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
-            >
-              <Sun size={16} />
-            </button>
-            <button
-              onClick={() => isDarkMode && toggleTheme()}
-              className={`w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer ${isDarkMode ? 'bg-[#333333] text-white shadow-md' : 'text-gray-500 hover:bg-white/5'}`}
-            >
-              <Moon size={16} />
-            </button>
-          </div>
+          <ThemeToggle />
 
           <NotificationBell modulo="geral" />
 

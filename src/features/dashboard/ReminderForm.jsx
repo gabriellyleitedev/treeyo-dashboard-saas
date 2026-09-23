@@ -1,7 +1,7 @@
-"use client";
 import { useState } from "react";
 import { X, Calendar, Clock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { mascaraData, mascaraHora } from "@/utils/masks";
 
 export default function ReminderForm({ isOpen, onClose, onSave }) {
   const [errors, setErrors] = useState({});
@@ -16,26 +16,14 @@ export default function ReminderForm({ isOpen, onClose, onSave }) {
 
   //DATA (00/00/0000)
   const handleDateChange = (e) => {
-    let v = e.target.value.replace(/\D/g, ""); // Remove letras
-    if (v.length > 8) v = v.slice(0, 8);
-
-    if (v.length >= 5) {
-      v = `${v.slice(0, 2)}/${v.slice(2, 4)}/${v.slice(4)}`;
-    } else if (v.length >= 3) {
-      v = `${v.slice(0, 2)}/${v.slice(2)}`;
-    }
-
+    const v = mascaraData(e.target.value);
     setFormData(prev => ({ ...prev, date: v }));
     if (errors.date) setErrors(prev => ({ ...prev, date: null }));
   };
 
   // HORÁRIO (00:00)
   const handleTimeChange = (e) => {
-    let v = e.target.value.replace(/\D/g, "");
-    if (v.length > 4) v = v.slice(0, 4);
-    if (v.length >= 3) {
-      v = `${v.slice(0, 2)}:${v.slice(2)}`;
-    }
+    const v = mascaraHora(e.target.value);
     setFormData(prev => ({ ...prev, time: v }));
     if (errors.time) setErrors(prev => ({ ...prev, time: null }));
   };

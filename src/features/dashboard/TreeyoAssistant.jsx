@@ -1,4 +1,3 @@
-import React from 'react';
 import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {

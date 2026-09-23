@@ -1,29 +1,19 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import SelectTreeyo from '@/components/ui/SelectTreeyo';
 import toast from "react-hot-toast";
+import { brParaISO, isoParaBR } from "@/utils/formatters";
+import { mascaraData } from "@/utils/masks";
 
 const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
     const hoje = new Date();
     const hojeISO = hoje.toISOString().split("T")[0];
 
-    const formatarParaBR = (iso) => {
-        const [y, m, d] = iso.split("-");
-        return `${d}/${m}/${y}`;
-    };
-
-    const converterParaISO = (br) => {
-        const partes = br.split("/");
-        if (partes.length !== 3) return "";
-        const [d, m, y] = partes;
-        return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
-    };
-
     const [formData, setFormData] = useState({
         data: hojeISO,
-        dataDisplay: formatarParaBR(hojeISO),
+        dataDisplay: isoParaBR(hojeISO),
         categoria: "",
         valor: "",
         status: "",
@@ -35,16 +25,6 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
     const [erros, setErros] = useState([]);
     const [shake, setShake] = useState(false);
 
-    useEffect(() => {
-        if (formData.metodo === "Dinheiro") {
-            setFormData(prev => ({
-                ...prev,
-                conta: "Espécie",
-                outroBanco: ""
-            }));
-        }
-    }, [formData.metodo]);
-
     const limparErros = () => {
         if (erros.length > 0) setErros([]);
     };
@@ -53,7 +33,9 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         limparErros();
         setFormData(prev => ({
             ...prev,
-            [campo]: valor
+            [campo]: valor,
+            // pagamento em dinheiro não tem banco
+            ...(campo === "metodo" && valor === "Dinheiro" ? { conta: "Espécie", outroBanco: "" } : {})
         }));
     };
 
@@ -61,12 +43,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
         limparErros();
 
-        let val = e.target.value.replace(/\D/g, "").slice(0, 8);
-
-        if (val.length >= 5)
-            val = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
-        else if (val.length >= 3)
-            val = `${val.slice(0, 2)}/${val.slice(2)}`;
+        const val = mascaraData(e.target.value);
 
         setFormData(prev => ({
             ...prev,
@@ -76,7 +53,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         if (val.length === 10) {
             setFormData(prev => ({
                 ...prev,
-                data: converterParaISO(val)
+                data: brParaISO(val)
             }));
         }
 

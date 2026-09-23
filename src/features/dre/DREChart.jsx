@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid, Tooltip, Cell } from 'recharts';
 
 const data = [

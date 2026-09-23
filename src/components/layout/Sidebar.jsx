@@ -1,33 +1,26 @@
-import { ChevronFirst, ChevronLast, Search, BarChart2, TrendingUp, DollarSign, PieChart, Zap, Settings, MoreVertical } from 'lucide-react'
+import { ChevronFirst, ChevronLast, Search, MoreVertical } from 'lucide-react'
 import { useLocation, Link } from 'react-router-dom'
-import React, { useState } from 'react'
+import { NAV_ITEMS } from '@/constants/navigation'
+import { USUARIO } from '@/constants/usuario'
+
+const navSections = [
+    {
+        title: '',
+        links: [{ name: 'Buscar...', icon: Search, href: '/buscar' }]
+    },
+    {
+        title: 'Geral',
+        links: NAV_ITEMS.filter((item) => item.section === 'Geral')
+    },
+    {
+        title: '',
+        links: NAV_ITEMS.filter((item) => item.section === 'Sistema')
+    }
+]
 
 const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }) => {
     const location = useLocation();
-    console.log("Rota atual:", location.pathname);
     const isActive = (href) => location.pathname === href;
-
-    const navSections = [
-        {
-            title: '',
-            links: [{ name: 'Buscar...', icon: Search, href: '/buscar' }]
-        },
-        {
-            title: 'Geral',
-            links: [
-                { name: 'Visão Geral', icon: BarChart2, href: '/visao-geral' },
-                { name: 'Lançamento', icon: Zap, href: '/lancamento' },
-                { name: 'Relatório de Movimentação', icon: BarChart2, href: '/movimentacao' },
-                { name: 'Evolução do Saldo', icon: TrendingUp, href: '/evolucao-saldo' },
-                { name: 'Relatório de Resultado', icon: PieChart, href: '/resultado' },
-                { name: 'Fluxo de Caixa Projetado', icon: DollarSign, href: '/fluxo-projetado' }
-            ]
-        },
-        {
-            title: '',
-            links: [{ name: 'Configurações', icon: Settings, href: '/configuracoes' }]
-        }
-    ]
 
     return (
         <aside className={`relative h-screen hidden xl:flex shrink-0 z-50 flex-col bg-neutral-950 text-white transition-all duration-500 ease-in-out ${isCollapsed ? 'w-16' : 'w-72'}`}>
@@ -110,13 +103,13 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }) => {
             <div className="mt-auto border-t border-white/5 p-4">
                 <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
                     <div className="w-9 h-9 rounded-full overflow-hidden border border-white/10 shrink-0">
-                        <img src="https://github.com/gabriellyleitedev.png" alt="User" className="w-full h-full object-cover" />
+                        <img src={USUARIO.avatar} alt="User" className="w-full h-full object-cover" />
                     </div>
 
                     {!isCollapsed && (
                         <>
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm text-white font-medium truncate">Gabrielly Leite</p>
+                                <p className="text-sm text-white font-medium truncate">{USUARIO.nomeCompleto}</p>
                                 <p className="text-[12px] text-neutral-500 truncate">Conta de Usuário</p>
                             </div>
                             {!isCollapsed && (

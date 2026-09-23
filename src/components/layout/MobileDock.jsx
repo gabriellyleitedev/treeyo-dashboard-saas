@@ -1,21 +1,15 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, BarChart2, Zap, TrendingUp, PieChart, DollarSign, Settings } from 'lucide-react';
+import { Search } from 'lucide-react';
+import { NAV_ITEMS } from '@/constants/navigation';
+
+const navLinks = [
+    { icon: Search, label: "Buscar", href: '#', isSearch: true },
+    ...NAV_ITEMS.map((item) => ({ icon: item.icon, label: item.shortLabel, href: item.href })),
+];
 
 const MobileDock = ({ onOpenSearch }) => {
     const location = useLocation();
     const isActive = (path) => location.pathname === path;
-
-    const navLinks = [
-        { icon: Search, label: "Buscar", href: '#', isSearch: true },
-        { icon: BarChart2, label: "Visão", href: '/visao-geral' },
-        { icon: Zap, label: "Lançar", href: '/lancamento' },
-        { icon: BarChart2, label: "Mov.", href: '/movimentacao' },
-        { icon: TrendingUp, label: "Saldo", href: '/evolucao-saldo' },
-        { icon: PieChart, label: "Resultado", href: '/resultado' },
-        { icon: DollarSign, label: "Fluxo", href: '/fluxo-projetado' },
-        { icon: Settings, label: "Config", href: '/configuracoes' }
-    ];
 
     return (
         <div className="lg:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 touch-none pointer-events-none">

@@ -1,63 +1,60 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from "react-hot-toast";
+import { Analytics } from '@vercel/analytics/react';
 import Layout from '@/components/layout/Layout'
 import VisaoGeral from '@/pages/VisaoGeral'
-import Movimentacao from '@/pages/Movimentacao'
-import EvolucaoSaldo from '@/pages/EvolucaoSaldo'
 import Lancamento from '@/pages/Lancamento'
-import { Toaster } from "react-hot-toast";
+import EvolucaoSaldo from '@/pages/EvolucaoSaldo'
+import EmBreve from '@/pages/EmBreve'
+import { ThemeProvider } from '@/context/ThemeContext';
+import { LancamentosProvider } from '@/context/LancamentosContext';
 import { NotificationProvider } from '@/context/NotificationContext';
-import { useState } from 'react';
-import { Analytics } from '@vercel/analytics/react';
+import { ROUTES } from '@/constants/navigation';
 
+const toastOptions = {
+  style: {
+    background: "#161616",
+    color: "#e5e5e5",
+    border: "1px solid rgba(255,255,255,0.05)",
+    backdropFilter: "blur(10px)",
+    borderRadius: "12px",
+    padding: "12px 20px",
+    fontWeight: 500
+  },
+  duration: 4000
+};
 
 function App() {
-
-  const [meusLancamentos, setMeusLancamentos] = useState([
-    { id: 1, descricao: 'Venda de móvel', valor: 1000, data: '17/03', categoria: 'Receita', tipo: 'entrada' },
-    { id: 2, descricao: 'Mercadoria', valor: 1200, data: '17/03', categoria: 'Despesa', tipo: 'saida' },
-    { id: 3, descricao: 'Pisos', valor: 2300, data: '19/02', categoria: 'Receita', tipo: 'entrada' },
-    { id: 4, descricao: 'Novo Lançamento', valor: 4500, data: '17/03', categoria: 'Receita', tipo: 'entrada' },
-  ]);
   return (
-    <>
-      <NotificationProvider>
-        <Routes>
-          <Route element={<Layout meusLancamentos={meusLancamentos} />}>
+    <ThemeProvider>
+      <LancamentosProvider>
+        <NotificationProvider>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Navigate to={ROUTES.visaoGeral} replace />} />
+              <Route path={ROUTES.visaoGeral} element={<VisaoGeral />} />
+              <Route path={ROUTES.lancamento} element={<Lancamento />} />
+              <Route path={ROUTES.evolucaoSaldo} element={<EvolucaoSaldo />} />
 
-            <Route path="/" element={<Navigate to="/visao-geral" replace />} />
-            <Route path="/visao-geral" element={<VisaoGeral />} />
-            <Route path="/movimentacao" element={<div className="text-white p-10">Página Movimentação em breve...</div>} />
+              {/* Telas ainda não construídas (pages/Movimentacao.jsx está em rascunho) */}
+              <Route path={ROUTES.movimentacao} element={<EmBreve titulo="Movimentação" />} />
+              <Route path={ROUTES.resultado} element={<EmBreve titulo="Resultado" />} />
+              <Route path={ROUTES.fluxoProjetado} element={<EmBreve titulo="Fluxo de Caixa Projetado" />} />
+              <Route path={ROUTES.configuracoes} element={<EmBreve titulo="Configurações" />} />
 
-            <Route path="/lancamento" element={<Lancamento />} />
-            <Route path="/evolucao-saldo" element={<EvolucaoSaldo />} />
-            <Route path='/resultado' element={<div className="text-white p-10">Página Resultado em breve...</div>} />
-            <Route path='/fluxo-projetado' element={<div className="text-white p-10">Página Fluxo de Caixa Projetado em breve...</div>} />
-            <Route path='/configuracoes' element={<div className="text-white p-10">Página Configurações em breve...</div>} />
-          </Route>
-        </Routes>
-      </NotificationProvider>
+              {/* Qualquer URL desconhecida volta para a Visão Geral */}
+              <Route path="*" element={<Navigate to={ROUTES.visaoGeral} replace />} />
+            </Route>
+          </Routes>
+        </NotificationProvider>
+      </LancamentosProvider>
 
       <Analytics />
 
       {/* Toast global */}
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: "#161616",
-            color: "#e5e5e5",
-            border: "1px solid rgba(255,255,255,0.05)",
-            backdropFilter: "blur(10px)",
-            borderRadius: "12px",
-            padding: "12px 20px",
-            fontWeight: 500
-          },
-          duration: 4000
-        }}
-      />
-    </>
+      <Toaster position="top-center" toastOptions={toastOptions} />
+    </ThemeProvider>
   );
 }
 
 export default App;
-

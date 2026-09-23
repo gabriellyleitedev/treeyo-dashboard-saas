@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -74,7 +73,7 @@ export default function CardsStack() {
               dragElastic={0.7}
 
               // 2. Lógica de Swipe Vertical
-              onDragEnd={(e, info) => {
+              onDragEnd={(_, info) => {
                 if (Math.abs(info.offset.y) > 80) {
                   next();
                 }
@@ -88,7 +87,7 @@ export default function CardsStack() {
 
               // 4. Lógica de Clique: Bloqueia o clique se for um dispositivo Touch puro
               // No iPad com Mouse, o 'pointer: fine' do CSS resolve a experiência
-              onClick={(e) => {
+              onClick={() => {
                 if (!isTop) return;
 
                 // Verifica se o dispositivo NÃO é primariamente touch pra permitir o clique

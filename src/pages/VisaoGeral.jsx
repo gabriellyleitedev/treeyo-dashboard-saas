@@ -1,33 +1,32 @@
-import React from 'react';
+import { useEffect, useRef } from 'react';
 import { TrendingUp } from 'lucide-react';
 import CardsStack from '@/features/dashboard/CardsStack';
 import MainChart from '@/features/dashboard/MainChart';
 import RemindersPanel from '@/features/dashboard/RemindersPanel';
 import TreeyoAssistant from '@/features/dashboard/TreeyoAssistant';
 import Header from '@/components/layout/Header';
+import GlowTopo from '@/components/ui/GlowTopo';
 import { useNotifications } from '@/context/NotificationContext';
-import SummaryDRE from '@/features/dashboard/SummaryDRE';
+import { useLancamentos } from '@/context/LancamentosContext';
+import { USUARIO } from '@/constants/usuario';
+import { STORAGE_KEYS, lerStorage } from '@/utils/storage';
 
 function VisaoGeral() {
-    const [isDarkMode, setIsDarkMode] = React.useState(true);
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-
-    const toggleTheme = () => setIsDarkMode(!isDarkMode);
     const { adicionarNotificacao } = useNotifications();
-    const hasChecked = React.useRef(false);
+    const { lancamentos } = useLancamentos();
+    const hasChecked = useRef(false);
 
-    React.useEffect(() => {
-
+    // Notificações de boas-vindas / sem lançamentos (uma vez por sessão)
+    useEffect(() => {
         if (hasChecked.current) return;
 
-        const lancamentos = JSON.parse(localStorage.getItem("@treeyo:lancamentos")) || [];
-        const perfil = JSON.parse(localStorage.getItem("@treeyo:perfil"));
+        const perfil = lerStorage(STORAGE_KEYS.perfil, null);
 
         if (perfil && !sessionStorage.getItem('@treeyo:welcome_notified')) {
             adicionarNotificacao({
                 id: `welcome-${Date.now()}`,
                 modulo: 'geral',
-                titulo: `Bem-vinda, ${perfil.nome || 'Gabi'}!`,
+                titulo: `Bem-vinda, ${perfil.nome || USUARIO.apelido}!`,
                 mensagem: 'Seu dashboard está atualizado.',
                 tipo: 'info',
                 lida: false,
@@ -50,20 +49,13 @@ function VisaoGeral() {
         }
 
         hasChecked.current = true;
-    }, []);
-
+    }, [adicionarNotificacao, lancamentos.length]);
 
     return (
         <div className="w-full min-h-screen lg:pb-0 pb-24">
-            <Header
-                isDarkMode={isDarkMode}
-                toggleTheme={toggleTheme}
-                isMenuOpen={isMenuOpen}
-                setIsMenuOpen={setIsMenuOpen}
-            />
+            <Header />
 
-            {/* LUZ VERDE TOPO */}
-            <div className='pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-22 bg-gradient-to-r from-transparent via-[#1fba11]/40 to-transparent blur-[60px] -rotate-12 '></div>
+            <GlowTopo />
 
             <section className="px-4 md:px-4 pt-6 w-full max-w-[1600px] mx-auto">
 
@@ -128,11 +120,7 @@ function VisaoGeral() {
                         <TreeyoAssistant />
                     </div>
 
-                    {/* DRE SIMPLIFICADA - LINHA INFERIOR 
-                    <div className="lg:col-span-12 w-full pt-0 pb-10">
-                        <SummaryDRE />
-                    </div>
-                   */}
+                    {/* DRE SIMPLIFICADA (desativada): <SummaryDRE /> em lg:col-span-12 */}
                 </div>
             </section>
         </div>

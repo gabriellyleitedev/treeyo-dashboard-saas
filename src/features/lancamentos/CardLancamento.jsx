@@ -1,20 +1,9 @@
-import React from "react";
 import { FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatarDataCurta, formatarMoeda } from "@/utils/formatters";
 
 const CardLancamento = ({ lancamento }) => {
     if (!lancamento) return null;
-
-    const formatarDataCard = (data) => {
-        if (!data) return "";
-        if (data.includes("/")) {
-            const partes = data.split("/");
-            return `${partes[0]}/${partes[1]}`;
-        }
-        const partes = data.split("-");
-        if (partes.length === 3) return `${partes[2]}/${partes[1]}`;
-        return data;
-    }
 
     return (
         <AnimatePresence mode="wait">
@@ -22,13 +11,13 @@ const CardLancamento = ({ lancamento }) => {
                 key={lancamento.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col h-auto p-3 backdrop-blur-md transform bg-Neutral-800 border border-white/10 rounded-[14px] w-[92%] mx-auto lg:w-full lg:mx-0 max-w-[400px]  shadow-[0_0_30px_rgba(0,0,0,0.1)]"
+                className="flex flex-col h-auto p-3 backdrop-blur-md transform bg-neutral-800 border border-white/10 rounded-[14px] w-[92%] mx-auto lg:w-full lg:mx-0 max-w-[400px]  shadow-[0_0_30px_rgba(0,0,0,0.1)]"
             >
                 <div className="flex justify-between items-center mb-6">
                     <div className="flex items-center gap-2 text-neutral-500 text-xs 
                     ">
                         <FileText size={16} />
-                        <span>{formatarDataCard(lancamento.dataDisplay || lancamento.data)}</span>
+                        <span>{formatarDataCurta(lancamento.dataDisplay || lancamento.data)}</span>
                     </div>
                     <span className={`text-[13px] font-normal px-3 py-1 rounded-full w-18 flex justify-center items-center  ${lancamento.status === "Pago" || lancamento.status === "Executado"
                         ? "bg-green-500/10 text-green-500"
@@ -62,10 +51,7 @@ const CardLancamento = ({ lancamento }) => {
                                 lancamento.tipo === 'Investimento' ? 'text-blue-500' : 'text-red-500'
                             }`}>
             
-                            {new Intl.NumberFormat('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL'
-                            }).format(lancamento.valor || 0)}
+                            {formatarMoeda(lancamento.valor)}
                         </p>
                     </div>
                 </div>

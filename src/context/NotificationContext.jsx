@@ -1,16 +1,24 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { STORAGE_KEYS, lerStorage, salvarStorage } from "@/utils/storage";
 
-const NotificationContext = createContext();
+const NotificationContext = createContext(null);
+
+function carregarNotificacoes() {
+  const dados = lerStorage(STORAGE_KEYS.notificacoes, {});
+  return {
+    geral: dados.geral || [],
+    lancamentos: dados.lancamentos || [],
+    saldo: dados.saldo || [],
+    dre: dados.dre || []
+  };
+}
 
 export const NotificationProvider = ({ children }) => {
-  const [notificacoes, setNotificacoes] = useState({
-    geral: [],
-    lancamentos: [],
-    saldo: [],
-    dre: []
-  });
+  const [notificacoes, setNotificacoes] = useState(carregarNotificacoes);
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  useEffect(() => {
+    salvarStorage(STORAGE_KEYS.notificacoes, notificacoes);
+  }, [notificacoes]);
 
   const adicionarNotificacao = useCallback((novaNotif) => {
     const modulo = novaNotif.modulo || "geral";
@@ -36,62 +44,29 @@ export const NotificationProvider = ({ children }) => {
         [modulo]: [notificacaoFormatada, ...listaAtual].slice(0, 20)
       };
     });
-  }, []); 
-
-  useEffect(() => {
-    const salvas = localStorage.getItem("@treeyo:notificacoes");
-    if (salvas) {
-      const dados = JSON.parse(salvas);
-      setNotificacoes({
-        geral: dados.geral || [],
-        lancamentos: dados.lancamentos || [],
-        saldo: dados.saldo || [],
-        dre: dados.dre || []
-      });
-    }
-    setIsLoaded(true);
   }, []);
 
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem(
-        "@treeyo:notificacoes",
-        JSON.stringify(notificacoes)
-      );
-    }
-  }, [notificacoes, isLoaded]);
-
-  const marcarTodasComoLidas = (modulo) => {
+  const marcarTodasComoLidas = useCallback((modulo) => {
     setNotificacoes(prev => ({
       ...prev,
-      [modulo]: prev[modulo].map(n => ({
-        ...n,
-        lida: true
-      }))
+      [modulo]: (prev[modulo] || []).map(n => ({ ...n, lida: true }))
     }));
-  };
+  }, []);
 
-  const limparNotificacoes = (modulo) => {
-    setNotificacoes(prev => ({
-      ...prev,
-      [modulo]: []
-    }));
-  };
+  const limparNotificacoes = useCallback((modulo) => {
+    setNotificacoes(prev => ({ ...prev, [modulo]: [] }));
+  }, []);
+
+  const value = useMemo(
+    () => ({ notificacoes, adicionarNotificacao, marcarTodasComoLidas, limparNotificacoes }),
+    [notificacoes, adicionarNotificacao, marcarTodasComoLidas, limparNotificacoes]
+  );
 
   return (
-    <NotificationContext.Provider
-      value={{
-        notificacoes,
-        adicionarNotificacao, 
-        marcarTodasComoLidas,
-        limparNotificacoes
-      }}
-    >
+    <NotificationContext.Provider value={value}>
       {children}
     </NotificationContext.Provider>
   );
 };
 
-export const useNotifications = () => {
-  return useContext(NotificationContext);
-};
+export const useNotifications = () => useContext(NotificationContext);

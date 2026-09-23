@@ -23,7 +23,13 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // "motion" é usado só como <motion.div>, que o no-unused-vars não enxerga
+      'no-unused-vars': ['error', { varsIgnorePattern: '^([A-Z_]|motion$)' }],
+      // contextos exportam o Provider e o hook juntos
+      'react-refresh/only-export-components': ['error', {
+        allowConstantExport: true,
+        allowExportNames: ['useNotifications', 'useLancamentos', 'useTheme'],
+      }],
     },
   },
 ])

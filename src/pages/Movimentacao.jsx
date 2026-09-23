@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars -- rascunho: o JSX abaixo está comentado até a tela ser finalizada */
+import { useState } from "react";
 import { Sun, Moon, Bell, Search, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 

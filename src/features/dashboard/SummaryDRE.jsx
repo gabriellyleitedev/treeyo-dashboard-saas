@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
@@ -38,7 +38,7 @@ export default function SummaryDRE() {
     if (navigator.share) {
       try {
         await navigator.share({ title: 'Relatório Treeyo', text: text });
-      } catch (err) { console.log('Compartilhamento cancelado'); }
+      } catch { /* usuário cancelou o compartilhamento */ }
     } else {
       navigator.clipboard.writeText(text);
       alert('Resumo copiado para a área de transferência!');
