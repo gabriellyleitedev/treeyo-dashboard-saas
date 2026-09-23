@@ -23,7 +23,7 @@ export default function SelectTreeyo({ value, onChange, options, placeholder }) 
                         "
                 >
 
-                    <span className={!value ? "text-neutral-500" : ""}>
+                    <span className={`truncate ${!value ? "text-neutral-500" : ""}`}>
                         {value || placeholder}
                     </span>
 

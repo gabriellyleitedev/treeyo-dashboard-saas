@@ -12,6 +12,9 @@ import { useLancamentos } from '@/context/LancamentosContext';
 import { containerVariants, itemVariants, itemVariantsSutil } from '@/utils/animations';
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
 
+// Colunas da lista: celular (info | valor | excluir), md (6 colunas), lg (8 colunas)
+const COLUNAS_LISTA = "grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 md:grid-cols-[3.5rem_6.5rem_8rem_minmax(0,1fr)_5.5rem_2rem] lg:grid-cols-[3.5rem_6.5rem_8rem_minmax(0,1fr)_5rem_minmax(0,1fr)_5.5rem_2rem] lg:gap-x-6";
+
 const TIPO_NOTIFICACAO = { "Entrada": "sucesso", "Saída": "aviso", "Investimento": "info" };
 
 const Lancamento = () => {
@@ -69,7 +72,7 @@ const Lancamento = () => {
     };
 
     return (
-        <div className="w-full lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
+        <div className="w-full">
 
             <GlowTopo />
 
@@ -81,7 +84,7 @@ const Lancamento = () => {
                 modulo="lancamentos"
             />
 
-            <motion.div className="w-full h-full flex flex-col " initial="hidden" animate="visible" variants={containerVariants}>
+            <motion.div className="w-full flex flex-col" initial="hidden" animate="visible" variants={containerVariants}>
                 <ConfirmModal
                     isOpen={modalOpen}
                     title="Excluir lançamento?"
@@ -122,85 +125,96 @@ const Lancamento = () => {
                     variants={itemVariants}
                 />
 
-                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
+                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
 
-                {/* Filtros de Tipo */}
-                <div className="shrink-0  pt-6 md:pt-4 md:px-3 relative z-20">
-                    <motion.div variants={itemVariants} className="flex justify-center md:justify-center xl:block w-full">
-                        <div className="flex flex-col gap-3 items-center md:items-start w-full md:w-fit">
-                            {["Entrada", "Saída", "Investimento"].map((tipo) => {
-                                const cores = getCoresDinamicas(tipo);
-                                return (
-                                    <div
-                                        key={tipo}
-                                        onClick={() => setTipoAtivo(tipo)}
-                                        className={`flex items-center justify-start px-2 py-2.5 md:w-36 w-[300px] h-10 rounded-lg border transition-all duration-300 cursor-pointer ${cores.glow}`}
-                                    >
-                                        <span className={`h-6 w-1 flex  rounded-full transition-all duration-300 ${cores.barra}`}></span>
-                                        <span className="pl-2 font-normal text-gray-200 select-none">{tipo}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                {/*
+                  Celular: tipos (em linha) > formulário > card.
+                  md: tipos | formulário, card embaixo.
+                  xl: tipos | card | formulário.
+                */}
+                <div className="grid grid-cols-1 md:grid-cols-[9rem_minmax(0,1fr)] xl:grid-cols-[9rem_minmax(0,1fr)_minmax(0,22rem)] gap-6 xl:gap-10 items-start relative z-20">
+
+                    {/* Filtros de Tipo */}
+                    <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 md:flex md:flex-col md:gap-3">
+                        {["Entrada", "Saída", "Investimento"].map((tipo) => {
+                            const cores = getCoresDinamicas(tipo);
+                            return (
+                                <button
+                                    key={tipo}
+                                    type="button"
+                                    onClick={() => setTipoAtivo(tipo)}
+                                    className={`flex items-center justify-start px-2 w-full h-10 rounded-lg border transition-all duration-300 cursor-pointer min-w-0 ${cores.glow}`}
+                                >
+                                    <span className={`h-6 w-1 shrink-0 rounded-full transition-all duration-300 ${cores.barra}`}></span>
+                                    <span className="pl-2 text-sm md:text-base font-normal text-gray-200 select-none truncate">{tipo}</span>
+                                </button>
+                            );
+                        })}
+                    </motion.div>
+
+                    {/* FORMULÁRIO */}
+                    <motion.div variants={itemVariantsSutil} className="w-full min-w-0 md:col-start-2 xl:col-start-3 xl:row-start-1">
+                        <FormularioLancamento
+                            tipoSelecionado={tipoAtivo}
+                            aoConfirmar={(novo) => {
+
+                                adicionarLancamento(novo);
+
+                                adicionarNotificacao({
+                                    modulo: "lancamentos",
+                                    tipo: TIPO_NOTIFICACAO[novo.tipo] || "info",
+                                    titulo: "Novo lançamento registrado",
+                                    mensagem: `${novo.tipo} de ${formatarMoeda(novo.valor)} adicionada`
+                                });
+
+                                toast.success("Lançamento registrado!");
+
+                            }}
+                        />
+                    </motion.div>
+
+                    {/* CARD DO ÚLTIMO LANÇAMENTO */}
+                    <motion.div variants={itemVariantsSutil} className="w-full min-w-0 flex justify-center md:col-span-2 xl:col-span-1 xl:col-start-2 xl:row-start-1">
+                        {listaGeral.length > 0 ? (
+                            <CardLancamento lancamento={listaGeral[0]} />
+                        ) : (
+                            <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-center text-neutral-600 text-sm italic p-4">
+                                Nenhum lançamento de {tipoAtivo} para exibir no card.
+                            </div>
+                        )}
                     </motion.div>
                 </div>
 
-                <div className="flex flex-col xl:flex-row-reverse items-center lg:items-start justify-between w-full xl:!-mt-48 gap-y-10 lg:gap-y-0">
+                {/* ÚLTIMOS LANÇAMENTOS */}
+                <motion.div variants={itemVariantsSutil} className="w-full flex flex-col pt-12 md:pt-16">
 
-                    {/* BLOCO DO FORMULÁRIO */}
-                    <div className="shrink-0 w-full xl:w-auto">
-                        <motion.div variants={itemVariantsSutil}>
-                            <div className="flex justify-center xl:justify-end w-full px-4 pt-14 lg:px-0 lg:pr-4 xl:pr-10 xl:px-4">
-                                <FormularioLancamento
-                                    tipoSelecionado={tipoAtivo}
-                                    aoConfirmar={(novo) => {
+                    <div className="flex items-baseline justify-between gap-4 mb-4">
+                        <h2 className="text-gray-200 font-medium tracking-wider uppercase text-sm">
+                            Últimos Lançamentos
+                        </h2>
 
-                                        adicionarLancamento(novo);
-
-                                        adicionarNotificacao({
-                                            modulo: "lancamentos",
-                                            tipo: TIPO_NOTIFICACAO[novo.tipo] || "info",
-                                            titulo: "Novo lançamento registrado",
-                                            mensagem: `${novo.tipo} de ${formatarMoeda(novo.valor)} adicionada`
-                                        });
-
-                                        toast.success("Lançamento registrado!");
-
-                                    }}
-                                />
-
-                            </div>
-                        </motion.div>
+                        {busca.trim() !== "" && (
+                            <span className="text-neutral-500 text-xs">
+                                {listaGeral.length} resultado{listaGeral.length !== 1 && "s"}
+                            </span>
+                        )}
                     </div>
 
-                    {/* BLOCO DO CARD */}
-                    <motion.div variants={itemVariantsSutil} className="w-full lg:flex-1 flex justify-center ">
-                        <div className="w-full items-center flex flex-col py-6 lg:py-12 lg:pl-4 xl:pl-44">
-                            {listaGeral.length > 0 ? (
-                                <CardLancamento lancamento={listaGeral[0]} />
-                            ) : (
-                                <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-neutral-600 text-sm italic xl:p-4">
-                                    Nenhum lançamento de {tipoAtivo} para exibir no card.
-                                </div>
-                            )}
+                    {/* Cabeçalho da tabela (tablet/desktop) */}
+                    {listaGeral.length > 0 && (
+                        <div className={`hidden md:grid ${COLUNAS_LISTA} px-4 lg:px-6 pb-2 border-b border-white/10 text-[11px] uppercase tracking-wider text-neutral-500`}>
+                            <span>Data</span>
+                            <span>Tipo</span>
+                            <span>Valor</span>
+                            <span>Categoria</span>
+                            <span className="hidden lg:block">Pagamento</span>
+                            <span className="hidden lg:block">Conta</span>
+                            <span>Status</span>
+                            <span />
                         </div>
-                    </motion.div>
-
-                </div>
-
-                <motion.div variants={itemVariantsSutil} className="w-full flex-1 min-h-0 flex flex-col px-0">
-
-                    <h1 className="text-gray-200 mb-6 font-medium tracking-wider uppercase text-sm shrink-0 md:pt-20 pt-16 px-6 lg:pl-1">
-                        Últimos Lançamentos
-                    </h1>
-
-                    {busca.trim() !== "" && (
-                        <span className="text-neutral-500 text-xs lg:pl-1 pl-6">
-                            {listaGeral.length} resultado{listaGeral.length !== 1 && "s"}
-                        </span>
                     )}
 
-                    <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll relative pt-6 md:pt-4">
+                    <div className="relative">
                         <AnimatePresence mode="popLayout" initial={false}>
                             {listaGeral.length > 0 ? (
 
@@ -214,41 +228,41 @@ const Lancamento = () => {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, x: -30, transition: { duration: 0.2 } }}
-                                            className="group relative w-full flex flex-col lg:grid lg:grid-cols-7 gap-1 lg:gap-6 items-start lg:items-center text-[13px] text-gray-200 py-4 lg:py-2 px-4 lg:px-6 hover:bg-white/[0.04] transition-all duration-400 border-b border-white/10"
+                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-gray-200 py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-white/[0.04] transition-all duration-400 border-b border-white/10`}
                                         >
+                                            {/* CELULAR: categoria + detalhes numa célula só */}
+                                            <div className="md:hidden min-w-0">
+                                                <p className="text-gray-200 truncate">{item.categoria || "-"}</p>
+                                                <p className="text-neutral-500 text-xs truncate">
+                                                    {formatarDataCurta(item.data)} · {item.tipo} · {item.metodo}
+                                                </p>
+                                            </div>
 
-                                            {/* DATA */}
-                                            <span className="text-neutral-500 ">{formatarDataCurta(item.data)}</span>
-
-                                            {/* TIPO */}
-                                            <span className="hidden lg:block text-gray-200">{item.tipo}</span>
+                                            <span className="hidden md:block text-neutral-500">{formatarDataCurta(item.data)}</span>
+                                            <span className="hidden md:block text-gray-200">{item.tipo}</span>
 
                                             {/* VALOR */}
-                                            <span className={`font-semibold ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
+                                            <span className={`font-semibold whitespace-nowrap ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
                                                 {isEntrada ? '+ ' : isSaida ? '- ' : ''}
                                                 {formatarMoeda(item.valor)}
                                             </span>
 
-                                            <span className="text-neutral-400 truncate w-full max-w-[160px]">{item.categoria || "-"}</span>
+                                            <span className="hidden md:block text-neutral-400 truncate">{item.categoria || "-"}</span>
+                                            <span className="hidden lg:block text-neutral-400 truncate">{item.metodo}</span>
+                                            <span className="hidden lg:block text-neutral-400 truncate">{item.conta}</span>
+                                            <span className="hidden md:block text-neutral-400 truncate">{item.status}</span>
 
-                                            {/* CAMPOS QUE SÓ APARECEM NO NOTEBOOK (LG) */}
-                                            <span className="hidden lg:block text-neutral-400">{item.metodo}</span>
-                                            <span className="hidden lg:block text-neutral-400">{item.conta}</span>
-
-                                            <div className="absolute right-4 top-10 lg:relative lg:right-auto lg:top-auto flex items-center gap-4 lg:gap-10">
-                                                <span className="hidden lg:block text-neutral-400">{item.status}</span>
-
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setItemParaExcluir(item);
-                                                        setModalOpen(true);
-                                                    }}
-                                                    className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setItemParaExcluir(item);
+                                                    setModalOpen(true);
+                                                }}
+                                                aria-label="Excluir lançamento"
+                                                className="justify-self-end opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
                                         </motion.div>
                                     );
                                 })

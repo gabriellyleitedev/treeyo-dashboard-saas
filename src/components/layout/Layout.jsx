@@ -56,7 +56,7 @@ const Layout = () => {
           relative
         ">
           {/* Espaçamento interno do conteúdo */}
-          <div className="px-4 md:px-10 h-full pb-28 md:pb-6 pt-2">
+          <div className="px-4 md:px-8 xl:px-10 pt-2 pb-32 xl:pb-8">
             <Outlet />
           </div>
         </div>

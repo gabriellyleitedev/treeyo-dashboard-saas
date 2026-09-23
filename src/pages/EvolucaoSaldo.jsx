@@ -40,8 +40,8 @@ const EvolucaoSaldo = () => {
 
     return (
 
-        <div className="w-full flex-1 lg:h-screen min-h-screen overflow-x-hidden bg-transparent flex flex-col lg:pb-0 pb-24">
-            <div className="max-w-[1400px] flex flex-col w-full px-3 sm:px-6 md:px-0 lg:px-8 transition-all duration-500 ease-in-out">
+        <div className="w-full">
+            <div className="max-w-[1400px] mx-auto flex flex-col w-full">
                 <GlowTopo />
 
                 <PageHeaderMobile
@@ -51,11 +51,10 @@ const EvolucaoSaldo = () => {
                     placeholder="Buscar saldo..."
                     modulo="saldo"
                     tamanhoTitulo="text-lg"
-                    className="px-1"
                 />
 
                 <motion.div
-                    className="w-full h-full flex flex-col"
+                    className="w-full flex flex-col"
                     initial="hidden"
                     animate="visible"
                     variants={containerVariants}
@@ -69,25 +68,22 @@ const EvolucaoSaldo = () => {
                         variants={itemVariants}
                     />
 
-                    <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-10 h-px shrink-0" />
+                    <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
 
-                    <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mb-8 mt-6 md:mt-0 shrink-0" />
                     {/* GRÁFICO */}
-                    <motion.div variants={itemVariants} className="w-full md:pt-4 pt-2 flex justify-center transition-all duration-500">
+                    <motion.div variants={itemVariants} className="w-full flex justify-center">
                         <SaldoMiniChart range={range} setRange={setRange} />
                     </motion.div>
 
 
-                    {/* BLOCO INFERIOR */}
-                    <div className="mt-8 flex w-full ">
-                        <div className=" flex flex-col lg:flex-row gap-12 xl:gap-4 w-full pt-16 items-center  transition-all duration-500">
+                    {/* BLOCO INFERIOR: celular empilhado; md+ card | resultado */}
+                    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)] gap-8 lg:gap-10 w-full pt-10 md:pt-14 items-stretch">
 
 
                             {/* COLUNA ESQUERDA*/}
                             <motion.div
                                 variants={itemVariants}
-                                className=" relative w-full  md:max-w-[360px] 
-                                h-fit border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
+                                className="relative w-full h-fit border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
                             >
                                 <div className="absolute inset-0 bg-green-500/10 blur-3xl"></div>
                                 <div
@@ -101,13 +97,13 @@ const EvolucaoSaldo = () => {
                                 />
                                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/20 blur-[100px] rounded-full z-0" />
                                 <div className="relative z-10 flex flex-col gap-4">
-                                    <h2 className="text-gray-200 text-base md:text-[18px] font-medium flex items-center ">
+                                    <h2 className="text-gray-200 text-base md:text-[18px] font-medium flex flex-wrap items-center gap-x-1">
                                         Sua evolução com a
-                                        <img src="/logo.png" className="w-24 flex" alt="logo" />
+                                        <img src="/logo.png" className="w-24" alt="Treeyo" />
                                     </h2>
 
 
-                                    <div className="grid grid-cols-2 gap-4 font-semibold cursor-default">
+                                    <div className="grid grid-cols-2 gap-3 md:gap-4 font-semibold cursor-default">
                                         <InsightCard label="Fluxo" text="Você identificou onde mais gastou dinheiro" />
                                         <InsightCard label="Custos" text="Você reduziu 20% dos seus gastos" />
                                         <InsightCard label="Despesas" text="Você economizou 15% nas suas despesas" />
@@ -119,11 +115,11 @@ const EvolucaoSaldo = () => {
                             {/* COLUNA DIREITA - RESULTADO */}
                             <motion.div
                                 variants={itemVariants}
-                                className="w-full lg:flex-1 flex flex-col justify-between pt-6 md:pt-0 gap-6 transition-all duration-500 "
+                                className="w-full min-w-0 flex flex-col justify-between gap-6"
                             >
                                 <div>
                                     <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-2 ">Resultado</h3>
-                                    <div className="grid grid-cols-2  2xl:grid-cols-4 gap-4 ">
+                                    <div className="grid grid-cols-2 2xl:grid-cols-4 gap-3 md:gap-4">
                                         <StatBox label="Vendas recebidas" value={dadosAtuais.vendas} variants={itemVariants} />
                                         <StatBox label="Despesas pagas" value={dadosAtuais.despesas} variants={itemVariants} />
                                         <StatBox label="Total movimentado" value={dadosAtuais.total} span="$" variants={itemVariants} />
@@ -131,14 +127,13 @@ const EvolucaoSaldo = () => {
                                     </div>
                                 </div>
 
-                                <motion.div variants={itemVariants} className="text-sm mt-auto text-neutral-400 space-y-2  cursor-pointer">
+                                <motion.div variants={itemVariants} className="text-sm mt-auto text-neutral-400 space-y-2">
                                     <p className="hover:text-gray-200 transition-all duration-300">• Seu saldo caiu 5% em relação ao mês passado</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• Você perdeu dinheiro entre os dias 23 e 27 deste mês</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• Pix foi o pagamento mais usado</p>
                                     <p className="hover:text-gray-200 transition-all duration-300">• O dia 10 foi o mais movimentado do mês</p>
                                 </motion.div>
                             </motion.div>
-                        </div>
                     </div>
 
                 </motion.div>
@@ -149,7 +144,7 @@ const EvolucaoSaldo = () => {
 };
 
 const InsightCard = ({ label, text }) => (
-    <div className="group bg-white/[0.03]  border border-white/10 md:p-2 p-2 rounded-xl min-h-[80px] hyphens-auto w-full flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
+    <div className="group bg-white/[0.03] border border-white/10 p-2 md:p-3 rounded-xl min-h-[80px] hyphens-auto w-full min-w-0 flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
         <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.1em] mb-1 ">
             {label}
         </p>
@@ -174,7 +169,7 @@ const StatBox = ({ label, value, span, variants }) => {
     return (
         <motion.div
             variants={variants}
-            className="relative bg-[#262626] border border-white/5 h-[100px] flex flex-col justify-center px-2 rounded-2xl w-full cursor-default transition-all duration-500 hover:border-green-500/20 md:pb-6 "
+            className="relative bg-[#262626] border border-white/5 min-h-[100px] flex flex-col justify-center px-3 md:px-4 py-3 rounded-2xl w-full min-w-0 cursor-default transition-all duration-500 hover:border-green-500/20"
         >
             {isEmpty ? (
                 <div className="flex flex-col">

@@ -42,7 +42,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
       {isOpen && (
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[99999] flex items-start justify-center pt-24 px-4 overflow-hidden"
+          className="fixed inset-0 z-[99999] flex items-start justify-center pt-16 md:pt-24 px-4 overflow-hidden"
         >
 
           <div onClick={onClose} className="absolute inset-0 bg-black/20 backdrop-blur-md" />
@@ -56,7 +56,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
             className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-3xl overflow-hidden"
           >
             {/* Input Header */}
-            <div className="flex items-center gap-4 p-8 border-b border-white/5">
+            <div className="flex items-center gap-3 md:gap-4 p-5 md:p-8 border-b border-white/5">
               <Search className="text-gray-200" size={24} />
               <input
                 autoFocus
@@ -70,7 +70,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
               </button>
             </div>
 
-            <div className="max-h-[60vh] overflow-y-auto p-8">
+            <div className="max-h-[60vh] overflow-y-auto p-5 md:p-8">
               {query ? (
 
                 <div className="space-y-4">

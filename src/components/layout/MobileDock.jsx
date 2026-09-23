@@ -12,8 +12,8 @@ const MobileDock = ({ onOpenSearch }) => {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <div className="lg:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 touch-none pointer-events-none">
-            <nav className="w-full max-w-[270px] h-[60px] bg-black/20 backdrop-blur border border-white/10 rounded-full overflow-hidden pointer-events-auto shadow-2xl">
+        <div className="xl:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 pointer-events-none">
+            <nav className="w-full max-w-[270px] md:max-w-[520px] h-[60px] bg-black/20 backdrop-blur border border-white/10 rounded-full overflow-hidden pointer-events-auto shadow-2xl">
 
                 {/* ÁREA DE SCROLL: */}
                 <div className="flex flex-nowrap items-center h-full px-4 overflow-x-auto overflow-y-hidden no-scrollbar snap-x touch-pan-x">

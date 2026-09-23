@@ -20,11 +20,10 @@ const Header = () => {
   const diaParaExibir = dataSelecionada.getDate();
 
   return (
-    <header className="sticky top-0 z-50 w-full px-4 md:px-0 pt-4 md:pt-0 md:-mt-8 transition-all duration-300">
+    <header className="sticky top-0 z-50 -mx-4 px-4 md:mx-0 md:px-0 pt-2 pb-1 md:pt-4 md:pb-0 bg-[#111111]/95 md:bg-transparent transition-all duration-300">
 
       {/* ESTRUTURA MOBILE */}
       <div className="md:hidden flex items-center justify-between px-1 py-0 relative">
-        <div className="absolute inset-0 -z-10 bg-[#1a1a1a]/10 rounded-md backdrop-blur-md" />
 
         {/* PERFIL */}
         <div className='relative'>
@@ -80,7 +79,7 @@ const Header = () => {
       </div>
 
       {/* ESTRUTURA NOTEBOOK */}
-      <div className="hidden md:flex items-center justify-between border border-white/10 rounded-full bg-[#1a1a1a]/10 backdrop-blur-md px-4 py-4">
+      <div className="hidden md:flex items-center justify-between border border-white/10 rounded-full bg-[#141414]/85 backdrop-blur-md px-4 py-4">
         <div className="flex items-center gap-2">
           <div className="bg-[#1fba11]/10 p-2 rounded-lg">
             <LayoutDashboard size={28} className="text-[#1fba11]" />

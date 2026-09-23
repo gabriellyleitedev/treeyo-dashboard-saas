@@ -2,33 +2,23 @@
 
 /*
  * Estilos globais.
- *
- * ATENÇÃO: estas regras ficam FORA de @layer de propósito, para manter o
- * visual atual. Por estarem fora de layer, elas vencem as utilities do
- * Tailwind — por isso o `* { margin: 0 }` abaixo anula classes como
- * mt-4, mb-8 e mx-auto (só funcionam com `!`, ex: `!mb-16`).
- * Corrigir isso = mover o reset para @layer base e revisar as telas.
+ * O reset fica em @layer base para que as utilities do Tailwind
+ * (mt-4, mx-auto, space-y-2...) consigam sobrescrevê-lo.
  */
+@layer base {
+  * {
+    font-family: "Inter", sans-serif;
+  }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-* {
-  margin: 0;
-  font-family: "Inter", sans-serif;
-}
-
-html,
-body,
-#root {
-  min-height: 100vh;
-  width: 100%;
-  background: #0D0D0D;
-  overflow-x: hidden;
-  overflow-y: auto;
+  html,
+  body,
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    background: #0D0D0D;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 }
 
 /* ---------- Animações ---------- */

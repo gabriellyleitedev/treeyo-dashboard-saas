@@ -14,7 +14,7 @@ export function PageHeaderMobile({
     placeholder,
     modulo,
     tamanhoTitulo = "text-xl",
-    className = "px-4",
+    className = "",
 }) {
     const navigate = useNavigate();
     const [searchAberto, setSearchAberto] = useState(false);
@@ -28,13 +28,13 @@ export function PageHeaderMobile({
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                         className="flex items-center justify-between w-full"
                     >
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <button onClick={() => navigate(-1)} className="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
                                 <ArrowLeft size={22} />
                             </button>
-                            <h1 className={`text-gray-200 font-medium ${tamanhoTitulo}`}>{titulo}</h1>
+                            <h1 className={`text-gray-200 font-medium truncate ${tamanhoTitulo}`}>{titulo}</h1>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 shrink-0">
                             <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
                                 <Search size={22} />
                             </button>
@@ -74,10 +74,10 @@ export function PageHeaderMobile({
 // seletor de tema e notificações.
 export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, modulo, variants }) {
     return (
-        <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-2 shrink-0 px-4 mt-4" variants={variants}>
+        <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-4 shrink-0 mt-2" variants={variants}>
             <div>
                 <h1 className="text-gray-200 font-semibold text-2xl whitespace-nowrap">
-                    <span className="text-neutral-400 font-normal"> Dashboard / </span> {titulo}
+                    <span className="hidden lg:inline text-neutral-400 font-normal">Dashboard / </span>{titulo}
                 </h1>
             </div>
 

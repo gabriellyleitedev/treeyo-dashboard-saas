@@ -18,7 +18,7 @@ O que você encontrará aqui agora:
 
 [x] Design System: Implementação de Dark Mode com foco em legibilidade de dados financeiros.
 
-[ ] Responsividade: Em fase de ajuste para garantir a melhor experiência em dispositivos mobile. (Em progresso)
+[x] Responsividade: layout adaptado para celular, tablet e desktop (360px a 1920px).
 
 [ ] Lógica de Estado: Implementação de estados dinâmicos para simulação de dados reais. (Próxima etapa)
 

@@ -249,8 +249,8 @@ export default function SaldoMiniChart({ range, setRange }) {
         <p className="md:text-xs text-xs text-gray-200 leading-tight italic text-left">{getSaudacao()}</p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 items-stretch w-full">
-        <div className="w-full h-64 lg:h-[160px] md:h-[200px] relative overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-stretch w-full">
+        <div className="w-full min-w-0 md:flex-1 h-64 md:h-[200px] lg:h-[180px] relative overflow-hidden">
           <div className="absolute left-7 top-[-30px] bottom-[30px] w-[1.5px] bg-gradient-to-b from-transparent via-white/20 to-transparent z-10" />
 
           <ResponsiveContainer width="100%" height="100%">
@@ -308,7 +308,7 @@ export default function SaldoMiniChart({ range, setRange }) {
           </ResponsiveContainer>
         </div>
 
-        <div className="flex flex-row md:flex-col overflow-x-auto md:w-auto gap-6 h-auto lg:h-[160px] md:!-mt-6 w-full lg:w-auto lg:px-14 no-scrollbar pb-2">
+        <div className="grid grid-cols-3 md:flex md:flex-col md:justify-center gap-2 md:gap-4 w-full md:w-44 lg:w-48 shrink-0 pb-2">
           {[
             { id: '7d', label: '7 Dias' },
             { id: '30d', label: 'Mensal' },
@@ -317,12 +317,12 @@ export default function SaldoMiniChart({ range, setRange }) {
             <button
               key={btn.id}
               onClick={() => btn.id === 'custom' ? setIsCalendarOpen(true) : setRange(btn.id)}
-              className={`flex-1 lg:w-44 h-11 px-4 rounded-xl text-[10px] font-semibold uppercase tracking-widest transition-all duration-300 flex items-center justify-center gap-2
+              className={`w-full min-w-0 min-h-11 px-2 md:px-4 py-2 rounded-xl text-[10px] leading-tight text-center font-semibold uppercase tracking-wider md:tracking-widest transition-all duration-300 flex items-center justify-center gap-2
                 ${range === btn.id
                   ? "bg-[#1fba11] text-black border border-[#1fba11] shadow-[0_0_25px_rgba(31,186,17,0.4)]"
                   : "bg-white/5 text-neutral-400 border border-white/5 hover:bg-white/10"}`}
             >
-              {btn.icon && <Calendar size={14} className={range === btn.id ? "text-black" : "text-[#1fba11]"} />}
+              {btn.icon && <Calendar size={14} className={`shrink-0 ${range === btn.id ? "text-black" : "text-[#1fba11]"}`} />}
               {btn.label}
             </button>
           ))}

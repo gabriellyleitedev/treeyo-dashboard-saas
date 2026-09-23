@@ -52,13 +52,14 @@ export default function CardsStack() {
   };
 
   return (
-    <div className="relative w-full md:max-w-[360px] max-w-[320px] h-full transition-all duration-300 ease-in-out">
-      <div className="px-4 md:px-0 p-6 md:p-4">
-        <h1 className="text-gray-200 font-normal text-2xl">
-          Fila Inteligente
-        </h1>
-      </div>
+    <div className="flex flex-col gap-4 w-full min-w-0">
+      <h2 className="text-gray-200 font-normal text-2xl leading-10">
+        Fila Inteligente
+      </h2>
 
+      {/* Os cards são absolutos (empilhados); a altura fixa reserva o espaço
+          do card do topo + os dois que aparecem por baixo (72px cada). */}
+      <div className="relative w-full h-[250px]">
       <AnimatePresence>
         {cards.map((card, i) => {
           const position = (i - index + cards.length) % cards.length;
@@ -114,7 +115,7 @@ export default function CardsStack() {
           );
         })}
       </AnimatePresence>
-
+      </div>
     </div>
 
   );

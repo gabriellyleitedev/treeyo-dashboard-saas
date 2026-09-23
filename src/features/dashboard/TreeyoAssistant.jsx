@@ -2,16 +2,10 @@ import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {
     return (
-        <div className="flex flex-col w-full items-center md:items-start p-0 md:p-0">
+        <div className="w-full min-w-0">
 
             {/* Card Principal */}
-            <div className="relative overflow-hidden w-full
-            md:max-w-[300px] md:min-h-[360px] 
-            lg:w-[310px] lg:min-h-[320px] 
-            max-w-[280px] 
-            min-h-[340px] 
-
-            flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
+            <div className="relative overflow-hidden w-full h-full flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
 
                 <div
                     className="absolute inset-0 z-0"
@@ -28,17 +22,17 @@ const TreeyoAssistant = () => {
 
                 <div className="relative z-10 flex flex-col h-full">
 
-                    <div className="flex-1 flex flex-col justify-end py-4 px-6 lg:px-5 lg:py-5">
+                    <div className="flex-1 flex flex-col justify-end p-5">
                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1fba11] to-[#0d5c08] flex items-center justify-center shadow-[0_0_30px_rgba(31,186,17,0.5)]">
                             <Sparkles className="text-white w-7 h-7" />
                         </div>
                     </div>
 
                     {/* TEXTO */}
-                    <div className="py-2 px-5 lg:py-0 lg:px-5 ">
+                    <div className="px-5">
                         <h3 className="text-white text-xl font-bold leading-tight">
-                            <h1>Smart IA Assistente</h1>
-                            <span className="text-[#1fba11]">Sem Complicação</span>
+                            <span className="block">Smart IA Assistente</span>
+                            <span className="block text-[#1fba11]">Sem Complicação</span>
                         </h3>
                         <p className="text-gray-400 text-sm leading-relaxed mt-2">
                             Fale com a IA da Treeyo para entender seu financeiro
@@ -47,7 +41,7 @@ const TreeyoAssistant = () => {
                     </div>
 
                     {/* ÁREA DA AÇÃO */}
-                    <div className='flex flex-col items-start gap-4 px-5 pb-4'>
+                    <div className='flex flex-col items-start gap-4 p-5'>
                         <div className="flex items-center group">
                             <button className="
                                 bg-gradient-to-r from-[#1fba11] to-[#158f0d]
@@ -69,9 +63,7 @@ const TreeyoAssistant = () => {
                         {/* INPUT - DIGITAR */}
                         <div className='
                             flex items-center gap-4 h-12 rounded-xl bg-black/40 border border-white/10 px-3 text-sm text-gray-300 focus-within:border-[#1fba11] overflow-hidden
-                            w-full 
-                            min-w-[265px]
-                            shrink-0 
+                            w-full
                         '>
 
                             <MessageSquare className='w-4 h-4 text-gray-400 shrink-0' />

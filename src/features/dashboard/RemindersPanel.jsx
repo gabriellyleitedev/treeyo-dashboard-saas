@@ -38,13 +38,13 @@ export default function RemindersPanel() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-[300px] md:max-w-[320px]  md:pl-3 mx-auto md:mx-0">
+    <div className="flex flex-col gap-4 w-full min-w-0">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between px-1">
-        <span className="text-2xl text-gray-200 flex ">
+      <div className="flex items-center justify-between h-10">
+        <h2 className="text-2xl text-gray-200 font-normal">
           Lembretes
-        </span>
+        </h2>
 
         <button className="text-gray-200 hover:text-[#1fba11] transition duration-300 border border-gray-200 hover:border-[#1fba11] rounded-md w-6 h-6 flex items-center justify-center">
           <Plus size={14} />
