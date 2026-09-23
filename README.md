@@ -32,6 +32,24 @@ O que você encontrará aqui agora:
 
 ---
 
+### 📁 Estrutura do Projeto
+```
+src/
+├── components/
+│   ├── layout/      # Layout, Sidebar, MobileDock, Header, PageHeader
+│   └── ui/          # Componentes genéricos (ConfirmModal, SelectTreeyo, ThemeToggle...)
+├── features/        # Componentes por domínio: dashboard, lancamentos, saldo, dre
+├── context/         # Estado global: lançamentos, notificações e tema
+├── constants/       # Rotas do app (navigation.js) e dados do usuário
+├── utils/           # Formatação (moeda/data), máscaras, animações e localStorage
+├── pages/           # Uma página por rota
+└── styles/          # CSS global (Tailwind v4)
+```
+Imports usam o alias `@/` → `src/` (ex: `import { formatarMoeda } from '@/utils/formatters'`).
+Para adicionar uma tela nova, registre a rota em `src/constants/navigation.js` e em `src/App.jsx`.
+
+---
+
 ### 🧠 Competências Técnicas Aplicadas
 - **Arquitetura de Componentes:** Código modular e reutilizável para escalabilidade do projeto.
 - **UI/UX Moderno:** Implementação de layouts em *Bento Grid*, *Dark Mode* e tipografia otimizada.
