@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Sun, Moon, Search, Trash2, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import FormularioLancamento from "../components/FormularioLancamento";
-import CardLancamento from "../components/CardLancamento";
-import ConfirmModal from "../components/ConfirmModal";
+import FormularioLancamento from '@/features/lancamentos/FormularioLancamento';
+import CardLancamento from '@/features/lancamentos/CardLancamento';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 import { toast } from "react-hot-toast";
-import { useNotifications } from "../context/NotificationContext";
-import NotificationBell from "../components/NotificationBell";
+import { useNotifications } from '@/context/NotificationContext';
+import NotificationBell from '@/components/ui/NotificationBell';
 function formatarDataCurta(dataISO) {
     if (!dataISO) return "";
     if (dataISO.includes("/")) return dataISO;

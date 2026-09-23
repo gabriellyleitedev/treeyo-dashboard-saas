@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { LayoutDashboard, Bell, Calendar, ChevronDown, Sun, Moon, User, Settings, LogOut } from 'lucide-react';
-import CalendarPicker from './CalendarPicker';
-import NotificationBell from "./NotificationBell";
+import CalendarPicker from '@/components/ui/CalendarPicker';
+import NotificationBell from '@/components/ui/NotificationBell';
 
 
 const Header = ({ isDarkMode, toggleTheme, isMenuOpen, setIsMenuOpen }) => {

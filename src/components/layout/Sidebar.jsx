@@ -38,7 +38,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }) => {
             {/* LOGO */}
             <div className={`flex px-1 py-3 border-b border-white/15 items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
                 <div className={`transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>
-                    <img src="logo.png.png" className="h-12 w-auto object-contain" alt="Logo" />
+                    <img src="/logo.png" className="h-12 w-auto object-contain" alt="Logo" />
                 </div>
 
                 <button

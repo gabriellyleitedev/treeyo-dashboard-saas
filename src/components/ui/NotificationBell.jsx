@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import { useNotifications } from "../context/NotificationContext";
+import { useNotifications } from '@/context/NotificationContext';
 import { useState, useRef, useEffect } from "react";
 
 const NotificationBell = ({ modulo = "geral" }) => {

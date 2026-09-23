@@ -1,12 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/Layout'
-import VisaoGeral from './pages/VisaoGeral'
-import Movimentacao from './pages/Movimentacao'
-import EvolucaoSaldo from './pages/EvolucaoSaldo'
-import Lancamento from './pages/Lancamento'
-import Dre from './pages/Dre'
+import Layout from '@/components/layout/Layout'
+import VisaoGeral from '@/pages/VisaoGeral'
+import Movimentacao from '@/pages/Movimentacao'
+import EvolucaoSaldo from '@/pages/EvolucaoSaldo'
+import Lancamento from '@/pages/Lancamento'
 import { Toaster } from "react-hot-toast";
-import { NotificationProvider } from "./context/NotificationContext";
+import { NotificationProvider } from '@/context/NotificationContext';
 import { useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 

@@ -2,9 +2,9 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Sun, Moon, Search, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import NotificationBell from "../components/NotificationBell";
-import ConfirmModal from "../components/ConfirmModal";
-import SaldoMiniChart from "../components/SaldoMiniChart";
+import NotificationBell from '@/components/ui/NotificationBell';
+import ConfirmModal from '@/components/ui/ConfirmModal';
+import SaldoMiniChart from '@/features/saldo/SaldoMiniChart';
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -278,7 +278,7 @@ const EvolucaoSaldo = () => {
                                 <div className="relative z-10 flex flex-col gap-4">
                                     <h2 className="text-gray-200 text-base md:text-[18px] font-medium flex items-center ">
                                         Sua evolução com a
-                                        <img src="logo.png.png" className="w-24 flex" alt="logo" />
+                                        <img src="/logo.png" className="w-24 flex" alt="logo" />
                                     </h2>
 
 

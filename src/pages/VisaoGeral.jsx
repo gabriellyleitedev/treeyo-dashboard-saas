@@ -1,12 +1,12 @@
 import React from 'react';
 import { TrendingUp } from 'lucide-react';
-import CardsStack from '../components/CardsStack';
-import MainChart from '../components/MainChart';
-import RemindersPanel from '../components/RemindersPanel';
-import TreeyoAssistant from '../components/TreeyoAssistant';
-import Header from '../components/Header';
-import { useNotifications } from "../context/NotificationContext";
-import SummaryDRE from '../components/SummaryDRE';
+import CardsStack from '@/features/dashboard/CardsStack';
+import MainChart from '@/features/dashboard/MainChart';
+import RemindersPanel from '@/features/dashboard/RemindersPanel';
+import TreeyoAssistant from '@/features/dashboard/TreeyoAssistant';
+import Header from '@/components/layout/Header';
+import { useNotifications } from '@/context/NotificationContext';
+import SummaryDRE from '@/features/dashboard/SummaryDRE';
 
 function VisaoGeral() {
     const [isDarkMode, setIsDarkMode] = React.useState(true);
