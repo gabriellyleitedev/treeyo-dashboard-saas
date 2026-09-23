@@ -56,7 +56,7 @@ const Layout = ({ meusLancamentos = [] }) => {
           flex-1 bg-[#111111] 
           rounded-none border-none
           xl:m-3 xl:rounded-[2.5rem] xl:border xl:border-white/5 xl:shadow-2xl
-          overflow-y-auto overflow-x-hidden custom-scrollbar
+          overflow-y-auto overflow-x-hidden
           relative
         ">
           {/* Espaçamento interno do conteúdo */}

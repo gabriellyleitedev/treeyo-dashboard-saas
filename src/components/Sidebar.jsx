@@ -49,7 +49,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }) => {
             </div>
 
             {/* NAV */}
-            <nav className="flex-1 pt-7 mt-8 overflow-y-auto overflow-x-hidden custom-scrollbar">
+            <nav className="flex-1 pt-7 mt-8 overflow-y-auto overflow-x-hidden">
                 {navSections.map((section, index) => (
                     <div key={index} className={`${index === 0 ? 'mt-6' : ''} ${index < navSections.length - 1 ? '!mb-16' : 'mb-0'}`}>
                         {section.title && !isCollapsed && (

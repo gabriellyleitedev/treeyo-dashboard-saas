@@ -63,15 +63,6 @@ const MobileDock = ({ onOpenSearch }) => {
                     })}
                 </div>
             </nav>
-
-            <style jsx>{`
-                .no-scrollbar::-webkit-scrollbar { display: none; }
-                .no-scrollbar { 
-                    -ms-overflow-style: none; 
-                    scrollbar-width: none;
-                    -webkit-overflow-scrolling: touch;
-                }
-            `}</style>
         </div>
     );
 }

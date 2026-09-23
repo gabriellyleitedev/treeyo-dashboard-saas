@@ -75,7 +75,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
               </button>
             </div>
 
-            <div className="max-h-[60vh] overflow-y-auto p-8 custom-scrollbar">
+            <div className="max-h-[60vh] overflow-y-auto p-8">
               {query ? (
 
                 <div className="space-y-4">

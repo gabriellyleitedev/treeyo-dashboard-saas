@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/*
+ * Estilos globais.
+ *
+ * ATENÇÃO: estas regras ficam FORA de @layer de propósito, para manter o
+ * visual atual. Por estarem fora de layer, elas vencem as utilities do
+ * Tailwind — por isso o `* { margin: 0 }` abaixo anula classes como
+ * mt-4, mb-8 e mx-auto (só funcionam com `!`, ex: `!mb-16`).
+ * Corrigir isso = mover o reset para @layer base e revisar as telas.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  width: 100%;
+  background: #0D0D0D;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* ---------- Animações ---------- */
+
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* usada pela Sidebar via animate-[pulseGlow_6s_ease-in-out_infinite] */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(-50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateY(-50%) scale(1.08);
+  }
+}
+
+.animate-barGrow {
+  animation: barGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ---------- Scrollbars ---------- */
+
+/* Esconde todas as scrollbars por padrão */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar fina e visível (ex: lista de lançamentos) */
+.custom-scroll {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #333333 transparent !important;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 5px !important;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: #222222 !important;
+  border-radius: 20px !important;
+}
