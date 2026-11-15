@@ -9,7 +9,18 @@ import GlowTopo from '@/components/ui/GlowTopo';
 import { useNotifications } from '@/context/NotificationContext';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { USUARIO } from '@/constants/usuario';
-import { STORAGE_KEYS, lerStorage } from '@/utils/storage';
+import { STORAGE_KEYS, isRecord, lerStorage } from '@/utils/storage';
+
+// Perfil salvo por um futuro cadastro; hoje só o nome é usado
+interface Perfil {
+    nome?: string;
+}
+
+// Qualquer valor salvo conta como perfil existente; o nome só é usado se for texto
+const interpretarPerfil = (dados: unknown): Perfil | null => {
+    if (!dados) return null;
+    return { nome: isRecord(dados) && typeof dados.nome === 'string' ? dados.nome : undefined };
+};
 
 function VisaoGeral() {
     const { adicionarNotificacao } = useNotifications();
@@ -20,7 +31,7 @@ function VisaoGeral() {
     useEffect(() => {
         if (hasChecked.current) return;
 
-        const perfil = lerStorage(STORAGE_KEYS.perfil, null);
+        const perfil = lerStorage(STORAGE_KEYS.perfil, null, interpretarPerfil);
 
         if (perfil && !sessionStorage.getItem('@treeyo:welcome_notified')) {
             adicionarNotificacao({
@@ -29,7 +40,6 @@ function VisaoGeral() {
                 titulo: `Bem-vinda, ${perfil.nome || USUARIO.apelido}!`,
                 mensagem: 'Seu dashboard está atualizado.',
                 tipo: 'info',
-                lida: false,
                 data: new Date().toISOString()
             });
             sessionStorage.setItem('@treeyo:welcome_notified', 'true');
@@ -42,7 +52,6 @@ function VisaoGeral() {
                 titulo: 'Comece a poupar!',
                 mensagem: 'Você ainda não registrou nenhuma movimentação este mês.',
                 tipo: 'warning',
-                lida: false,
                 data: new Date().toISOString()
             });
             sessionStorage.setItem('@treeyo:empty_alert_notified', 'true');

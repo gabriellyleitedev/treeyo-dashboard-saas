@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
-  ChevronRight, 
+  TrendingDown,
+  ChevronRight,
   Eye, 
   EyeOff, 
   ArrowUpRight, 
@@ -31,7 +30,7 @@ export default function SummaryDRE() {
     margem: "56.4%"
   };
 
-  const format = (val) => isHidden ? "••••••" : `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+  const format = (val: number) => isHidden ? "••••••" : `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
   const handleShare = async () => {
     const text = `Resumo Financeiro Treeyo - ${dateFormatted}\nLucro Líquido: R$ ${data.lucro}\nMargem: ${data.margem}`;
@@ -40,7 +39,7 @@ export default function SummaryDRE() {
         await navigator.share({ title: 'Relatório Treeyo', text: text });
       } catch { /* usuário cancelou o compartilhamento */ }
     } else {
-      navigator.clipboard.writeText(text);
+      void navigator.clipboard.writeText(text);
       alert('Resumo copiado para a área de transferência!');
     }
   };
@@ -57,7 +56,7 @@ export default function SummaryDRE() {
         
         <div className="flex items-center gap-2">
           <button 
-            onClick={handleShare}
+            onClick={() => void handleShare()}
             className="p-2.5 bg-white/[0.03] border border-white/10 rounded-xl text-zinc-400 hover:text-[#1fba11] transition-all"
           >
             <Share2 size={18} />
@@ -119,7 +118,7 @@ export default function SummaryDRE() {
         </div>
 
         <button 
-          onClick={() => navigate('/resultado')}
+          onClick={() => void navigate('/resultado')}
           className="w-full sm:w-auto flex items-center justify-center gap-2 text-zinc-500 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] transition-all group"
         >
           Ver Relatório Completo 

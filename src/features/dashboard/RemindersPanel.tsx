@@ -2,8 +2,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 
+interface Reminder {
+  id: number;
+  title: string;
+  description: string;
+  color: string;
+  completed: boolean;
+}
+
 export default function RemindersPanel() {
-  const [reminders, setReminders] = useState([
+  const [reminders, setReminders] = useState<Reminder[]>([
     {
       id: 1,
       title: "ÚLTIMAS ATUALIZAÇÕES",
@@ -27,7 +35,7 @@ export default function RemindersPanel() {
     },
   ]);
 
-  function toggleReminder(id) {
+  function toggleReminder(id: Reminder["id"]) {
     setReminders((prev) =>
       prev.map((item) =>
         item.id === id

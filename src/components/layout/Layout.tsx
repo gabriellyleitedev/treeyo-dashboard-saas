@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileDock from './MobileDock';
-import BuscaInteligente from '@/components/ui/BuscaInteligente';
+import BuscaInteligente, { type ItemBusca } from '@/components/ui/BuscaInteligente';
 import { NAV_ITEMS, ROUTES } from '@/constants/navigation';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
@@ -15,7 +15,7 @@ const Layout = () => {
 
   // Atalho CTRL+K ou CMD+K
   useEffect(() => {
-    const handleK = (e) => {
+    const handleK = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(true);
@@ -26,7 +26,7 @@ const Layout = () => {
   }, []);
 
   // Itens pesquisáveis no Ctrl+K: telas do menu + lançamentos cadastrados
-  const rotasDoSistema = useMemo(() => [
+  const rotasDoSistema = useMemo((): ItemBusca[] => [
     ...NAV_ITEMS.map(item => ({ name: item.name, href: item.href, cat: 'Menu' })),
 
     ...lancamentos.map(l => ({

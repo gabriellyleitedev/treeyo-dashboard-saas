@@ -1,6 +1,18 @@
-import { Activity, TrendingUp, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { TrendingUp, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
-const rows = [
+type StatusAtividade = 'Concluído' | 'Pendente' | 'Programado' | 'Atrasado';
+
+interface LinhaAtividade {
+    id: number;
+    operation: string;
+    /** Valor já formatado para exibição */
+    amount: string;
+    date: string;
+    type: 'entrada' | 'saida';
+    status: StatusAtividade;
+}
+
+const rows: LinhaAtividade[] = [
     { id: 1, operation: 'Recebimento de vendas', amount: '+R$ 4.200', date: '12 Mai', type: 'entrada', status: 'Concluído' },
     { id: 2, operation: 'Pagamento de impostos', amount: '-R$ 1.020', date: '13 Mai', type: 'saida', status: 'Pendente' },
     { id: 3, operation: 'Retirada do sócio', amount: '-R$ 780', date: '14 Mai', type: 'saida', status: 'Programado' },
@@ -8,7 +20,7 @@ const rows = [
     { id: 5, operation: 'Recebimento de cliente', amount: '+R$ 1.480', date: '16 Mai', type: 'entrada', status: 'Concluído' },
 ];
 
-const statusStyles = {
+const statusStyles: Record<StatusAtividade, string> = {
     Concluído: 'text-emerald-400',
     Pendente: 'text-amber-400',
     Programado: 'text-sky-400',

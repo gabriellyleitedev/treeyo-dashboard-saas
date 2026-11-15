@@ -1,12 +1,23 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, type ReactNode } from "react";
+import { motion, type Variants } from "framer-motion";
 import SaldoMiniChart from '@/features/saldo/SaldoMiniChart';
 import GlowTopo from '@/components/ui/GlowTopo';
 import { PageHeaderMobile, PageHeaderDesktop } from '@/components/layout/PageHeader';
 import { containerVariants, itemVariants } from '@/utils/animations';
+import type { PeriodoSaldo } from '@/types/saldo';
+
+// Valores já formatados para exibição
+interface PresetSaldo {
+    vendas: string;
+    despesas: string;
+    total: string;
+    saldo: string;
+    insights: string[];
+    frases: string[];
+}
 
 // Números fixos por período até existir cálculo real a partir dos lançamentos
-const presets = {
+const presets: Record<PeriodoSaldo, PresetSaldo> = {
     "7d": {
         vendas: "18",
         despesas: "07",
@@ -33,7 +44,7 @@ const presets = {
     }
 };
 const EvolucaoSaldo = () => {
-    const [range, setRange] = useState("30d");
+    const [range, setRange] = useState<PeriodoSaldo>("30d");
     const [busca, setBusca] = useState("");
 
     const dadosAtuais = presets[range] || presets["30d"];
@@ -143,7 +154,12 @@ const EvolucaoSaldo = () => {
     );
 };
 
-const InsightCard = ({ label, text }) => (
+interface InsightCardProps {
+    label: string;
+    text: ReactNode;
+}
+
+const InsightCard = ({ label, text }: InsightCardProps) => (
     <div className="group bg-white/[0.03] border border-white/10 p-2 md:p-3 rounded-xl min-h-[80px] hyphens-auto w-full min-w-0 flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
         <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.1em] mb-1 ">
             {label}
@@ -153,11 +169,20 @@ const InsightCard = ({ label, text }) => (
         </p>
     </div>
 );
-const StatBox = ({ label, value, span, variants }) => {
+interface StatBoxProps {
+    label: string;
+    /** Valor exibido; "0.000", "--", 0 ou vazio mostram o estado sem dados */
+    value: string | number;
+    /** Sufixo destacado ao lado do valor (ex.: "$") */
+    span?: string;
+    variants?: Variants;
+}
+
+const StatBox = ({ label, value, span, variants }: StatBoxProps) => {
     const isEmpty = value === "0.000" || value === "--" || value === 0 || !value;
 
-    const getEmptyState = (label) => {
-        const map = {
+    const getEmptyState = (label: string) => {
+        const map: Record<string, string> = {
             "Vendas recebidas": "Sem dados",
             "Despesas pagas": "Sem dados",
             "Total movimentado": "Sem registros",

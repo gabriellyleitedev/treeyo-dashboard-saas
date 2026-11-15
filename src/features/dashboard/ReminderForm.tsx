@@ -1,11 +1,35 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { X, Calendar, Clock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { mascaraData, mascaraHora } from "@/utils/masks";
 
-export default function ReminderForm({ isOpen, onClose, onSave }) {
-  const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
+interface ReminderFormData {
+  title: string;
+  description: string;
+  /** DD/MM/AAAA enquanto digita */
+  date: string;
+  /** HH:MM */
+  time: string;
+}
+
+export interface Lembrete extends ReminderFormData {
+  id: string;
+  /** Convertida para AAAA-MM-DD ao salvar */
+  date: string;
+  completed: boolean;
+}
+
+type ReminderErrors = Partial<Record<"title" | "date" | "time", string | null>>;
+
+interface ReminderFormProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (lembrete: Lembrete) => void;
+}
+
+export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormProps) {
+  const [errors, setErrors] = useState<ReminderErrors>({});
+  const [formData, setFormData] = useState<ReminderFormData>({
     title: "",
     description: "",
     date: "", // Agora começa como string vazia para a máscara
@@ -15,21 +39,21 @@ export default function ReminderForm({ isOpen, onClose, onSave }) {
   if (!isOpen) return null;
 
   //DATA (00/00/0000)
-  const handleDateChange = (e) => {
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = mascaraData(e.target.value);
     setFormData(prev => ({ ...prev, date: v }));
     if (errors.date) setErrors(prev => ({ ...prev, date: null }));
   };
 
   // HORÁRIO (00:00)
-  const handleTimeChange = (e) => {
+  const handleTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const v = mascaraHora(e.target.value);
     setFormData(prev => ({ ...prev, time: v }));
     if (errors.time) setErrors(prev => ({ ...prev, time: null }));
   };
 
   const validate = () => {
-    const newErrors = {};
+    const newErrors: ReminderErrors = {};
     if (!formData.title.trim()) newErrors.title = "Título obrigatório";
 
     // Validação simples de data (DD/MM/AAAA)
@@ -46,7 +70,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
 

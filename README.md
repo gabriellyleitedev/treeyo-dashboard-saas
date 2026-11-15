@@ -40,13 +40,14 @@ src/
 │   └── ui/          # Componentes genéricos (ConfirmModal, SelectTreeyo, ThemeToggle...)
 ├── features/        # Componentes por domínio: dashboard, lancamentos, saldo, dre
 ├── context/         # Estado global: lançamentos, notificações e tema
-├── constants/       # Rotas do app (navigation.js) e dados do usuário
+├── constants/       # Rotas do app (navigation.ts) e dados do usuário
+├── types/           # Tipos compartilhados: lançamentos, notificações e saldo
 ├── utils/           # Formatação (moeda/data), máscaras, animações e localStorage
 ├── pages/           # Uma página por rota
 └── styles/          # CSS global (Tailwind v4)
 ```
 Imports usam o alias `@/` → `src/` (ex: `import { formatarMoeda } from '@/utils/formatters'`).
-Para adicionar uma tela nova, registre a rota em `src/constants/navigation.js` e em `src/App.jsx`.
+Para adicionar uma tela nova, registre a rota em `src/constants/navigation.ts` e em `src/App.tsx`.
 
 ---
 

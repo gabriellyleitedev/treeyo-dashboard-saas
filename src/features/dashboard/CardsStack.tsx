@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -7,8 +7,22 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+interface CardFila {
+  icon: ReactNode;
+  title: string;
+  /** Linhas exibidas no card ativo */
+  status: string | readonly string[];
+  action: string;
+  /** Cor de destaque em hex (#rrggbb) */
+  color: string;
+}
+
+interface ActionBlockProps extends CardFila {
+  isTop: boolean;
+}
+
 export default function CardsStack() {
-  const cards = [
+  const cards: CardFila[] = [
     {
       icon: <CalendarCheck />,
       title: "Conciliação Bancária",
@@ -121,7 +135,7 @@ export default function CardsStack() {
   );
 
 }
-function ActionBlock({ icon, title, status, action, color, isTop }) {
+function ActionBlock({ icon, title, status, action, color, isTop }: ActionBlockProps) {
   return (
     <div
       className={`

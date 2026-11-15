@@ -1,17 +1,56 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import SelectTreeyo from '@/components/ui/SelectTreeyo';
 import toast from "react-hot-toast";
 import { brParaISO, isoParaBR } from "@/utils/formatters";
 import { mascaraData } from "@/utils/masks";
+import {
+    METODOS_PAGAMENTO,
+    STATUS_INVESTIMENTO,
+    STATUS_PAGAMENTO,
+    type Lancamento,
+    type MetodoPagamento,
+    type StatusLancamento,
+    type TipoLancamento,
+} from "@/types/lancamento";
 
-const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
+// Estado dos campos enquanto o usuário preenche ("" = ainda não escolhido)
+interface FormLancamento {
+    data: string;
+    dataDisplay: string;
+    categoria: string;
+    /** Texto digitado; vira número ao confirmar */
+    valor: string;
+    status: StatusLancamento | "";
+    metodo: MetodoPagamento | "";
+    conta: string;
+    outroBanco: string;
+}
+
+type CampoFormulario = keyof FormLancamento;
+
+const BANCOS = [
+    "Nubank PJ",
+    "Itaú",
+    "Banco Inter",
+    "Bradesco",
+    "C6 Bank",
+    "Santander",
+    "Outro"
+];
+
+interface FormularioLancamentoProps {
+    tipoSelecionado: TipoLancamento;
+    aoConfirmar: (novo: Lancamento) => void;
+}
+
+const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancamentoProps) => {
 
     const hoje = new Date();
     const hojeISO = hoje.toISOString().split("T")[0];
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<FormLancamento>({
         data: hojeISO,
         dataDisplay: isoParaBR(hojeISO),
         categoria: "",
@@ -22,14 +61,14 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         outroBanco: ""
     });
 
-    const [erros, setErros] = useState([]);
+    const [erros, setErros] = useState<CampoFormulario[]>([]);
     const [shake, setShake] = useState(false);
 
     const limparErros = () => {
         if (erros.length > 0) setErros([]);
     };
 
-    const handleChange = (campo, valor) => {
+    const handleChange = <K extends CampoFormulario>(campo: K, valor: FormLancamento[K]) => {
         limparErros();
         setFormData(prev => ({
             ...prev,
@@ -39,7 +78,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
         }));
     };
 
-    const handleDataChange = (e) => {
+    const handleDataChange = (e: ChangeEvent<HTMLInputElement>) => {
 
         limparErros();
 
@@ -61,7 +100,8 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
     const validarEEnviar = () => {
 
-        const novosErros = [];
+        const novosErros: CampoFormulario[] = [];
+        const { status, metodo } = formData;
 
         const bancoFinal =
             formData.conta === "Outro"
@@ -70,11 +110,13 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
         if (!formData.categoria) novosErros.push("categoria");
         if (!formData.valor) novosErros.push("valor");
-        if (!formData.status) novosErros.push("status");
-        if (!formData.metodo) novosErros.push("metodo");
+        if (!status) novosErros.push("status");
+        if (!metodo) novosErros.push("metodo");
         if (!bancoFinal) novosErros.push("conta");
 
-        if (novosErros.length > 0) {
+        // status/metodo vazios já estão em novosErros; repetidos aqui para o
+        // TypeScript saber que, daqui para baixo, eles têm valor
+        if (novosErros.length > 0 || !status || !metodo) {
 
             setErros(novosErros);
             setShake(true);
@@ -88,7 +130,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
         }
 
-        const valorLimpo = formData.valor.toString()
+        const valorLimpo = formData.valor
             .replace(/R\$/g, "") // Remove o R$ se o cara digitar
             .replace(/\s/g, "")  // Remove espaços
             .replace(/\./g, "")  // Remove pontos de milhar (ex: do 1.000)
@@ -104,6 +146,8 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
 
         aoConfirmar({
             ...formData,
+            status,
+            metodo,
             valor: valorNumerico,
             conta: bancoFinal,
             id: Date.now(),
@@ -127,7 +171,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
     const inputBaseStyle =
         "w-full bg-[#161616] backdrop-blur-md border rounded-lg relative pl-2 pr-3 py-0 text-sm outline-none h-10 transition-all duration-300";
 
-    const getBorderStyle = (campo) => {
+    const getBorderStyle = (campo: CampoFormulario) => {
         if (erros.includes(campo))
             return "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
 
@@ -184,8 +228,8 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
                     }
                     options={
                         tipoSelecionado === "Investimento"
-                            ? ["Executado", "Agendado"]
-                            : ["Pago", "Pendente"]
+                            ? STATUS_INVESTIMENTO
+                            : STATUS_PAGAMENTO
                     }
                 />
 
@@ -193,7 +237,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
                     value={formData.metodo}
                     onChange={(v) => handleChange("metodo", v)}
                     placeholder="Form. Pagamento"
-                    options={["Pix", "Débito", "Crédito", "Dinheiro"]}
+                    options={METODOS_PAGAMENTO}
                 />
 
                 {formData.metodo === "Dinheiro" ? (
@@ -220,15 +264,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }) => {
                         value={formData.conta}
                         onChange={(v) => handleChange("conta", v)}
                         placeholder="Banco"
-                        options={[
-                            "Nubank PJ",
-                            "Itaú",
-                            "Banco Inter",
-                            "Bradesco",
-                            "C6 Bank",
-                            "Santander",
-                            "Outro"
-                        ]}
+                        options={BANCOS}
                     />
 
                 )}

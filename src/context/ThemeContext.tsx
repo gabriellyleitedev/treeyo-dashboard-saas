@@ -1,9 +1,18 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 
-const ThemeContext = createContext(null);
+interface ThemeContextValue {
+  isDarkMode: boolean;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+interface ThemeProviderProps {
+  children: ReactNode;
+}
 
 // Por enquanto só guarda a escolha (o app ainda não tem tema claro).
-export function ThemeProvider({ children }) {
+export function ThemeProvider({ children }: ThemeProviderProps) {
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   const value = useMemo(
@@ -14,4 +23,8 @@ export function ThemeProvider({ children }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = (): ThemeContextValue => {
+  const contexto = useContext(ThemeContext);
+  if (!contexto) throw new Error('useTheme precisa estar dentro de <ThemeProvider>');
+  return contexto;
+};

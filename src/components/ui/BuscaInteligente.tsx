@@ -1,17 +1,40 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ReactNode } from "react";
+import type { NavigateFunction } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, ArrowRight, History, Inbox } from "lucide-react";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { STORAGE_KEYS, lerStorage, salvarStorage } from "@/utils/storage";
 
+/** Item que pode ser encontrado na busca (Ctrl+K) */
+export interface ItemBusca {
+  name: string;
+  href: string;
+  /** Categoria exibida abaixo do nome (padrão "Sistema") */
+  cat?: string;
+  /** Texto em minúsculas usado na busca; se ausente, busca pelo nome */
+  searchData?: string;
+  icon?: ReactNode;
+}
+
+interface BuscaInteligenteProps {
+  isOpen: boolean;
+  onClose: () => void;
+  navigate: NavigateFunction;
+  rotasDoSistema?: ItemBusca[];
+}
+
 // Abas de sugestão
-const sugestoes = NAV_ITEMS
+const sugestoes: ItemBusca[] = NAV_ITEMS
   .filter((item) => item.sugestao)
   .map((item) => ({ name: item.name, href: item.href, icon: <item.icon size={18} /> }));
 
-export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSistema = [] }) {
+// Histórico salvo: lista de termos (ignora o que não for texto)
+const interpretarHistorico = (dados: unknown): string[] =>
+  Array.isArray(dados) ? dados.filter((termo) => typeof termo === "string") : [];
+
+export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSistema = [] }: BuscaInteligenteProps) {
   const [query, setQuery] = useState("");
-  const [history, setHistory] = useState(() => lerStorage(STORAGE_KEYS.historicoBusca, []));
+  const [history, setHistory] = useState(() => lerStorage(STORAGE_KEYS.historicoBusca, [], interpretarHistorico));
 
   // LÓGICA DE VARREDURA TOTAL 
   const results = useMemo(() => {
@@ -24,9 +47,9 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
     });
   }, [query, rotasDoSistema]);
 
-  const handleSelect = (item) => {
-    const destino = item.href || item.path;
-    if (destino) navigate(destino);
+  const handleSelect = (item: ItemBusca) => {
+    const destino = item.href;
+    if (destino) void navigate(destino);
 
     const searchTerm = item.name || query;
     const newHistory = [searchTerm, ...history.filter(h => h !== searchTerm)].slice(0, 5);

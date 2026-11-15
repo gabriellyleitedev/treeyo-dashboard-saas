@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Toaster } from "react-hot-toast";
+import { Toaster, type DefaultToastOptions } from "react-hot-toast";
 import { Analytics } from '@vercel/analytics/react';
 import Layout from '@/components/layout/Layout'
 import VisaoGeral from '@/pages/VisaoGeral'
@@ -11,7 +11,7 @@ import { LancamentosProvider } from '@/context/LancamentosContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { ROUTES } from '@/constants/navigation';
 
-const toastOptions = {
+const toastOptions: DefaultToastOptions = {
   style: {
     background: "#161616",
     color: "#e5e5e5",
@@ -36,7 +36,7 @@ function App() {
               <Route path={ROUTES.lancamento} element={<Lancamento />} />
               <Route path={ROUTES.evolucaoSaldo} element={<EvolucaoSaldo />} />
 
-              {/* Telas ainda não construídas (pages/Movimentacao.jsx está em rascunho) */}
+              {/* Telas ainda não construídas (pages/Movimentacao.tsx está em rascunho) */}
               <Route path={ROUTES.movimentacao} element={<EmBreve titulo="Movimentação" />} />
               <Route path={ROUTES.resultado} element={<EmBreve titulo="Resultado" />} />
               <Route path={ROUTES.fluxoProjetado} element={<EmBreve titulo="Fluxo de Caixa Projetado" />} />

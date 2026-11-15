@@ -1,8 +1,10 @@
+import type { Variants } from 'framer-motion';
+
 // Variants do framer-motion usadas na entrada das páginas.
 // Uso: <motion.div initial="hidden" animate="visible" variants={containerVariants}>
 //        <motion.div variants={itemVariants}>...</motion.div>
 
-export const containerVariants = {
+export const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -10,13 +12,13 @@ export const containerVariants = {
   },
 };
 
-export const itemVariants = {
+export const itemVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
 // Igual ao itemVariants, com deslocamento menor
-export const itemVariantsSutil = {
+export const itemVariantsSutil: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };

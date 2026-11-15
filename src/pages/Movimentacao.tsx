@@ -1,11 +1,13 @@
-/* eslint-disable no-unused-vars -- rascunho: o JSX abaixo está comentado até a tela ser finalizada */
+// RASCUNHO: a tela ainda não está nas rotas (App.tsx usa <EmBreve /> em /movimentacao).
+// O código do rascunho fica comentado abaixo; ao retomar a tela, descomente
+// os imports/constantes e o JSX e tipe o que for necessário.
+/*
 import { useState } from "react";
 import { Sun, Moon, Bell, Search, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 // COMPONENTE STAT
 
-const Movimentacao = () => {
   const [filtroAtivo, setFiltroAtivo] = useState("Todos");
 
   const dottedGridStyle = {
@@ -31,6 +33,9 @@ const Movimentacao = () => {
     },
   };
 
+*/
+
+const Movimentacao = () => {
   return (
     <div className="w-full">
 

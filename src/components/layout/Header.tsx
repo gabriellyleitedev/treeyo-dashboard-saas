@@ -12,7 +12,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [dataSelecionada, setDataSelecionada] = useState(new Date());
 
-  const handleDateChange = (dateString) => {
+  const handleDateChange = (dateString: string) => {
     const novaData = new Date(dateString + 'T00:00:00');
     setDataSelecionada(novaData);
   };

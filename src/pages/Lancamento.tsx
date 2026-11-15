@@ -11,17 +11,25 @@ import { useNotifications } from '@/context/NotificationContext';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { containerVariants, itemVariants, itemVariantsSutil } from '@/utils/animations';
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
+import { TIPOS_LANCAMENTO, type Lancamento as LancamentoItem, type TipoLancamento } from '@/types/lancamento';
+import type { TipoNotificacao } from '@/types/notificacao';
 
 // Colunas da lista: celular (info | valor | excluir), md (6 colunas), lg (8 colunas)
 const COLUNAS_LISTA = "grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 md:grid-cols-[3.5rem_6.5rem_8rem_minmax(0,1fr)_5.5rem_2rem] lg:grid-cols-[3.5rem_6.5rem_8rem_minmax(0,1fr)_5rem_minmax(0,1fr)_5.5rem_2rem] lg:gap-x-6";
 
-const TIPO_NOTIFICACAO = { "Entrada": "sucesso", "Saída": "aviso", "Investimento": "info" };
+const TIPO_NOTIFICACAO: Record<TipoLancamento, TipoNotificacao> = { "Entrada": "sucesso", "Saída": "aviso", "Investimento": "info" };
+
+// Classes do botão de tipo: barra lateral colorida + borda/brilho
+interface CoresTipo {
+    barra: string;
+    glow: string;
+}
 
 const Lancamento = () => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [itemParaExcluir, setItemParaExcluir] = useState(null);
+    const [itemParaExcluir, setItemParaExcluir] = useState<LancamentoItem | null>(null);
 
-    const [tipoAtivo, setTipoAtivo] = useState("Entrada");
+    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>("Entrada");
     const [busca, setBusca] = useState(""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
     const { lancamentos: lista, adicionarLancamento, removerLancamento } = useLancamentos();
@@ -47,13 +55,13 @@ const Lancamento = () => {
                     item.data?.includes(termo)
                 );
             })
-            .sort((a, b) => new Date(b.data) - new Date(a.data));
+            .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
 
     }, [lista, busca]);
 
-    const getCoresDinamicas = (tipo) => {
+    const getCoresDinamicas = (tipo: TipoLancamento): CoresTipo => {
         const ativo = tipoAtivo === tipo;
-        const config = {
+        const config: Record<TipoLancamento, CoresTipo> = {
             "Entrada": {
                 barra: "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]",
                 glow: ativo ? "border-green-500/40 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.15)]" : "border-white/10 bg-[#1a1a1a]"
@@ -136,7 +144,7 @@ const Lancamento = () => {
 
                     {/* Filtros de Tipo */}
                     <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 md:flex md:flex-col md:gap-3">
-                        {["Entrada", "Saída", "Investimento"].map((tipo) => {
+                        {TIPOS_LANCAMENTO.map((tipo) => {
                             const cores = getCoresDinamicas(tipo);
                             return (
                                 <button

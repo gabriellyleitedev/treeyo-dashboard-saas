@@ -1,9 +1,20 @@
-import { ChevronFirst, ChevronLast, Search, MoreVertical } from 'lucide-react'
+import { ChevronFirst, ChevronLast, Search, MoreVertical, type LucideIcon } from 'lucide-react'
 import { useLocation, Link } from 'react-router-dom'
 import { NAV_ITEMS } from '@/constants/navigation'
 import { USUARIO } from '@/constants/usuario'
 
-const navSections = [
+interface SidebarLink {
+    name: string;
+    icon: LucideIcon;
+    href: string;
+}
+
+interface SidebarSection {
+    title: string;
+    links: readonly SidebarLink[];
+}
+
+const navSections: SidebarSection[] = [
     {
         title: '',
         links: [{ name: 'Buscar...', icon: Search, href: '/buscar' }]
@@ -18,9 +29,15 @@ const navSections = [
     }
 ]
 
-const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }) => {
+interface SidebarProps {
+    isCollapsed: boolean;
+    setIsCollapsed: (collapsed: boolean) => void;
+    onOpenSearch: () => void;
+}
+
+const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }: SidebarProps) => {
     const location = useLocation();
-    const isActive = (href) => location.pathname === href;
+    const isActive = (href: string) => location.pathname === href;
 
     return (
         <aside className={`relative h-screen hidden xl:flex shrink-0 z-50 flex-col bg-neutral-950 text-white transition-all duration-500 ease-in-out ${isCollapsed ? 'w-16' : 'w-72'}`}>

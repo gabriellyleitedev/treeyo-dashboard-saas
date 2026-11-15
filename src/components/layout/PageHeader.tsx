@@ -1,9 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import NotificationBell from "@/components/ui/NotificationBell";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import type { ModuloNotificacao } from "@/types/notificacao";
+
+// Props comuns aos cabeçalhos mobile e desktop
+interface PageHeaderProps {
+    titulo: string;
+    busca: string;
+    onBuscaChange: (valor: string) => void;
+    placeholder: string;
+    modulo: ModuloNotificacao;
+}
+
+interface PageHeaderMobileProps extends PageHeaderProps {
+    /** Classe de tamanho do título (padrão text-xl) */
+    tamanhoTitulo?: string;
+    className?: string;
+}
+
+interface PageHeaderDesktopProps extends PageHeaderProps {
+    variants?: Variants;
+}
 
 // Cabeçalho das páginas internas no mobile: voltar + título, e um campo de
 // busca que abre no lugar do título.
@@ -15,7 +35,7 @@ export function PageHeaderMobile({
     modulo,
     tamanhoTitulo = "text-xl",
     className = "",
-}) {
+}: PageHeaderMobileProps) {
     const navigate = useNavigate();
     const [searchAberto, setSearchAberto] = useState(false);
 
@@ -29,7 +49,7 @@ export function PageHeaderMobile({
                         className="flex items-center justify-between w-full"
                     >
                         <div className="flex items-center gap-2 min-w-0">
-                            <button onClick={() => navigate(-1)} className="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
+                            <button onClick={() => void navigate(-1)}className="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
                                 <ArrowLeft size={22} />
                             </button>
                             <h1 className={`text-gray-200 font-medium truncate ${tamanhoTitulo}`}>{titulo}</h1>
@@ -72,7 +92,7 @@ export function PageHeaderMobile({
 
 // Cabeçalho das páginas internas no desktop: "Dashboard / Título", busca,
 // seletor de tema e notificações.
-export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, modulo, variants }) {
+export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, modulo, variants }: PageHeaderDesktopProps) {
     return (
         <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-4 shrink-0 mt-2" variants={variants}>
             <div>

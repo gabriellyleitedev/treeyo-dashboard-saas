@@ -1,8 +1,21 @@
 import { Bell } from "lucide-react";
 import { useNotifications } from '@/context/NotificationContext';
 import { useState, useRef, useEffect } from "react";
+import type { ModuloNotificacao, TipoNotificacao } from "@/types/notificacao";
 
-const NotificationBell = ({ modulo = "geral" }) => {
+// Cor do título por tipo; tipos sem cor usam o cinza padrão
+const corTipo: Partial<Record<TipoNotificacao, string>> = {
+  sucesso: "text-[#1fba11]",
+  erro: "text-red-500",
+  aviso: "text-yellow-400",
+  info: "text-blue-400"
+};
+
+interface NotificationBellProps {
+  modulo?: ModuloNotificacao;
+}
+
+const NotificationBell = ({ modulo = "geral" }: NotificationBellProps) => {
 
   const {
     notificacoes,
@@ -13,16 +26,16 @@ const NotificationBell = ({ modulo = "geral" }) => {
   const lista = notificacoes[modulo] || [];
 
   const [open, setOpen] = useState(false);
-  const ref = useRef();
+  const ref = useRef<HTMLDivElement>(null);
 
   const naoLidas = lista.filter(n => !n.lida).length;
 
-  const formatarData = (data) => {
+  const formatarData = (data: string) => {
 
     const d = new Date(data);
     const hoje = new Date();
 
-    const diff = hoje - d;
+    const diff = hoje.getTime() - d.getTime();
     const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (dias === 0) return "Hoje";
@@ -35,17 +48,10 @@ const NotificationBell = ({ modulo = "geral" }) => {
 
   };
 
-  const corTipo = {
-    sucesso: "text-[#1fba11]",
-    erro: "text-red-500",
-    aviso: "text-yellow-400",
-    info: "text-blue-400"
-  };
-
   useEffect(() => {
 
-    const handleClickOutside = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && event.target instanceof Node && !ref.current.contains(event.target)) {
         setOpen(false);
       }
     };

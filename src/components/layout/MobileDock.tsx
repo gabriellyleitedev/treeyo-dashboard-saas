@@ -1,15 +1,28 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, type LucideIcon } from 'lucide-react';
 import { NAV_ITEMS } from '@/constants/navigation';
 
-const navLinks = [
+interface DockLink {
+    icon: LucideIcon;
+    label: string;
+    href: string;
+    isSearch?: boolean;
+}
+
+const navLinks: DockLink[] = [
     { icon: Search, label: "Buscar", href: '#', isSearch: true },
     ...NAV_ITEMS.map((item) => ({ icon: item.icon, label: item.shortLabel, href: item.href })),
 ];
 
-const MobileDock = ({ onOpenSearch }) => {
+const itemClassName = "relative flex flex-col items-center justify-center min-w-[60px] h-full snap-center outline-none border-none bg-transparent";
+
+interface MobileDockProps {
+    onOpenSearch: () => void;
+}
+
+const MobileDock = ({ onOpenSearch }: MobileDockProps) => {
     const location = useLocation();
-    const isActive = (path) => location.pathname === path;
+    const isActive = (path: string) => location.pathname === path;
 
     return (
         <div className="xl:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 pointer-events-none">
@@ -20,17 +33,8 @@ const MobileDock = ({ onOpenSearch }) => {
                     {navLinks.map((link, idx) => {
                         const active = isActive(link.href);
 
-                        const Component = link.isSearch ? 'button' : Link;
-                        const extraProps = link.isSearch
-                            ? { onClick: onOpenSearch, type: 'button' }
-                            : { to: link.href };
-
-                        return (
-                            <Component
-                                key={idx}
-                                {...extraProps}
-                                className="relative flex flex-col items-center justify-center min-w-[60px] h-full snap-center outline-none border-none bg-transparent"
-                            >
+                        const conteudo = (
+                            <>
                                 {/* ICONE */}
                                 <div className={`relative z-10 transition-all duration-300 ${active ? 'text-white scale-110' : 'text-neutral-500'}`}>
                                     <link.icon size={22} strokeWidth={active ? 2.5 : 2} />
@@ -52,7 +56,18 @@ const MobileDock = ({ onOpenSearch }) => {
                                         />
                                     </div>
                                 )}
-                            </Component>
+                            </>
+                        );
+
+                        // "Buscar" abre o modal; os demais itens navegam
+                        return link.isSearch ? (
+                            <button key={idx} type="button" onClick={onOpenSearch} className={itemClassName}>
+                                {conteudo}
+                            </button>
+                        ) : (
+                            <Link key={idx} to={link.href} className={itemClassName}>
+                                {conteudo}
+                            </Link>
                         );
                     })}
                 </div>

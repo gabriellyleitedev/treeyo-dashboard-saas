@@ -1,8 +1,13 @@
 import { FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatarDataCurta, formatarMoeda } from "@/utils/formatters";
+import type { Lancamento } from "@/types/lancamento";
 
-const CardLancamento = ({ lancamento }) => {
+interface CardLancamentoProps {
+    lancamento: Lancamento | null | undefined;
+}
+
+const CardLancamento = ({ lancamento }: CardLancamentoProps) => {
     if (!lancamento) return null;
 
     return (

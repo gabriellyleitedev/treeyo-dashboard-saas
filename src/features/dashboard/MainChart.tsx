@@ -84,7 +84,7 @@ export default function MainChart() {
               dy={10}
               padding={{ left: isMobile ? 50 : 30 }}
               // FORMATAÇÃO APENAS PARA MOBILE (S, T, Q...)
-              tickFormatter={(value) => (isMobile && value ? value.charAt(0) : value)}
+              tickFormatter={(value: string) => (isMobile && value ? value.charAt(0) : value)}
             />
 
             <YAxis
@@ -97,17 +97,19 @@ export default function MainChart() {
             />
 
             <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const current = payload[0].value;
-                  const index = data.indexOf(payload[0].payload);
+              content={({ active, activeIndex }) => {
+                // activeIndex é o índice (em texto) do ponto sob o mouse em `data`
+                const index = Number(activeIndex);
+                const ponto = data[index];
+                if (active && ponto) {
+                  const current = ponto.saldo;
                   const previous = data[index - 1]?.saldo;
                   const diff = previous ? ((current - previous) / previous) * 100 : null;
 
                   return (
                     <div className="bg-[#0b0b0b] border border-white/10 rounded-xl px-4 py-3 text-xs shadow-xl">
                       <p className="text-neutral-400 uppercase text-[10px] mb-1 font-bold">
-                        {payload[0].payload.day || "Análise"}
+                        {ponto.day || "Análise"}
                       </p>
                       <p className="text-gray-200 font-bold text-sm">{formatarMoeda(current)}</p>
                       {diff !== null && (

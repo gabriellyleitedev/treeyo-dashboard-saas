@@ -1,7 +1,16 @@
 import { Listbox } from "@headlessui/react";
 import { Check, ChevronDown } from "lucide-react";
 
-export default function SelectTreeyo({ value, onChange, options, placeholder }) {
+// T inclui "" quando o campo pode estar vazio (ex.: StatusLancamento | "").
+interface SelectTreeyoProps<T extends string> {
+    /** Opção selecionada; "" mostra o placeholder */
+    value: T;
+    onChange: (valor: T) => void;
+    options: readonly T[];
+    placeholder: string;
+}
+
+export default function SelectTreeyo<T extends string>({ value, onChange, options, placeholder }: SelectTreeyoProps<T>) {
     return (
 
         <Listbox value={value} onChange={onChange}>

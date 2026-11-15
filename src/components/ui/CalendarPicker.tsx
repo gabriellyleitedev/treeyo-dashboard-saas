@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, type MouseEvent, type ReactNode } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -14,7 +14,14 @@ const months = [
 const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 // "2026-09-23" -> { year: 2026, month: 8, day: 23 } (null se inválida)
-function parseISO(value) {
+interface DataCalendario {
+  year: number;
+  /** Mês 0-11, como no Date */
+  month: number;
+  day: number;
+}
+
+function parseISO(value: string | undefined): DataCalendario | null {
   if (!value) return null;
   const parts = value.split('-');
   if (parts.length !== 3) return null;
@@ -23,12 +30,21 @@ function parseISO(value) {
   return { year, month, day };
 }
 
+interface CalendarPickerProps {
+  /** Data selecionada em ISO (AAAA-MM-DD); se ausente, começa em hoje */
+  value?: string;
+  /** Recebe a data escolhida em ISO (AAAA-MM-DD) */
+  onChange?: (dataISO: string) => void;
+  /** Substitui o botão padrão que abre o calendário */
+  customTrigger?: ReactNode;
+}
+
 export default function CalendarPicker({
   value,
   onChange,
   customTrigger
-}) {
-  const ref = useRef(null);
+}: CalendarPickerProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const inicial = parseISO(value);
   const today = new Date();
 
@@ -50,8 +66,8 @@ export default function CalendarPicker({
   }
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
+    function handleClickOutside(e: globalThis.MouseEvent) {
+      if (ref.current && e.target instanceof Node && !ref.current.contains(e.target)) {
         setOpen(false);
       }
     }
@@ -62,7 +78,7 @@ export default function CalendarPicker({
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  function prevMonth(e) {
+  function prevMonth(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     if (month === 0) {
       setMonth(11);
@@ -72,7 +88,7 @@ export default function CalendarPicker({
     }
   }
 
-  function nextMonth(e) {
+  function nextMonth(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     if (month === 11) {
       setMonth(0);
@@ -82,7 +98,7 @@ export default function CalendarPicker({
     }
   }
 
-  function handleSelect(day) {
+  function handleSelect(day: number) {
     setSelectedDay(day);
     const formatted = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     if (onChange) onChange(formatted);

@@ -1,4 +1,3 @@
-
 const DRECard = () => {
     return <div>DRECard</div>;
 };

@@ -12,8 +12,16 @@ const data = [
 const maxSaldo = Math.max(...data.map(d => d.saldo));
 const activeIndex = data.findIndex(d => d.saldo === maxSaldo);
 
-const CustomCursor = (props) => {
+// O Recharts injeta a posição da barra sob o mouse ao clonar o cursor
+interface CustomCursorProps {
+  x?: number;
+  y?: number;
+  width?: number;
+}
+
+const CustomCursor = (props: CustomCursorProps) => {
   const { x, y, width } = props;
+  if (x === undefined || y === undefined || width === undefined) return null;
   return (
     <g>
       <circle cx={x + width / 2} cy={y} r={6} fill="#fff" filter="drop-shadow(0 0 8px #1fba11)" />
@@ -84,7 +92,7 @@ const DREChart = () => {
             />
             {/* BARRAS */}
             <Bar dataKey="saldo" radius={[12, 12, 0, 0]} barSize={55}>
-              {data.map((entry, index) => (
+              {data.map((_entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={index === activeIndex ? 'url(#treeyoActiveGradient)' : 'url(#treeyoInactiveGradient)'}

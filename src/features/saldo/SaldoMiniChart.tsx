@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Calendar, X } from "lucide-react";
 import { formatarMoeda } from "@/utils/formatters";
 import { mascaraData } from "@/utils/masks";
+import type { PeriodoSaldo, PontoSaldo } from "@/types/saldo";
+
+interface PeriodoPickerProps {
+  /** Recebe as datas inicial e final no formato DD/MM/AAAA */
+  onSelect: (inicio: string, fim: string) => void;
+}
 
 // Seletor de período (datas digitadas DD/MM/AAAA)
-function PeriodoPicker({ onSelect }) {
+function PeriodoPicker({ onSelect }: PeriodoPickerProps) {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const handleDateChange = (value, setter) => setter(mascaraData(value));
+  const handleDateChange = (value: string, setter: (valor: string) => void) => setter(mascaraData(value));
 
   const handleAplicar = () => {
     if (startDate.length === 10 && endDate.length === 10) {
@@ -66,7 +72,7 @@ function PeriodoPicker({ onSelect }) {
   );
 }
 
-const data7d = [
+const data7d: PontoSaldo[] = [
   { label: "Seg", day: "Segunda", saldo: 3100 },
   { label: "Ter", day: "Terça", saldo: 1800 },
   { label: "Qua", day: "Quarta", saldo: 3900 },
@@ -76,22 +82,31 @@ const data7d = [
   { label: "Hoje", day: "Domingo", saldo: 7642.83 }
 ];
 
-const data30d = [
+const data30d: PontoSaldo[] = [
   { label: "Sem 1", day: "Semana 1", saldo: 4000 },
   { label: "Sem 2", day: "Semana 2", saldo: 5200 },
   { label: "Sem 3", day: "Semana 3", saldo: 6478 },
   { label: "Sem 4", day: "Semana 4", saldo: 7642.83 }
 ];
 
-const dataCustomOriginal = [
+const dataCustomOriginal: PontoSaldo[] = [
   { label: "Jan", day: "Janeiro", saldo: 4000 },
   { label: "Jun", day: "Junho", saldo: 7642.83 }
 ];
 
-function CustomDot(props) {
+// cx, cy, payload e index são injetados pelo Recharts ao clonar o elemento `dot`
+interface CustomDotProps {
+  data: PontoSaldo[];
+  cx?: number;
+  cy?: number;
+  payload?: PontoSaldo;
+  index?: number;
+}
+
+function CustomDot(props: CustomDotProps) {
   const { cx, cy, payload, index, data } = props;
   const isLast = index === data.length - 1;
-  if (isLast) {
+  if (isLast && cx !== undefined && cy !== undefined && payload) {
     return (
       <g>
         <circle cx={cx} cy={cy} r={16} fill="white" fillOpacity="0.15" filter="url(#superGlow)" />
@@ -106,14 +121,25 @@ function CustomDot(props) {
 }
 
 // --- COMPONENTE PRINCIPAL ---
-export default function SaldoMiniChart({ range, setRange }) {
+interface SaldoMiniChartProps {
+  range: PeriodoSaldo;
+  setRange: (range: PeriodoSaldo) => void;
+}
+
+interface BotaoPeriodo {
+  id: PeriodoSaldo;
+  label: string;
+  icon?: boolean;
+}
+
+export default function SaldoMiniChart({ range, setRange }: SaldoMiniChartProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [customLabel, setCustomLabel] = useState("Escolher Período");
   const [filteredCustomData, setFilteredCustomData] = useState(dataCustomOriginal);
 
   const handleClose = () => setIsCalendarOpen(false);
 
-  const handleDateSelection = (start, end) => {
+  const handleDateSelection = (start: string, end: string) => {
     setCustomLabel(`${start} - ${end}`);
     setRange("custom");
 
@@ -128,9 +154,9 @@ export default function SaldoMiniChart({ range, setRange }) {
 
   const data = range === "7d" ? data7d : range === "30d" ? data30d : filteredCustomData;
 
-  const [activeData, setActiveData] = useState(null);
+  const [activeData, setActiveData] = useState<PontoSaldo | null>(null);
 
-  const getSaudacao = () => {
+  const getSaudacao = (): ReactNode => {
 
     if (range === "7d") {
       return (
@@ -267,14 +293,15 @@ export default function SaldoMiniChart({ range, setRange }) {
               <YAxis hide domain={['dataMin - 1000', 'dataMax + 2000']} />
 
               <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
+                content={({ active, activeIndex }) => {
+                  // activeIndex é o índice (em texto) do ponto sob o mouse em `data`
+                  const index = Number(activeIndex);
+                  const currentData = data[index];
+                  if (active && currentData) {
 
-                    const currentData = payload[0].payload;
-                    if (currentData !== activeData?.label) {
+                    if (currentData !== activeData) {
                       setActiveData(currentData);
                     }
-                    const index = data.indexOf(currentData);
                     const previousValue = data[index - 1]?.saldo;
                     const diff = previousValue ? ((currentData.saldo - previousValue) / previousValue) * 100 : null;
                     const comparativoTexto = range === "7d" ? "que ontem" : "que o mês passado";
@@ -309,11 +336,11 @@ export default function SaldoMiniChart({ range, setRange }) {
         </div>
 
         <div className="grid grid-cols-3 md:flex md:flex-col md:justify-center gap-2 md:gap-4 w-full md:w-44 lg:w-48 shrink-0 pb-2">
-          {[
+          {([
             { id: '7d', label: '7 Dias' },
             { id: '30d', label: 'Mensal' },
             { id: 'custom', label: customLabel, icon: true }
-          ].map((btn) => (
+          ] satisfies BotaoPeriodo[]).map((btn: BotaoPeriodo) => (
             <button
               key={btn.id}
               onClick={() => btn.id === 'custom' ? setIsCalendarOpen(true) : setRange(btn.id)}
