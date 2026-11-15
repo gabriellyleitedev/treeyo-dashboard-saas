@@ -3,6 +3,16 @@ const moedaBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: '
 // 1500 -> "R$ 1.500,00"
 export const formatarMoeda = (valor: number | string): string => moedaBRL.format(Number(valor) || 0);
 
+// Valor digitado -> número ("R$ 1.500,50" -> 1500.5; NaN se inválido)
+export function converterValorDigitado(valor: string): number {
+  const valorLimpo = valor
+    .replace(/R\$/g, "") // Remove o R$ se o cara digitar
+    .replace(/\s/g, "")  // Remove espaços
+    .replace(/\./g, "")  // Remove pontos de milhar (ex: do 1.000)
+    .replace(",", ".");  // Troca a vírgula por ponto pro JS entender
+  return parseFloat(valorLimpo);
+}
+
 // "2026-09-20" ou "20/09/2026" -> "20/09"
 export function formatarDataCurta(data: string): string {
   if (!data) return '';

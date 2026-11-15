@@ -49,7 +49,7 @@ export function PageHeaderMobile({
                         className="flex items-center justify-between w-full"
                     >
                         <div className="flex items-center gap-2 min-w-0">
-                            <button onClick={() => void navigate(-1)}className="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
+                            <button onClick={() => void navigate(-1)} className="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
                                 <ArrowLeft size={22} />
                             </button>
                             <h1 className={`text-gray-200 font-medium truncate ${tamanhoTitulo}`}>{titulo}</h1>

@@ -293,9 +293,9 @@ export default function SaldoMiniChart({ range, setRange }: SaldoMiniChartProps)
               <YAxis hide domain={['dataMin - 1000', 'dataMax + 2000']} />
 
               <Tooltip
-                content={({ active, activeIndex }) => {
-                  // activeIndex é o índice (em texto) do ponto sob o mouse em `data`
-                  const index = Number(activeIndex);
+                content={({ active, label }) => {
+                  // Primeiro ponto com o rótulo sob o mouse (mesmo critério do Recharts)
+                  const index = data.findIndex((d) => d.label === label);
                   const currentData = data[index];
                   if (active && currentData) {
 

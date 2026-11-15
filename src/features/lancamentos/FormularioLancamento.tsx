@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import SelectTreeyo from '@/components/ui/SelectTreeyo';
 import toast from "react-hot-toast";
-import { brParaISO, isoParaBR } from "@/utils/formatters";
+import { brParaISO, converterValorDigitado, isoParaBR } from "@/utils/formatters";
 import { mascaraData } from "@/utils/masks";
 import {
     METODOS_PAGAMENTO,
@@ -130,13 +130,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
         }
 
-        const valorLimpo = formData.valor
-            .replace(/R\$/g, "") // Remove o R$ se o cara digitar
-            .replace(/\s/g, "")  // Remove espaços
-            .replace(/\./g, "")  // Remove pontos de milhar (ex: do 1.000)
-            .replace(",", ".");  // Troca a vírgula por ponto pro JS entender
-
-        const valorNumerico = parseFloat(valorLimpo);
+        const valorNumerico = converterValorDigitado(formData.valor);
 
         if (isNaN(valorNumerico)) {
             setErros(["valor"]);

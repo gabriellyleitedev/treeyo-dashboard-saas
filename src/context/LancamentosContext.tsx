@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { STORAGE_KEYS, isOneOf, isRecord, lerStorage, salvarStorage, textoOuVazio as texto } from '@/utils/storage';
+import { converterValorDigitado } from '@/utils/formatters';
 import {
   METODOS_PAGAMENTO,
   STATUS_INVESTIMENTO,
@@ -20,7 +21,8 @@ const STATUS_VALIDOS = [...STATUS_PAGAMENTO, ...STATUS_INVESTIMENTO];
 
 // Converte um item lido do storage. Itens que não são um lançamento
 // reconhecível são descartados. A primeira versão do formulário gravava
-// `valor` como texto, então ele é convertido para número.
+// `valor` como o texto digitado ("1.500,00"), que é convertido com a mesma
+// regra do formulário para não perder o valor ao regravar o storage.
 function interpretarLancamento(item: unknown): Lancamento | null {
   if (!isRecord(item)) return null;
   const { id, tipo, status, metodo, valor } = item;
@@ -34,7 +36,7 @@ function interpretarLancamento(item: unknown): Lancamento | null {
     tipo,
     status,
     metodo,
-    valor: typeof valor === 'number' ? valor : Number(valor) || 0,
+    valor: typeof valor === 'number' ? valor : converterValorDigitado(texto(valor)) || 0,
     data: texto(item.data),
     dataDisplay: texto(item.dataDisplay),
     categoria: texto(item.categoria),
