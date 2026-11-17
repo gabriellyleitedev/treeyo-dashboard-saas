@@ -7,9 +7,20 @@ import { NAV_ITEMS, ROUTES } from '@/constants/navigation';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
 
+const MEDIA_SIDEBAR_RECOLHIDA = '(min-width: 1024px) and (max-width: 1279px)';
+
 const Layout = () => {
   const { lancamentos } = useLancamentos();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Entre 1024px e 1279px (notebooks pequenos) a sidebar começa recolhida para
+  // sobrar espaço ao conteúdo; o usuário ainda pode expandi-la.
+  const [isCollapsed, setIsCollapsed] = useState(() => window.matchMedia(MEDIA_SIDEBAR_RECOLHIDA).matches);
+
+  useEffect(() => {
+    const media = window.matchMedia(MEDIA_SIDEBAR_RECOLHIDA);
+    const aoMudar = (e: MediaQueryListEvent) => setIsCollapsed(e.matches);
+    media.addEventListener('change', aoMudar);
+    return () => media.removeEventListener('change', aoMudar);
+  }, []);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -38,7 +49,7 @@ const Layout = () => {
   ], [lancamentos]);
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-neutral-950">
+    <div className="flex h-screen w-full overflow-hidden bg-canvas">
       {/* SIDEBAR COM GATILHO DE BUSCA */}
       <Sidebar 
         isCollapsed={isCollapsed} 
@@ -49,14 +60,14 @@ const Layout = () => {
       <main className="flex-1 transition-all duration-500 flex flex-col h-screen p-0 relative">
         {/* O PAINEL COM A BORDA QUE VOCÊ QUERIA */}
         <div className="
-          flex-1 bg-[#111111] 
+          flex-1 bg-surface bg-painel 
           rounded-none border-none
-          xl:m-3 xl:rounded-[2.5rem] xl:border xl:border-white/5 xl:shadow-2xl
+          lg:m-3 lg:rounded-[2.5rem] lg:border lg:border-white/5 lg:shadow-2xl
           overflow-y-auto overflow-x-hidden
           relative
         ">
-          {/* Espaçamento interno do conteúdo */}
-          <div className="px-4 md:px-8 xl:px-10 pt-2 pb-32 xl:pb-8">
+          {/* Espaçamento interno do conteúdo (pb maior no mobile para não ficar atrás da dock) */}
+          <div className="px-4 md:px-8 xl:px-10 pt-2 pb-28 lg:pb-8">
             <Outlet />
           </div>
         </div>

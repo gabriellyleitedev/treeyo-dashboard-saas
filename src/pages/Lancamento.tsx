@@ -128,10 +128,10 @@ const Lancamento = () => {
                 />
 
                 <PageHeaderDesktop
-                    titulo="Lançamento"
+                    titulo="Lançamentos"
                     busca={busca}
                     onBuscaChange={setBusca}
-                    placeholder="Buscar Lançamento..."
+                    placeholder="Buscar lançamentos..."
                     modulo="lancamentos"
                     variants={itemVariants}
                 />
@@ -143,7 +143,7 @@ const Lancamento = () => {
                   md: tipos | formulário, card embaixo.
                   xl: tipos | card | formulário.
                 */}
-                <div className="grid grid-cols-1 md:grid-cols-[9rem_minmax(0,1fr)] xl:grid-cols-[9rem_minmax(0,1fr)_minmax(0,22rem)] gap-6 xl:gap-10 items-start relative z-20">
+                <div className="grid grid-cols-1 md:grid-cols-[9rem_minmax(0,1fr)] xl:grid-cols-[9rem_minmax(0,1fr)_minmax(0,22rem)] gap-5 md:gap-6 xl:gap-10 items-start relative z-20">
 
                     {/* Filtros de Tipo */}
                     <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 md:flex md:flex-col md:gap-3">
@@ -154,10 +154,10 @@ const Lancamento = () => {
                                     key={tipo}
                                     type="button"
                                     onClick={() => setTipoAtivo(tipo)}
-                                    className={`flex items-center justify-start px-2 w-full h-10 rounded-lg border transition-all duration-300 cursor-pointer min-w-0 ${cores.glow}`}
+                                    className={`flex items-center justify-start px-1.5 sm:px-2 w-full h-11 md:h-10 rounded-xl md:rounded-lg border transition-all duration-300 cursor-pointer min-w-0 ${cores.glow}`}
                                 >
                                     <span className={`h-6 w-1 shrink-0 rounded-full transition-all duration-300 ${cores.barra}`}></span>
-                                    <span className="pl-2 text-sm md:text-base font-normal text-gray-200 select-none truncate">{tipo}</span>
+                                    <span className="pl-1.5 sm:pl-2 text-[13px] sm:text-sm md:text-base font-normal text-gray-200 select-none truncate">{tipo}</span>
                                 </button>
                             );
                         })}
@@ -185,7 +185,7 @@ const Lancamento = () => {
                     </motion.div>
 
                     {/* CARD DO ÚLTIMO LANÇAMENTO */}
-                    <motion.div variants={itemVariantsSutil} className="w-full min-w-0 flex justify-center md:col-span-2 xl:col-span-1 xl:col-start-2 xl:row-start-1">
+                    <motion.div variants={itemVariantsSutil} className={`w-full min-w-0 justify-center md:col-span-2 xl:col-span-1 xl:col-start-2 xl:row-start-1 ${ultimoDoTipo ? "flex" : "hidden md:flex"}`}>
                         {ultimoDoTipo ? (
                             <CardLancamento lancamento={ultimoDoTipo} />
                         ) : (
@@ -197,7 +197,7 @@ const Lancamento = () => {
                 </div>
 
                 {/* ÚLTIMOS LANÇAMENTOS */}
-                <motion.div variants={itemVariantsSutil} className="w-full flex flex-col pt-12 md:pt-16">
+                <motion.div variants={itemVariantsSutil} className="w-full flex flex-col pt-8 md:pt-16">
 
                     <div className="flex items-baseline justify-between gap-4 mb-4">
                         <h2 className="text-gray-200 font-medium tracking-wider uppercase text-sm">
@@ -270,7 +270,7 @@ const Lancamento = () => {
                                                     setModalOpen(true);
                                                 }}
                                                 aria-label="Excluir lançamento"
-                                                className="justify-self-end opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-1"
+                                                className="justify-self-end opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-2 -m-1 lg:p-1 lg:m-0"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -278,7 +278,7 @@ const Lancamento = () => {
                                     );
                                 })
                             ) : (
-                                <div className="text-center py-20 text-neutral-600 italic">Nenhum lançamento encontrado.</div>
+                                <div className="text-center py-10 md:py-20 text-sm md:text-base text-neutral-600 italic">Nenhum lançamento encontrado.</div>
                             )}
                         </AnimatePresence>
                     </div>

@@ -164,8 +164,10 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
     };
 
+    // Mobile: campos mais altos (alvo de toque) e fonte 16px — abaixo disso o
+    // Safari do iPhone dá zoom na página ao focar o campo.
     const inputBaseStyle =
-        "w-full bg-[#161616] backdrop-blur-md border rounded-lg relative pl-2 pr-3 py-0 text-sm outline-none h-10 transition-all duration-300";
+        "w-full bg-[#161616] backdrop-blur-md border rounded-xl md:rounded-lg relative pl-3 pr-3 py-0 text-base md:text-sm outline-none h-12 md:h-10 transition-all duration-300 placeholder:text-neutral-600";
 
     const getBorderStyle = (campo: CampoFormulario) => {
         if (erros.includes(campo))
@@ -186,12 +188,16 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
                 <input
                     type="text"
+                    inputMode="numeric"
+                    aria-label="Data"
+                    placeholder="DD/MM/AAAA"
                     className={`${inputBaseStyle} ${getBorderStyle("dataDisplay")}`}
                     value={formData.dataDisplay}
                     onChange={handleDataChange}
                 />
 
                 <input
+                    aria-label={tipoSelecionado === "Investimento" ? "Tipo de ativo" : "Categoria"}
                     className={`${inputBaseStyle} ${getBorderStyle("categoria")}`}
                     placeholder={
                         tipoSelecionado === "Investimento"
@@ -206,7 +212,9 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
                 <input
                     type="text"
-                    placeholder="Valor"
+                    inputMode="decimal"
+                    aria-label="Valor em reais"
+                    placeholder="Valor (R$)"
                     className={`${inputBaseStyle} ${getBorderStyle("valor")}`}
                     value={formData.valor}
                     onChange={(e) =>
@@ -267,15 +275,17 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
             </div>
 
-            <div className="flex items-center justify-center pt-3">
+            <div className="flex items-center justify-center pt-1 md:pt-3">
 
+                {/* Mobile: botão largo e alto (ação principal da tela, ao alcance do polegar) */}
                 <button
+                    type="button"
                     onClick={validarEEnviar}
-                    className="relative flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-neutral-200 bg-[#1a1a1a] backdrop-blur-md overflow-hidden group transition-all"
+                    className="relative w-full md:w-auto h-12 md:h-auto flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-base md:text-sm font-medium text-neutral-200 bg-[#1a1a1a] backdrop-blur-md overflow-hidden group transition-all active:scale-[0.98] cursor-pointer"
                 >
 
                     <span
-                        className="absolute inset-0 rounded-xl border border-neutral-700 group-hover:border-[#1fba11] transition-all duration-300 pointer-events-none"
+                        className="absolute inset-0 rounded-xl border border-[#1fba11]/40 md:border-neutral-700 group-hover:border-[#1fba11] transition-all duration-300 pointer-events-none"
                     />
 
                     <Check

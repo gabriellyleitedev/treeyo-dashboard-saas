@@ -21,10 +21,10 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                         w-full bg-[#161616]
                         backdrop-blur-md
                         border border-white/5
-                        rounded-lg
-                        h-10
-                        pl-2 pr-8
-                        text-sm
+                        rounded-xl md:rounded-lg
+                        h-12 md:h-10
+                        pl-3 pr-8
+                        text-base md:text-sm
                         text-neutral-400
                         flex items-center justify-between
                         transition-all
@@ -49,7 +49,7 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                         top-full
                         mt-1
                         w-full
-                        bg-[#161616]/5
+                        bg-[#161616]/95
                         backdrop-blur-md
                         border border-white/10
                         rounded-lg
@@ -66,7 +66,7 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                             key={op}
                             value={op}
                             className={({ active }) =>
-                                `cursor-pointer px-3 py-2 text-sm flex items-center justify-between
+                                `cursor-pointer px-3 py-3 md:py-2 text-base md:text-sm flex items-center justify-between
                                 ${active
                                     ? "bg-[#1fba11]/10 text-[#1fba11]"
                                     : "text-gray-200"}`

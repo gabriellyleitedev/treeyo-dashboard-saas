@@ -1,6 +1,33 @@
 @import "tailwindcss";
 
 /*
+ * Tokens de design do Treeyo. O Tailwind v4 gera utilitários a partir deles
+ * (bg-brand, text-brand, bg-surface-2, border-line, text-entrada...).
+ * Componentes novos devem usar estes nomes em vez de hex soltos, para que a
+ * identidade visual (e um futuro tema claro) mude em um lugar só.
+ */
+@theme {
+  /* Marca */
+  --color-brand: #1fba11;
+  --color-brand-strong: #2ad81a;
+  --color-brand-ink: #041a02; /* texto sobre fundo brand */
+
+  /* Superfícies (do fundo para a frente) */
+  --color-canvas: #0b0e0c;
+  --color-surface: #101411;
+  --color-surface-1: #151a16;
+  --color-surface-2: #1b211d;
+  --color-surface-3: #242b26;
+  --color-line: rgb(255 255 255 / 0.08);
+
+  /* Semântica financeira */
+  --color-entrada: #1fba11;
+  --color-saida: #f05252;
+  --color-investimento: #4b8bf5;
+  --color-pendente: #eab308;
+}
+
+/*
  * Estilos globais.
  * O reset fica em @layer base para que as utilities do Tailwind
  * (mt-4, mx-auto, space-y-2...) consigam sobrescrevê-lo.
@@ -15,7 +42,7 @@
   #root {
     min-height: 100vh;
     width: 100%;
-    background: #0D0D0D;
+    background: var(--color-canvas);
     overflow-x: hidden;
     overflow-y: auto;
   }
@@ -84,4 +111,10 @@
 .custom-scroll::-webkit-scrollbar-thumb {
   background-color: #222222 !important;
   border-radius: 20px !important;
+}
+
+/* Fundo do painel principal: grafite esverdeado com uma luz sutil no topo,
+   para dar profundidade sem competir com o conteúdo */
+.bg-painel {
+  background-image: radial-gradient(120% 60% at 50% -10%, rgb(31 186 17 / 0.07), transparent 60%);
 }

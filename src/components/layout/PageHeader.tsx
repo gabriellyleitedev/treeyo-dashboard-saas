@@ -4,6 +4,7 @@ import { Search, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import NotificationBell from "@/components/ui/NotificationBell";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import { botaoVidro } from "@/components/ui/estilos";
 import type { ModuloNotificacao } from "@/types/notificacao";
 
 // Props comuns aos cabeçalhos mobile e desktop
@@ -16,8 +17,6 @@ interface PageHeaderProps {
 }
 
 interface PageHeaderMobileProps extends PageHeaderProps {
-    /** Classe de tamanho do título (padrão text-xl) */
-    tamanhoTitulo?: string;
     className?: string;
 }
 
@@ -25,41 +24,34 @@ interface PageHeaderDesktopProps extends PageHeaderProps {
     variants?: Variants;
 }
 
-// Cabeçalho das páginas internas no mobile: voltar + título, e um campo de
-// busca que abre no lugar do título.
+// Cabeçalho das páginas internas no mobile: voltar | título centralizado | busca.
+// A busca abre no lugar do título. As notificações ficam no cabeçalho da Visão Geral.
 export function PageHeaderMobile({
     titulo,
     busca,
     onBuscaChange,
     placeholder,
-    modulo,
-    tamanhoTitulo = "text-xl",
     className = "",
 }: PageHeaderMobileProps) {
     const navigate = useNavigate();
     const [searchAberto, setSearchAberto] = useState(false);
 
     return (
-        <div className={`md:hidden flex items-center justify-between py-0 relative pt-3 ${className}`}>
+        <div className={`md:hidden flex items-center h-14 relative pt-2 ${className}`}>
             <AnimatePresence mode="wait">
                 {!searchAberto ? (
                     <motion.div
                         key="header-normal"
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="flex items-center justify-between w-full"
+                        className="grid grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-center gap-3 w-full"
                     >
-                        <div className="flex items-center gap-2 min-w-0">
-                            <button onClick={() => void navigate(-1)} className="shrink-0 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-200">
-                                <ArrowLeft size={22} />
-                            </button>
-                            <h1 className={`text-gray-200 font-medium truncate ${tamanhoTitulo}`}>{titulo}</h1>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                            <button onClick={() => setSearchAberto(true)} className="p-2 text-gray-200 bg-white/5 border border-white/10 rounded-full">
-                                <Search size={22} />
-                            </button>
-                            <NotificationBell modulo={modulo} />
-                        </div>
+                        <button onClick={() => void navigate(-1)} aria-label="Voltar" className={botaoVidro}>
+                            <ArrowLeft size={18} />
+                        </button>
+                        <h1 className="text-center text-base font-medium text-gray-100 truncate">{titulo}</h1>
+                        <button onClick={() => setSearchAberto(true)} aria-label={placeholder} className={botaoVidro}>
+                            <Search size={18} />
+                        </button>
                     </motion.div>
                 ) : (
                     <motion.div

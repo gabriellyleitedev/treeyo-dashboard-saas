@@ -61,7 +61,6 @@ const EvolucaoSaldo = () => {
                     onBuscaChange={setBusca}
                     placeholder="Buscar saldo..."
                     modulo="saldo"
-                    tamanhoTitulo="text-lg"
                 />
 
                 <motion.div

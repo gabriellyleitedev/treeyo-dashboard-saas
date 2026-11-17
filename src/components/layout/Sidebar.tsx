@@ -40,30 +40,32 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }: SidebarProps) =>
     const isActive = (href: string) => location.pathname === href;
 
     return (
-        <aside className={`relative h-screen hidden xl:flex shrink-0 z-50 flex-col bg-neutral-950 text-white transition-all duration-500 ease-in-out ${isCollapsed ? 'w-16' : 'w-72'}`}>
+        <aside className={`relative h-screen hidden lg:flex shrink-0 z-50 flex-col bg-canvas text-white transition-all duration-500 ease-in-out ${isCollapsed ? 'w-20' : 'w-64 2xl:w-72'}`}>
 
             <div className='pointer-events-none absolute top-0 left-0 w-full h-42 bg-gradient-to-r from-green-50/20 to-transparent blur-2xl'></div>
             <div className='pointer-events-none absolute bottom-0 left-0 w-full h-42 bg-gradient-to-r from-green-50/20 to-transparent blur-2xl'></div>
 
             {/* LOGO */}
-            <div className={`flex px-1 py-3 border-b border-white/15 items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className={`flex px-4 py-3 border-b border-white/15 items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
                 <div className={`transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>
                     <img src="/logo.png" className="h-12 w-auto object-contain" alt="Logo" />
                 </div>
 
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className={` right-5 absolute z-50 p-2 rounded-xl bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-all duration-300 hover:scale-105 hover:shadow-2xl ${isCollapsed ? 'relative left-0' : 'relative'}`}>
+                    aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
+                    className="relative z-50 shrink-0 p-2 rounded-xl bg-[#1A1A1A] hover:bg-[#1A1A1A]/80 transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer">
                     {isCollapsed ? <ChevronLast size={20} /> : <ChevronFirst size={20} />}
                 </button>
             </div>
 
             {/* NAV */}
-            <nav className="flex-1 pt-7 mt-8 overflow-y-auto overflow-x-hidden">
+            {/* Espaçamentos menores que antes para caber em telas de 768px de altura */}
+            <nav className="flex-1 pt-6 px-3 overflow-y-auto overflow-x-hidden">
                 {navSections.map((section, index) => (
-                    <div key={index} className={`${index === 0 ? 'mt-6' : ''} ${index < navSections.length - 1 ? '!mb-16' : 'mb-0'}`}>
+                    <div key={index} className={index < navSections.length - 1 ? 'mb-8 2xl:mb-12' : 'mb-0'}>
                         {section.title && !isCollapsed && (
-                            <p className="text-xs uppercase tracking-widest text-neutral-300/80 ml-2 font-semibold mb-3">
+                            <p className="text-xs uppercase tracking-widest text-neutral-300/80 ml-3 font-semibold mb-3">
                                 {section.title}
                             </p>
                         )}
@@ -80,7 +82,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }: SidebarProps) =>
                                         <button
                                             key={link.name}
                                             onClick={onOpenSearch}
-                                            className={`relative group flex items-center gap-0 w-full px-2 py-0.5 rounded-md font-medium transition-all duration-300 bg-white/10 backdrop-blur-md text-white ${isCollapsed ? 'justify-center' : ''}`}
+                                            aria-label="Buscar (Ctrl+K)"
+                                            className={`relative group flex items-center gap-0 w-full px-2 py-0.5 rounded-xl font-medium transition-all duration-300 bg-white/10 backdrop-blur-md text-white ${isCollapsed ? 'justify-center' : ''}`}
                                         >
                                             <div className="min-w-[40px] h-10 flex items-center justify-center">
                                                 <Search className="w-5 h-5 text-gray-200" />
@@ -94,7 +97,9 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }: SidebarProps) =>
                                     <Link
                                         key={link.name}
                                         to={link.href}
-                                        className={`relative group flex items-center gap-3 w-full px-2 py-0.5 rounded-md font-medium cursor-pointer transition-all duration-300 overflow-hidden ${active ? 'text-white bg-white/10' : 'text-neutral-400 hover:bg-white/10 hover:text-white'}`}
+                                        title={isCollapsed ? link.name : undefined}
+                                        aria-current={active ? 'page' : undefined}
+                                        className={`relative group flex items-center gap-3 w-full px-2 py-0.5 rounded-xl text-[15px] font-medium cursor-pointer transition-all duration-300 overflow-hidden ${active ? 'text-white bg-white/10' : 'text-neutral-400 hover:bg-white/10 hover:text-white'}`}
                                     >
                                         {active && (
                                             <>
@@ -103,8 +108,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }: SidebarProps) =>
                                                 <span className="pointer-events-none absolute right-[-2px] top-1/2 -translate-y-1/2 h-7 w-[7px] rounded transition-all duration-500 group-hover:h-10" style={{ background: 'linear-gradient(180deg, #5CFF57 0%, #2ff31dff 50%, #5CFF57 100%)', boxShadow: '0 0 0px #37ff25ff, 0 0 15px #23ff0fff, 0 0 15px rgba(21, 255, 0, 0.95)' }} />
                                             </>
                                         )}
-                                        <div className="relative z-10 min-w-[40px] h-10 flex items-center justify-center rounded-xl transition-all duration-300 bg-white/10 group-hover:bg-white/15">
-                                            <link.icon className="w-5 h-5" />
+                                        <div className="relative z-10 min-w-[38px] h-[38px] flex items-center justify-center rounded-xl transition-all duration-300 bg-white/10 group-hover:bg-white/15">
+                                            <link.icon className="w-[18px] h-[18px]" />
                                         </div>
                                         <span className={`relative z-10 whitespace-nowrap transition-all duration-300 ${isCollapsed ? 'opacity-0 w-0' : 'opacity-100 w-auto ml-2'}`}>
                                             {link.name}
@@ -117,10 +122,10 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch }: SidebarProps) =>
                 ))}
             </nav>
 
-            <div className="mt-auto border-t border-white/5 p-4">
+            <div className="mt-auto border-t border-white/5 px-4 py-3">
                 <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-                    <div className="w-9 h-9 rounded-full overflow-hidden border border-white/10 shrink-0">
-                        <img src={USUARIO.avatar} alt="User" className="w-full h-full object-cover" />
+                    <div aria-hidden="true" className="w-9 h-9 rounded-full bg-[#1fba11]/15 border border-[#1fba11]/30 text-[#1fba11] text-xs font-semibold flex items-center justify-center shrink-0">
+                        {USUARIO.iniciais}
                     </div>
 
                     {!isCollapsed && (

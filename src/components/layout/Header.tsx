@@ -20,7 +20,7 @@ const Header = () => {
   const diaParaExibir = dataSelecionada.getDate();
 
   return (
-    <header className="sticky top-0 z-50 -mx-4 px-4 md:mx-0 md:px-0 pt-2 pb-1 md:pt-4 md:pb-0 bg-[#111111]/95 md:bg-transparent transition-all duration-300">
+    <header className="sticky top-0 z-50 -mx-4 px-4 md:mx-0 md:px-0 pt-2 pb-1 md:pt-4 md:pb-0 bg-surface/95 md:bg-transparent transition-all duration-300">
 
       {/* ESTRUTURA MOBILE */}
       <div className="md:hidden flex items-center justify-between px-1 py-0 relative">
@@ -34,8 +34,8 @@ const Header = () => {
             }}
             className='flex items-center gap-1 bg-transparent border-none outline-none'
           >
-            <div className="w-10 h-10 rounded-full border-[1.5px] border-[#1fba11] p-[1.5px] shrink-0">
-              <img src={USUARIO.avatar} className="w-full h-full rounded-full object-cover" alt="Perfil" />
+            <div aria-hidden="true" className="w-10 h-10 rounded-full bg-[#1fba11]/15 border-[1.5px] border-[#1fba11] text-[#1fba11] text-sm font-semibold flex items-center justify-center shrink-0">
+              {USUARIO.iniciais}
             </div>
             <div className="flex items-center gap-1">
               <span className="text-white font-base text-sm">Olá {USUARIO.apelido}!</span>
@@ -79,7 +79,7 @@ const Header = () => {
       </div>
 
       {/* ESTRUTURA NOTEBOOK */}
-      <div className="hidden md:flex items-center justify-between border border-white/10 rounded-full bg-[#141414]/85 backdrop-blur-md px-4 py-4">
+      <div className="hidden md:flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
           <div className="bg-[#1fba11]/10 p-2 rounded-lg">
             <LayoutDashboard size={28} className="text-[#1fba11]" />

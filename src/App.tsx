@@ -36,8 +36,10 @@ function App() {
               <Route path={ROUTES.lancamento} element={<Lancamento />} />
               <Route path={ROUTES.evolucaoSaldo} element={<EvolucaoSaldo />} />
 
-              {/* Telas ainda não construídas (pages/Movimentacao.tsx está em rascunho) */}
-              <Route path={ROUTES.movimentacao} element={<EmBreve titulo="Movimentação" />} />
+              {/* Movimentação foi absorvida pelo histórico da tela de Lançamentos */}
+              <Route path="/movimentacao" element={<Navigate to={ROUTES.lancamento} replace />} />
+
+              {/* Telas ainda não construídas */}
               <Route path={ROUTES.resultado} element={<EmBreve titulo="Resultado" />} />
               <Route path={ROUTES.fluxoProjetado} element={<EmBreve titulo="Fluxo de Caixa Projetado" />} />
               <Route path={ROUTES.configuracoes} element={<EmBreve titulo="Configurações" />} />
