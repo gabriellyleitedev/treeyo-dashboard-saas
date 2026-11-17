@@ -19,9 +19,6 @@ interface CardFila {
   color: string;
 }
 
-interface ActionBlockProps extends CardFila {
-  isTop: boolean;
-}
 
 const plural = (n: number, singular: string, pluralTxt: string) => `${n} ${n === 1 ? singular : pluralTxt}`;
 
@@ -99,138 +96,112 @@ export default function CardsStack({ resumo, previsto7 }: CardsStackProps) {
   const { atrasadas, vencemHoje, proximos7Dias } = resumo.pendencias;
   const totalPendencias = atrasadas.itens.length + vencemHoje.itens.length + proximos7Dias.itens.length;
 
+  const total = cards.length;
+  const atual = cards[index % total];
+
+  // Arrastar para o lado (celular) ou clicar no card (desktop) passa para o próximo
+  const anterior = () => setIndex((prev) => (prev - 1 + total) % total);
+
   return (
     <div className="flex flex-col gap-4 w-full min-w-0">
       <TituloSecao chip={totalPendencias > 0 ? `${totalPendencias} ${totalPendencias === 1 ? "pendência" : "pendências"}` : "em dia"}>
         Fila Inteligente
       </TituloSecao>
 
-      {/* Os cards são absolutos (empilhados); a altura fixa reserva o espaço
-          do card do topo + os dois que aparecem por baixo (72px cada). */}
-      <div className="relative w-full h-[250px]">
-      <AnimatePresence>
-        {cards.map((card, i) => {
-          const position = (i - (index % cards.length) + cards.length) % cards.length;
-          if (position > 2) return null;
-          const isTop = position === 0;
+      {/*
+        Pilha em leque, como cartões: o da frente (grafite) mostra a pendência
+        ativa; atrás dele, um cartão verde e um grafite escuro aparecem à direita.
+      */}
+      <div className="relative w-full h-[180px]">
+        {/* 3º cartão (grafite escuro) */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 w-[calc(100%-56px)] rounded-[20px] translate-x-[56px] scale-y-[0.86] origin-right"
+          style={{ background: "linear-gradient(135deg, #1b1f1c 0%, #0e110f 100%)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 30px rgba(0,0,0,0.35)" }}
+        />
+        {/* 2º cartão (verde Treeyo) */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-y-0 left-0 w-[calc(100%-56px)] rounded-[20px] translate-x-[28px] scale-y-[0.93] origin-right"
+          style={{ background: "linear-gradient(135deg, #3ee52c 0%, #1fba11 45%, #158f0d 100%)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), 0 12px 30px rgba(31,186,17,0.25)" }}
+        />
 
-          return (
+        {/* 1º cartão (grafite, com o conteúdo) */}
+        <motion.div
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.5}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -60) next();
+            else if (info.offset.x > 60) anterior();
+          }}
+          onClick={() => {
+            // Só o clique com mouse avança; no toque quem avança é o arraste
+            if (total > 1 && window.matchMedia("(pointer: fine)").matches) next();
+          }}
+          className={`absolute inset-y-0 left-0 w-[calc(100%-56px)] rounded-[20px] overflow-hidden touch-pan-y ${total > 1 ? "cursor-pointer" : ""}`}
+          style={{
+            background: "linear-gradient(135deg, #3a3f3b 0%, #262a27 45%, #191c1a 100%)",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 18px 40px rgba(0,0,0,0.45)",
+          }}
+        >
+          {/* Reflexo metálico */}
+          <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,0.10), transparent 55%)" }} />
+
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={card.title}
-              drag={isTop ? "y" : false}
-              dragConstraints={{ top: 0, bottom: 0 }}
-              dragElastic={0.7}
-
-              // 2. Lógica de Swipe Vertical
-              onDragEnd={(_, info) => {
-                if (Math.abs(info.offset.y) > 80) {
-                  next();
-                }
-              }}
-
-              // 3. Estilos de toque e cursor
-              style={{
-                touchAction: isTop ? "none" : "auto",
-                cursor: isTop ? "grab" : "default",
-              }}
-
-              // 4. Lógica de Clique: Bloqueia o clique se for um dispositivo Touch puro
-              // No iPad com Mouse, o 'pointer: fine' do CSS resolve a experiência
-              onClick={() => {
-                if (!isTop) return;
-
-                // Verifica se o dispositivo NÃO é primariamente touch pra permitir o clique
-                // Isso evita que o toque no mobile dispare o 'next' duas vezes ou por erro
-                if (window.matchMedia("(pointer: fine)").matches) {
-                  next();
-                }
-              }}
-
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{
-                opacity: 1,
-                y: position * 72,
-                scale: isTop ? 1 : 0.96,
-                zIndex: 30 - position,
-              }}
-
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.45, ease: "easeOut" }}
-              className="absolute w-full cursor-pointer"
+              key={atual.title}
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ duration: 0.2 }}
             >
-              <ActionBlock {...card} isTop={isTop} />
+              <CartaoFila {...atual} />
             </motion.div>
-          );
-        })}
-      </AnimatePresence>
+          </AnimatePresence>
+
+          {/* Paginação */}
+          {total > 1 && (
+            <div className="absolute bottom-3.5 right-4 flex items-center gap-1.5" aria-label={`Item ${(index % total) + 1} de ${total}`}>
+              {cards.map((c, i) => (
+                <span key={c.title} className={`h-1.5 rounded-full transition-all ${i === index % total ? "w-4 bg-white/80" : "w-1.5 bg-white/25"}`} />
+              ))}
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
-
   );
-
 }
-function ActionBlock({ icon, title, status, action, color, isTop }: ActionBlockProps) {
+
+// Conteúdo do cartão da frente. Cores fixas (é um "cartão físico" grafite,
+// igual nos dois temas); a cor de destaque vem do tipo da pendência.
+function CartaoFila({ icon, title, status, action, color }: CardFila) {
+  const linhas = Array.isArray(status) ? status : [status];
   return (
-    <div
-      className={`
-        relative rounded-2xl border border-line bg-card transition-all duration-300
-        ${isTop ? "p-2 h-auto" : "p-4 h-[64px] sm:h-[56px] opacity-70"} 
-      `}
-      style={{
-        boxShadow: isTop
-          ? `
-            0 25px 50px -12px var(--tema-sombra),
-            inset 0 -18px 36px -14px ${color}55
-          `
-          : "0 10px 25px var(--tema-sombra)",
-      }}
-    >
-
-      {/* Glow */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{
-          background: `radial-gradient(circle at 80% 120%, ${color}33, transparent 65%)`,
-        }}
-      />
-
-      <div className="relative z-10 flex flex-col gap-4">
-
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <div
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: `${color}22`, color }}
-          >
-            {icon}
-          </div>
-
-          <h3 className="text-fg font-semibold text-base">
-            {title}
-          </h3>
-        </div>
-
-        {/* Conteúdo — só aparece no card ativo */}
-        {isTop && (
-          <>
-            <div className="flex flex-col gap-2 text-sm text-fg-muted">
-              {Array.isArray(status)
-                ? status.map((line, i) => <p key={i}>{line}</p>)
-                : <p>{status}</p>}
-            </div>
-
-            <Link
-              to={ROUTES.lancamento}
-              onClick={(e) => e.stopPropagation()}
-              className="mt-4 self-start flex items-center gap-4 text-sm font-medium transition-transform hover:translate-x-0.5"
-              style={{ color }}
-            >
-              <span className="flex items-center">{action}</span>
-              <ArrowRight size={16} />
-            </Link>
-          </>
-        )}
+    <div className="relative flex flex-col h-[180px] p-4">
+      <div className="flex items-center gap-2.5">
+        <span className="w-8 h-8 rounded-full flex items-center justify-center [&>svg]:w-4 [&>svg]:h-4" style={{ backgroundColor: `${color}26`, color }}>
+          {icon}
+        </span>
+        <h3 className="text-[15px] font-medium text-white">{title}</h3>
       </div>
+
+      <div className="flex flex-col gap-1 mt-3 text-[13px] text-white/60">
+        {linhas.slice(0, 3).map((linha, i) => (
+          <p key={i} className={`truncate ${i === 0 ? "text-white/90 font-medium" : ""}`}>{linha}</p>
+        ))}
+      </div>
+
+      <Link
+        to={ROUTES.lancamento}
+        onClick={(e) => e.stopPropagation()}
+        className="mt-auto self-start flex items-center gap-2 text-[13px] font-medium hover:gap-3 transition-all"
+        style={{ color }}
+      >
+        {action}
+        <ArrowRight size={14} />
+      </Link>
     </div>
   );
 }
