@@ -99,8 +99,8 @@ function VisaoGeral() {
                 {/* COLUNA DIREITA: lembretes + assistente (ocupa as 2 linhas no desktop).
                     Os lembretes ficam com a altura que sobra e rolam por dentro. */}
                 <div className="min-w-0 min-h-0 flex flex-col gap-6 md:col-span-2 lg:col-span-4 lg:row-span-2 md:grid md:grid-cols-2 lg:flex">
-                    <RemindersPanel className="lg:shrink" />
-                    <div className="lg:flex-1 lg:min-h-[300px]">
+                    <RemindersPanel className="lg:flex-1" />
+                    <div className="shrink-0 lg:h-[300px] 2xl:h-[340px]">
                         <TreeyoAssistant />
                     </div>
                 </div>
