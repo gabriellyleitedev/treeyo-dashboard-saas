@@ -24,13 +24,15 @@ function formatarData(data: string): string {
 
 interface NotificationBellProps {
   modulo?: ModuloNotificacao;
+  /** Sem borda/fundo próprios (quando fica dentro de uma cápsula) */
+  discreto?: boolean;
 }
 
 // Sino + painel de notificações. O painel é renderizado num portal (no <body>)
 // com um fundo desfocado por cima de toda a tela: o cabeçalho é sticky e cria
 // seu próprio contexto de z-index, então um overlay dentro dele não cobriria
 // a sidebar.
-const NotificationBell = ({ modulo = "geral" }: NotificationBellProps) => {
+const NotificationBell = ({ modulo = "geral", discreto = false }: NotificationBellProps) => {
   const { notificacoes, limparNotificacoes, marcarTodasComoLidas } = useNotifications();
   const lista = notificacoes[modulo] || [];
   const naoLidas = lista.filter((n) => !n.lida).length;
@@ -69,7 +71,7 @@ const NotificationBell = ({ modulo = "geral" }: NotificationBellProps) => {
         aria-label={naoLidas > 0 ? `Notificações (${naoLidas} novas)` : "Notificações"}
         aria-haspopup="dialog"
         aria-expanded={aberto}
-        className="relative w-10 h-10 rounded-full border bg-fg/5 border-line hover:bg-fg/10 transition flex items-center justify-center cursor-pointer"
+        className={`relative rounded-full hover:bg-fg/10 transition flex items-center justify-center cursor-pointer ${discreto ? "w-9 h-9" : "w-10 h-10 border bg-fg/5 border-line"}`}
       >
         <Bell size={18} className="text-fg" />
         {naoLidas > 0 && (

@@ -6,6 +6,7 @@ import BuscaInteligente, { type ItemBusca } from '@/components/ui/BuscaInteligen
 import { NAV_ITEMS, ROUTES } from '@/constants/navigation';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
+import type { ContextoLayout } from './contextoLayout';
 
 const MEDIA_SIDEBAR_RECOLHIDA = '(min-width: 1024px) and (max-width: 1279px)';
 
@@ -35,6 +36,8 @@ const Layout = () => {
     window.addEventListener('keydown', handleK);
     return () => window.removeEventListener('keydown', handleK);
   }, []);
+
+  const contextoLayout = useMemo((): ContextoLayout => ({ abrirBusca: () => setIsSearchOpen(true) }), []);
 
   // Itens pesquisáveis no Ctrl+K: telas do menu + lançamentos cadastrados
   const rotasDoSistema = useMemo((): ItemBusca[] => [
@@ -68,7 +71,7 @@ const Layout = () => {
         ">
           {/* Espaçamento interno do conteúdo (pb maior no mobile para não ficar atrás da dock) */}
           <div className="px-4 md:px-8 xl:px-10 pt-2 pb-28 lg:pb-8">
-            <Outlet />
+            <Outlet context={contextoLayout} />
           </div>
         </div>
 

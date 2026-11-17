@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -29,7 +30,12 @@ const Lancamento = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [itemParaExcluir, setItemParaExcluir] = useState<LancamentoItem | null>(null);
 
-    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>("Entrada");
+    // Os atalhos da Visão Geral abrem esta tela com ?tipo=Entrada|Saída|Investimento
+    const [searchParams] = useSearchParams();
+    const tipoDaUrl = searchParams.get("tipo");
+    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(
+        () => TIPOS_LANCAMENTO.find((t) => t === tipoDaUrl) ?? "Entrada"
+    );
     const [busca, setBusca] = useState(""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
     const { lancamentos: lista, adicionarLancamento, removerLancamento } = useLancamentos();

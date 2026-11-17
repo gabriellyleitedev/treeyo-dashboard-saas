@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
-import { CalendarDays, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ROUTES } from "@/constants/navigation";
 import { formatarCentavos } from "@/domain/dinheiro";
 import type { PontoSerie } from "@/domain/resumo";
@@ -10,15 +11,34 @@ const dataComPontos = (iso: string) => iso.split("-").reverse().join(".");
 // "2026-11-17" -> "17/11"
 const curtaBR = (iso: string) => iso.split("-").reverse().slice(0, 2).join("/");
 
+const PERIODOS = [7, 14, 30] as const;
+export type Periodo = (typeof PERIODOS)[number];
+
+function useCelular(): boolean {
+  const [celular, setCelular] = useState(() => window.matchMedia("(max-width: 767px)").matches);
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 767px)");
+    const aoMudar = (e: MediaQueryListEvent) => setCelular(e.matches);
+    media.addEventListener("change", aoMudar);
+    return () => media.removeEventListener("change", aoMudar);
+  }, []);
+  return celular;
+}
+
 interface MainChartProps {
-  serie: readonly PontoSerie[];
+  series: Record<Periodo, readonly PontoSerie[]>;
   /** Ocupa a altura do contêiner (painel sem rolagem no desktop) */
   className?: string;
 }
 
-// Evolução do saldo: linha limpa, sem eixos; o valor aparece numa pílula no
-// ponto sob o cursor. Rodapé com a variação e o período, como num extrato.
-export default function MainChart({ serie, className = "" }: MainChartProps) {
+// Evolução do saldo: linha com brilho, seletor de período e valor numa pílula
+// no ponto sob o cursor. Sem eixo de valores (visual limpo); no celular as
+// datas aparecem embaixo, porque lá não há hover para descobrir os dias.
+export default function MainChart({ series, className = "" }: MainChartProps) {
+  const [periodo, setPeriodo] = useState<Periodo>(14);
+  const celular = useCelular();
+  const serie = series[periodo];
+
   const inicio = serie[0]?.saldo ?? 0;
   const fim = serie.at(-1)?.saldo ?? 0;
   const variacao = fim - inicio;
@@ -32,20 +52,16 @@ export default function MainChart({ serie, className = "" }: MainChartProps) {
   const min = Math.min(...valores);
   const max = Math.max(...valores);
   const folga = Math.max((max - min) * 0.2, 1000); // ao menos R$ 10 de folga
+  const semMovimento = serie.every((p) => p.movimento === 0);
 
   return (
-    <div className={`w-full h-[320px] rounded-[22px] bg-card border border-line flex flex-col overflow-hidden ${className}`}>
+    <div className={`w-full h-[340px] rounded-[22px] bg-card border border-line flex flex-col overflow-hidden ${className}`}>
 
       {/* CABEÇALHO */}
-      <div className="flex items-start justify-between gap-4 px-5 pt-4">
+      <div className="flex items-start justify-between gap-3 px-5 pt-4">
         <div className="min-w-0">
           <h2 className="text-[15px] font-medium text-fg">Evolução do saldo</h2>
-          <p className="flex items-center gap-1.5 text-xs text-fg-subtle mt-0.5">
-            Saldo ao fim de cada dia nos últimos
-            <span className="inline-flex items-center gap-1 text-fg-muted">
-              <CalendarDays size={12} /> {serie.length} dias
-            </span>
-          </p>
+          <p className="text-xs text-fg-subtle mt-0.5">Saldo ao fim de cada dia</p>
         </div>
         <Link
           to={ROUTES.lancamento}
@@ -56,17 +72,45 @@ export default function MainChart({ serie, className = "" }: MainChartProps) {
         </Link>
       </div>
 
+      {/* PERÍODO */}
+      <div role="radiogroup" aria-label="Período" className="flex gap-1 px-5 mt-3">
+        {PERIODOS.map((p) => (
+          <button
+            key={p}
+            type="button"
+            role="radio"
+            aria-checked={periodo === p}
+            onClick={() => setPeriodo(p)}
+            className={`h-7 px-3 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+              periodo === p ? "bg-fg/10 text-fg border border-line" : "text-fg-subtle hover:text-fg-muted border border-transparent"
+            }`}
+          >
+            {p}D
+          </button>
+        ))}
+      </div>
+
       {/* GRÁFICO */}
-      <div className="flex-1 min-h-0 w-full">
+      <div className="relative flex-1 min-h-0 w-full">
+        {semMovimento && (
+          <p className="absolute inset-x-0 top-1/3 text-center text-xs text-fg-subtle pointer-events-none">
+            Sem movimentações nos últimos {periodo} dias
+          </p>
+        )}
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={serie as PontoSerie[]} margin={{ top: 36, right: 0, left: 0, bottom: 4 }}>
+          <AreaChart
+            data={serie as PontoSerie[]}
+            margin={celular ? { top: 28, right: 12, left: 12, bottom: 0 } : { top: 32, right: 0, left: 0, bottom: 4 }}
+          >
             <defs>
               <linearGradient id="saldoPreenchimento" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#1fba11" stopOpacity={0.28} />
                 <stop offset="100%" stopColor="#1fba11" stopOpacity={0} />
               </linearGradient>
-              {/* Brilho suave na linha */}
-              <filter id="saldoBrilho" x="-10%" y="-50%" width="120%" height="200%">
+              {/* userSpaceOnUse: a área do filtro é o gráfico inteiro. Com o padrão
+                  (objectBoundingBox), uma linha reta tem altura 0 e o navegador
+                  some com ela (acontecia com saldo sem variação no período) */}
+              <filter id="saldoBrilho" filterUnits="userSpaceOnUse" x="-5%" y="-5%" width="110%" height="110%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
@@ -75,7 +119,17 @@ export default function MainChart({ serie, className = "" }: MainChartProps) {
               </filter>
             </defs>
 
-            <XAxis dataKey="data" hide />
+            <XAxis
+              dataKey="data"
+              hide={!celular}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "var(--tema-fg-subtle)", fontSize: 10 }}
+              tickFormatter={curtaBR}
+              interval="preserveStartEnd"
+              minTickGap={24}
+              dy={6}
+            />
             <YAxis hide domain={[min - folga, max + folga]} />
 
             <Tooltip

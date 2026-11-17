@@ -28,6 +28,7 @@ export function useResumoFinanceiro(hoje: DataISO) {
       mes: totaisDoPeriodo(lancamentos, inicioMes, hoje),
       serie7: serieDeSaldo(lancamentos, hoje, 7),
       serie14: serieDeSaldo(lancamentos, hoje, 14),
+      serie30: serieDeSaldo(lancamentos, hoje, 30),
       pendencias: pendencias(lancamentos, hoje),
       ultimos: [...lancamentos]
         .filter((l) => l.data <= hoje)

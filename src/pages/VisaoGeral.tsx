@@ -4,6 +4,7 @@ import MainChart from '@/features/dashboard/MainChart';
 import RemindersPanel from '@/features/dashboard/RemindersPanel';
 import TreeyoAssistant from '@/features/dashboard/TreeyoAssistant';
 import SaldoCard from '@/features/dashboard/SaldoCard';
+import SaldoHero from '@/features/dashboard/SaldoHero';
 import { useResumoFinanceiro } from '@/features/dashboard/useResumoFinanceiro';
 import Header from '@/components/layout/Header';
 import GlowTopo from '@/components/ui/GlowTopo';
@@ -73,7 +74,9 @@ function VisaoGeral() {
         // painel-fixo (≥1024px de largura e ≥660px de altura): a página ocupa
         // exatamente a altura disponível e não rola; os cards se ajustam.
         // Fora disso (celular, tablet, notebook muito baixo) a página rola normalmente.
-        <div className="w-full flex flex-col painel-fixo:h-[calc(100dvh-4.25rem)]">
+        <div className="relative w-full flex flex-col painel-fixo:h-[calc(100dvh-4.25rem)]">
+            {/* Celular: luz verde vinda do topo, atrás do cabeçalho de vidro e do saldo */}
+            <div aria-hidden="true" className="md:hidden pointer-events-none absolute -top-4 -inset-x-4 h-[460px]" style={{ background: "radial-gradient(90% 70% at 50% 0%, rgba(31,186,17,0.42) 0%, rgba(31,186,17,0.12) 45%, transparent 75%)" }} />
             <Header data={dataRef} onDataChange={setDataRef} />
 
             <GlowTopo />
@@ -85,20 +88,23 @@ function VisaoGeral() {
             */}
             <section className="w-full max-w-[1600px] mx-auto pt-5 flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 painel-fixo:grid-rows-[auto_minmax(0,1fr)] gap-6">
 
-                {/* SALDO */}
-                <div className="flex flex-col gap-4 min-w-0 lg:col-span-4">
-                    <TituloSecao as="h1" chip="14 dias">Visão Geral</TituloSecao>
-                    <SaldoCard resumo={resumo} />
+                {/* SALDO: celular sem card (SaldoHero); md+ com card */}
+                <div className="order-1 lg:order-none min-w-0 lg:col-span-4">
+                    <SaldoHero resumo={resumo} />
+                    <div className="hidden md:flex flex-col gap-4">
+                        <TituloSecao as="h1" chip="14 dias">Visão Geral</TituloSecao>
+                        <SaldoCard resumo={resumo} />
+                    </div>
                 </div>
 
                 {/* FILA INTELIGENTE */}
-                <div className="min-w-0 lg:col-span-4">
+                <div className="order-2 lg:order-none min-w-0 lg:col-span-4">
                     <CardsStack resumo={resumo} previsto7={previsto7} />
                 </div>
 
                 {/* COLUNA DIREITA: lembretes + assistente (ocupa as 2 linhas no desktop).
                     Os lembretes ficam com a altura que sobra e rolam por dentro. */}
-                <div className="min-w-0 min-h-0 flex flex-col gap-6 md:col-span-2 lg:col-span-4 lg:row-span-2 md:grid md:grid-cols-2 lg:flex">
+                <div className="order-4 lg:order-none min-w-0 min-h-0 flex flex-col gap-6 md:col-span-2 lg:col-span-4 lg:row-span-2 md:grid md:grid-cols-2 lg:flex">
                     <RemindersPanel className="lg:flex-1" />
                     <div className="shrink-0 lg:h-[300px] 2xl:h-[340px]">
                         <TreeyoAssistant />
@@ -106,8 +112,8 @@ function VisaoGeral() {
                 </div>
 
                 {/* GRÁFICO: preenche a altura que sobra */}
-                <div className="min-w-0 min-h-0 md:col-span-2 lg:col-span-8 lg:row-start-2 lg:col-start-1">
-                    <MainChart serie={resumo.serie14} className="painel-fixo:h-full" />
+                <div className="order-3 lg:order-none min-w-0 min-h-0 md:col-span-2 lg:col-span-8 lg:row-start-2 lg:col-start-1">
+                    <MainChart series={{ 7: resumo.serie7, 14: resumo.serie14, 30: resumo.serie30 }} className="painel-fixo:h-full" />
                 </div>
             </section>
         </div>

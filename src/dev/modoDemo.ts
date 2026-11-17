@@ -2,7 +2,8 @@
 // arquivo quando import.meta.env.DEV é true, então ele não vai para o build).
 //
 //   ?demo=1  guarda uma cópia dos dados atuais e carrega dados de exemplo
-//   ?demo=0  apaga os dados de exemplo e devolve a cópia guardada
+//   ?demo=0  apaga os dados de exemplo, devolve a cópia guardada e impede o
+//            demo de religar sozinho
 //
 // As datas são relativas a hoje, então o painel sempre parece atual.
 
@@ -81,12 +82,47 @@ function gerarNotificacoes() {
   };
 }
 
+/**
+ * Enquanto as telas estão sendo finalizadas, o modo demo liga sozinho em
+ * desenvolvimento quando não há lançamentos (para ver o painel "vivo").
+ * AO FINALIZAR AS TELAS: mudar para false e abrir o app com ?demo=0.
+ */
+const DEMO_AUTOMATICO = true;
+const DEMO_DESLIGADO = '@treeyo:demo-desligado';
+const DEMO_GERADO_EM = '@treeyo:demo-gerado-em';
+
+function semLancamentos(): boolean {
+  try {
+    const salvo = JSON.parse(localStorage.getItem(STORAGE_KEYS.lancamentos) ?? '[]') as unknown;
+    return !Array.isArray(salvo) || salvo.length === 0;
+  } catch {
+    return true;
+  }
+}
+
 export function aplicarModoDemo(): void {
   const params = new URLSearchParams(window.location.search);
-  const demo = params.get('demo');
-  if (demo !== '1' && demo !== '0') return;
+  let demo = params.get('demo');
+  const hoje = dataLocalISO();
+
+  if (demo !== '1' && demo !== '0') {
+    try {
+      const ativo = localStorage.getItem(MARCA_DEMO) !== null;
+      // Demo ativo gerado em outro dia: regenera para as datas continuarem atuais
+      if (ativo && localStorage.getItem(DEMO_GERADO_EM) !== hoje) demo = '1';
+      // Liga sozinho (uma vez) se não há dados e ninguém desligou com ?demo=0
+      else if (!ativo && DEMO_AUTOMATICO && !localStorage.getItem(DEMO_DESLIGADO) && semLancamentos()) demo = '1';
+    } catch {
+      return;
+    }
+    if (demo !== '1') return;
+  }
 
   try {
+    localStorage.removeItem(DEMO_DESLIGADO);
+    if (demo === '0') localStorage.setItem(DEMO_DESLIGADO, '1');
+    if (demo === '1') localStorage.setItem(DEMO_GERADO_EM, hoje);
+
     if (demo === '1') {
       // Só faz backup na primeira ativação, para não guardar dados de demo por cima dos reais
       if (!localStorage.getItem(MARCA_DEMO)) {
@@ -96,7 +132,6 @@ export function aplicarModoDemo(): void {
         }
         localStorage.setItem(MARCA_DEMO, '1');
       }
-      const hoje = dataLocalISO();
       localStorage.setItem(STORAGE_KEYS.lancamentos, JSON.stringify(gerarLancamentos(hoje)));
       localStorage.setItem(STORAGE_KEYS.lembretes, JSON.stringify(gerarLembretes(hoje)));
       localStorage.setItem(STORAGE_KEYS.notificacoes, JSON.stringify(gerarNotificacoes()));
@@ -108,6 +143,7 @@ export function aplicarModoDemo(): void {
         localStorage.removeItem(PREFIXO_BACKUP + chave);
       }
       localStorage.removeItem(MARCA_DEMO);
+      localStorage.removeItem(DEMO_GERADO_EM);
     }
   } catch {
     // storage bloqueado: segue sem demo
