@@ -59,6 +59,9 @@ const Lancamento = () => {
 
     }, [lista, busca]);
 
+    // Card de destaque: lançamento mais recente do tipo selecionado nos botões
+    const ultimoDoTipo = listaGeral.find((item) => item.tipo === tipoAtivo);
+
     const getCoresDinamicas = (tipo: TipoLancamento): CoresTipo => {
         const ativo = tipoAtivo === tipo;
         const config: Record<TipoLancamento, CoresTipo> = {
@@ -183,8 +186,8 @@ const Lancamento = () => {
 
                     {/* CARD DO ÚLTIMO LANÇAMENTO */}
                     <motion.div variants={itemVariantsSutil} className="w-full min-w-0 flex justify-center md:col-span-2 xl:col-span-1 xl:col-start-2 xl:row-start-1">
-                        {listaGeral.length > 0 ? (
-                            <CardLancamento lancamento={listaGeral[0]} />
+                        {ultimoDoTipo ? (
+                            <CardLancamento lancamento={ultimoDoTipo} />
                         ) : (
                             <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-center text-neutral-600 text-sm italic p-4">
                                 Nenhum lançamento de {tipoAtivo} para exibir no card.

@@ -3,7 +3,8 @@ import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import SelectTreeyo from '@/components/ui/SelectTreeyo';
 import toast from "react-hot-toast";
-import { brParaISO, converterValorDigitado, isoParaBR } from "@/utils/formatters";
+import { brParaDataISO, dataISOParaBR, dataLocalISO } from "@/domain/datas";
+import { MENSAGENS_ERRO_VALOR, validarValor } from "@/domain/dinheiro";
 import { mascaraData } from "@/utils/masks";
 import {
     METODOS_PAGAMENTO,
@@ -47,12 +48,12 @@ interface FormularioLancamentoProps {
 
 const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancamentoProps) => {
 
-    const hoje = new Date();
-    const hojeISO = hoje.toISOString().split("T")[0];
+    // Data local: toISOString() usaria UTC e sugeriria "amanhã" após as 21h
+    const hojeISO = dataLocalISO();
 
     const [formData, setFormData] = useState<FormLancamento>({
         data: hojeISO,
-        dataDisplay: isoParaBR(hojeISO),
+        dataDisplay: dataISOParaBR(hojeISO),
         categoria: "",
         valor: "",
         status: "",
@@ -84,17 +85,13 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
         const val = mascaraData(e.target.value);
 
+        // Data incompleta ou inexistente (ex.: 31/02) fica vazia e é barrada
+        // na validação, em vez de manter silenciosamente a data anterior
         setFormData(prev => ({
             ...prev,
-            dataDisplay: val
+            dataDisplay: val,
+            data: brParaDataISO(val) ?? ""
         }));
-
-        if (val.length === 10) {
-            setFormData(prev => ({
-                ...prev,
-                data: brParaISO(val)
-            }));
-        }
 
     };
 
@@ -108,21 +105,32 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
                 ? formData.outroBanco
                 : formData.conta;
 
-        if (!formData.categoria) novosErros.push("categoria");
-        if (!formData.valor) novosErros.push("valor");
+        const valor = validarValor(formData.valor);
+
+        if (!formData.data) novosErros.push("dataDisplay");
+        if (!formData.categoria.trim()) novosErros.push("categoria");
+        if (!valor.ok) novosErros.push("valor");
         if (!status) novosErros.push("status");
         if (!metodo) novosErros.push("metodo");
-        if (!bancoFinal) novosErros.push("conta");
+        if (!bancoFinal.trim()) novosErros.push("conta");
 
-        // status/metodo vazios já estão em novosErros; repetidos aqui para o
+        // status/metodo/valor já estão em novosErros; repetidos aqui para o
         // TypeScript saber que, daqui para baixo, eles têm valor
-        if (novosErros.length > 0 || !status || !metodo) {
+        if (novosErros.length > 0 || !status || !metodo || !valor.ok) {
 
             setErros(novosErros);
             setShake(true);
 
+            // Mensagem específica quando só um campo tem problema conhecido
+            const mensagem =
+                novosErros.length === 1 && novosErros[0] === "dataDisplay"
+                    ? "Data inválida. Use DD/MM/AAAA"
+                    : novosErros.length === 1 && !valor.ok
+                        ? MENSAGENS_ERRO_VALOR[valor.erro]
+                        : "Por favor, preencha todos os campos";
+
             setTimeout(() => {
-                toast.error("⚠️ Por favor, preencha todos os campos");
+                toast.error(mensagem);
                 setShake(false);
             }, 50);
 
@@ -130,19 +138,13 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
         }
 
-        const valorNumerico = converterValorDigitado(formData.valor);
-
-        if (isNaN(valorNumerico)) {
-            setErros(["valor"]);
-            toast.error("⚠️ Digite um valor válido");
-            return;
-        }
-
         aoConfirmar({
             ...formData,
+            categoria: formData.categoria.trim(),
             status,
             metodo,
-            valor: valorNumerico,
+            // O modelo salvo ainda está em reais; a migração para centavos é a próxima etapa
+            valor: valor.centavos / 100,
             conta: bancoFinal,
             id: Date.now(),
             tipo: tipoSelecionado

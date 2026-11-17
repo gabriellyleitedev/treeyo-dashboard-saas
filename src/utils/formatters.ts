@@ -28,16 +28,4 @@ export function formatarDataCurta(data: string): string {
   return `${dia}/${mes}`;
 }
 
-// "2026-09-20" -> "20/09/2026"
-export function isoParaBR(iso: string): string {
-  const [ano, mes, dia] = iso.split('-');
-  return `${dia}/${mes}/${ano}`;
-}
-
-// "20/09/2026" -> "2026-09-20" ("" se incompleta)
-export function brParaISO(br: string): string {
-  const partes = br.split('/');
-  if (partes.length !== 3) return '';
-  const [dia, mes, ano] = partes;
-  return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
-}
+// Conversão e validação de datas: ver @/domain/datas
