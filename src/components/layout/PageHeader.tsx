@@ -10,9 +10,10 @@ import type { ModuloNotificacao } from "@/types/notificacao";
 // Props comuns aos cabeçalhos mobile e desktop
 interface PageHeaderProps {
     titulo: string;
-    busca: string;
-    onBuscaChange: (valor: string) => void;
-    placeholder: string;
+    /** Sem busca/onBuscaChange o campo de busca não aparece */
+    busca?: string;
+    onBuscaChange?: (valor: string) => void;
+    placeholder?: string;
     modulo: ModuloNotificacao;
 }
 
@@ -28,9 +29,9 @@ interface PageHeaderDesktopProps extends PageHeaderProps {
 // A busca abre no lugar do título. As notificações ficam no cabeçalho da Visão Geral.
 export function PageHeaderMobile({
     titulo,
-    busca,
+    busca = "",
     onBuscaChange,
-    placeholder,
+    placeholder = "Buscar",
     className = "",
 }: PageHeaderMobileProps) {
     const navigate = useNavigate();
@@ -49,9 +50,11 @@ export function PageHeaderMobile({
                             <ArrowLeft size={18} />
                         </button>
                         <h1 className="text-center text-base font-medium text-fg truncate">{titulo}</h1>
-                        <button onClick={() => setSearchAberto(true)} aria-label={placeholder} className={botaoVidro}>
-                            <Search size={18} />
-                        </button>
+                        {onBuscaChange ? (
+                            <button onClick={() => setSearchAberto(true)} aria-label={placeholder} className={botaoVidro}>
+                                <Search size={18} />
+                            </button>
+                        ) : <span aria-hidden="true" />}
                     </motion.div>
                 ) : (
                     <motion.div
@@ -64,13 +67,13 @@ export function PageHeaderMobile({
                             <input
                                 autoFocus
                                 value={busca}
-                                onChange={(e) => onBuscaChange(e.target.value)}
+                                onChange={(e) => onBuscaChange?.(e.target.value)}
                                 placeholder={placeholder}
                                 className="w-full bg-fg/5 text-sm text-fg py-2 pl-10 pr-4 rounded-full border border-green-500/30 focus:outline-none"
                             />
                         </div>
                         <button
-                            onClick={() => { setSearchAberto(false); onBuscaChange(""); }}
+                            onClick={() => { setSearchAberto(false); onBuscaChange?.(""); }}
                             className="text-xs font-medium text-fg-muted uppercase px-2"
                         >
                             Cancelar
@@ -93,7 +96,7 @@ export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, m
                 </h1>
             </div>
 
-            <div className="flex items-center group relative">
+            {onBuscaChange && <div className="flex items-center group relative">
                 <Search className="absolute left-3 w-4 h-4 text-fg group-focus-within:text-marca transition-colors z-10" />
                 <input
                     autoComplete="off"
@@ -103,7 +106,7 @@ export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, m
                     placeholder={placeholder}
                     className="bg-card text-sm text-fg pl-10 pr-4 py-2 rounded-full border border-line w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-fg-subtle cursor-pointer"
                 />
-            </div>
+            </div>}
 
             <div className="ml-auto flex items-center gap-3">
                 <ThemeToggle />

@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
 import { Plus } from "lucide-react";
 import { ROUTES } from "@/constants/navigation";
 import { formatarCentavos } from "@/domain/dinheiro";
 import type { PontoSerie } from "@/domain/resumo";
+import { useCelular } from "@/utils/useCelular";
 
 // "2026-11-17" -> "17.11.2026"
 const dataComPontos = (iso: string) => iso.split("-").reverse().join(".");
@@ -13,17 +14,6 @@ const curtaBR = (iso: string) => iso.split("-").reverse().slice(0, 2).join("/");
 
 const PERIODOS = [7, 14, 30] as const;
 export type Periodo = (typeof PERIODOS)[number];
-
-function useCelular(): boolean {
-  const [celular, setCelular] = useState(() => window.matchMedia("(max-width: 767px)").matches);
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 767px)");
-    const aoMudar = (e: MediaQueryListEvent) => setCelular(e.matches);
-    media.addEventListener("change", aoMudar);
-    return () => media.removeEventListener("change", aoMudar);
-  }, []);
-  return celular;
-}
 
 interface MainChartProps {
   series: Record<Periodo, readonly PontoSerie[]>;

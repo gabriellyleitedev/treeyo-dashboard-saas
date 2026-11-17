@@ -1,226 +1,70 @@
-import { useState, type ReactNode } from "react";
-import { motion, type Variants } from "framer-motion";
-import SaldoMiniChart from '@/features/saldo/SaldoMiniChart';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Plus, Sprout } from 'lucide-react';
 import GlowTopo from '@/components/ui/GlowTopo';
 import { PageHeaderMobile, PageHeaderDesktop } from '@/components/layout/PageHeader';
+import { ROUTES } from '@/constants/navigation';
+import { dataLocalISO } from '@/domain/datas';
+import JornadaHero from '@/features/saldo/JornadaHero';
+import SaldoMensalChart from '@/features/saldo/SaldoMensalChart';
+import EntradasSaidasChart from '@/features/saldo/EntradasSaidasChart';
+import Conquistas from '@/features/saldo/Conquistas';
+import { useJornada } from '@/features/saldo/useJornada';
 import { containerVariants, itemVariants } from '@/utils/animations';
-import type { PeriodoSaldo } from '@/types/saldo';
 
-// Valores já formatados para exibição
-interface PresetSaldo {
-    vendas: string;
-    despesas: string;
-    total: string;
-    saldo: string;
-    insights: string[];
-    frases: string[];
-}
-
-// Números fixos por período até existir cálculo real a partir dos lançamentos
-const presets: Record<PeriodoSaldo, PresetSaldo> = {
-    "7d": {
-        vendas: "18",
-        despesas: "07",
-        total: "4.200",
-        saldo: "3.100",
-        insights: ["Você economizou 200 min esta semana", "Crescimento de 5% vs semana passada"],
-        frases: ["Seu saldo caiu 2% essa semana", "Sábado foi seu melhor dia"]
-    },
-    "30d": {
-        vendas: "87",
-        despesas: "43",
-        total: "7.642",
-        saldo: "3.582",
-        insights: ["Redução de 20% nos custos mensais", "Pix foi o mais usado no mês"],
-        frases: ["Seu saldo caiu 5% em relação ao mês passado", "O dia 10 foi o mais movimentado"]
-    },
-    "custom": {
-        vendas: "--",
-        despesas: "--",
-        total: "0.000",
-        saldo: "0.000",
-        insights: ["Selecione um período", "Aguardando dados..."],
-        frases: ["Período personalizado selecionado"]
-    }
-};
+// Evolução do Saldo: a jornada desde o primeiro lançamento até hoje.
+//
+//   celular: hero (Dia 1 × hoje) → saldo mês a mês → entradas × saídas → conquistas
+//   lg:      hero      | saldo mês a mês
+//            entradas × saídas | conquistas
 const EvolucaoSaldo = () => {
-    const [range, setRange] = useState<PeriodoSaldo>("30d");
-    const [busca, setBusca] = useState("");
-
-    const dadosAtuais = presets[range] || presets["30d"];
+    const [hoje] = useState(dataLocalISO);
+    const jornada = useJornada(hoje);
 
     return (
+        <div className="relative w-full">
+            {/* Celular: luz verde do topo, atrás do cabeçalho e do saldo */}
+            <div aria-hidden="true" className="md:hidden pointer-events-none absolute -top-4 -inset-x-4 h-[420px]" style={{ background: 'radial-gradient(90% 70% at 50% 0%, rgba(31,186,17,0.36) 0%, rgba(31,186,17,0.1) 45%, transparent 75%)' }} />
+            <GlowTopo />
 
-        <div className="w-full">
-            <div className="max-w-[1400px] mx-auto flex flex-col w-full">
-                <GlowTopo />
+            <PageHeaderMobile titulo="Evolução do Saldo" modulo="saldo" />
 
-                <PageHeaderMobile
-                    titulo="Evolução do Saldo"
-                    busca={busca}
-                    onBuscaChange={setBusca}
-                    placeholder="Buscar saldo..."
-                    modulo="saldo"
-                />
+            <motion.div className="relative w-full max-w-[1600px] mx-auto flex flex-col" initial="hidden" animate="visible" variants={containerVariants}>
+                <PageHeaderDesktop titulo="Evolução do Saldo" modulo="saldo" variants={itemVariants} />
 
-                <motion.div
-                    className="w-full flex flex-col"
-                    initial="hidden"
-                    animate="visible"
-                    variants={containerVariants}
-                >
-                    <PageHeaderDesktop
-                        titulo="Evolução do Saldo"
-                        busca={busca}
-                        onBuscaChange={setBusca}
-                        placeholder="Buscar saldo..."
-                        modulo="saldo"
-                        variants={itemVariants}
-                    />
-
-                    <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
-
-                    {/* GRÁFICO */}
-                    <motion.div variants={itemVariants} className="w-full flex justify-center">
-                        <SaldoMiniChart range={range} setRange={setRange} />
-                    </motion.div>
-
-
-                    {/* BLOCO INFERIOR: celular empilhado; md+ card | resultado */}
-                    <div className="grid grid-cols-1 md:grid-cols-[minmax(0,340px)_minmax(0,1fr)] lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)] gap-8 lg:gap-10 w-full pt-10 md:pt-14 items-stretch">
-
-
-                            {/* COLUNA ESQUERDA*/}
-                            <motion.div
-                                variants={itemVariants}
-                                className="relative w-full h-fit border border-[#1fba11]/20 rounded-2xl p-4 lg:p-6 bg-[#0f0f0f] overflow-hidden shrink-0"
-                            >
-                                <div className="absolute inset-0 bg-green-500/10 blur-3xl"></div>
-                                <div
-                                    className="absolute inset-0 z-0 opacity-20"
-                                    style={{
-                                        backgroundImage: `radial-gradient(circle, #ffffff 0.8px, transparent 0.8px)`,
-                                        backgroundSize: '24px 24px',
-                                        maskImage: 'radial-gradient(circle at center, black, transparent 90%)',
-                                        WebkitMaskImage: 'radial-gradient(circle at center, black, transparent 90%)'
-                                    }}
-                                />
-                                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/20 blur-[100px] rounded-full z-0" />
-                                <div className="relative z-10 flex flex-col gap-4">
-                                    <h2 className="text-gray-200 text-base md:text-[18px] font-medium flex flex-wrap items-center gap-x-1">
-                                        Sua evolução com a
-                                        <img src="/logo.png" className="w-24" alt="Treeyo" />
-                                    </h2>
-
-
-                                    <div className="grid grid-cols-2 gap-3 md:gap-4 font-semibold cursor-default">
-                                        <InsightCard label="Fluxo" text="Você identificou onde mais gastou dinheiro" />
-                                        <InsightCard label="Custos" text="Você reduziu 20% dos seus gastos" />
-                                        <InsightCard label="Despesas" text="Você economizou 15% nas suas despesas" />
-                                        <InsightCard label="Eficiência" text={<>Você economizou 847 minutos com a <span className="text-[#1fba11]">Treeyo</span></>} />
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            {/* COLUNA DIREITA - RESULTADO */}
-                            <motion.div
-                                variants={itemVariants}
-                                className="w-full min-w-0 flex flex-col justify-between gap-6"
-                            >
-                                <div>
-                                    <h3 className="text-gray-200 text-[20px] sm:text-xl lg:text-2xl font-medium pb-2 ">Resultado</h3>
-                                    <div className="grid grid-cols-2 2xl:grid-cols-4 gap-3 md:gap-4">
-                                        <StatBox label="Vendas recebidas" value={dadosAtuais.vendas} variants={itemVariants} />
-                                        <StatBox label="Despesas pagas" value={dadosAtuais.despesas} variants={itemVariants} />
-                                        <StatBox label="Total movimentado" value={dadosAtuais.total} span="$" variants={itemVariants} />
-                                        <StatBox label="Saldo final" value={dadosAtuais.saldo} span="$" variants={itemVariants} />
-                                    </div>
-                                </div>
-
-                                <motion.div variants={itemVariants} className="text-sm mt-auto text-neutral-400 space-y-2">
-                                    <p className="hover:text-gray-200 transition-all duration-300">• Seu saldo caiu 5% em relação ao mês passado</p>
-                                    <p className="hover:text-gray-200 transition-all duration-300">• Você perdeu dinheiro entre os dias 23 e 27 deste mês</p>
-                                    <p className="hover:text-gray-200 transition-all duration-300">• Pix foi o pagamento mais usado</p>
-                                    <p className="hover:text-gray-200 transition-all duration-300">• O dia 10 foi o mais movimentado do mês</p>
-                                </motion.div>
-                            </motion.div>
-                    </div>
-
-                </motion.div>
-            </div>
-        </div>
-
-    );
-};
-
-interface InsightCardProps {
-    label: string;
-    text: ReactNode;
-}
-
-const InsightCard = ({ label, text }: InsightCardProps) => (
-    <div className="group bg-white/[0.03] border border-white/10 p-2 md:p-3 rounded-xl min-h-[80px] hyphens-auto w-full min-w-0 flex flex-col justify-center transition-all duration-300 hover:scale-105 hover:bg-white/[0.05] cursor-pointer">
-        <p className="text-[10px] text-neutral-400 font-semibold uppercase tracking-[0.1em] mb-1 ">
-            {label}
-        </p>
-        <p className="text-sm font-medium text-gray-200 leading-tight group-hover:text-white transition-colors ">
-            {text}
-        </p>
-    </div>
-);
-interface StatBoxProps {
-    label: string;
-    /** Valor exibido; "0.000", "--", 0 ou vazio mostram o estado sem dados */
-    value: string | number;
-    /** Sufixo destacado ao lado do valor (ex.: "$") */
-    span?: string;
-    variants?: Variants;
-}
-
-const StatBox = ({ label, value, span, variants }: StatBoxProps) => {
-    const isEmpty = value === "0.000" || value === "--" || value === 0 || !value;
-
-    const getEmptyState = (label: string) => {
-        const map: Record<string, string> = {
-            "Vendas recebidas": "Sem dados",
-            "Despesas pagas": "Sem dados",
-            "Total movimentado": "Sem registros",
-            "Saldo final": "Nenhuma movimentação",
-        };
-        return map[label] || "Aguardando dados";
-    };
-
-    return (
-        <motion.div
-            variants={variants}
-            className="relative bg-[#262626] border border-white/5 min-h-[100px] flex flex-col justify-center px-3 md:px-4 py-3 rounded-2xl w-full min-w-0 cursor-default transition-all duration-500 hover:border-green-500/20"
-        >
-            {isEmpty ? (
-                <div className="flex flex-col">
-                    <span className="text-neutral-500 text-lg font-medium italic leading-tight">
-                        {getEmptyState(label)}
-                    </span>
-
-                    <span className="text-[10px] uppercase text-neutral-600 mt-1 tracking-tighter">
-                        {label}
-                    </span>
-                </div>
-            ) : (
-                <div className="flex flex-col">
-                    <div className="flex items-center gap-1">
-                        <p className="text-2xl md:text-3xl font-semibold text-gray-200 tracking-tight">
-                            {value}
+                {jornada === null ? (
+                    <motion.div variants={itemVariants} className="mt-10 md:mt-6 mx-auto max-w-md w-full rounded-[22px] bg-card border border-line p-8 flex flex-col items-center text-center">
+                        <span className="w-14 h-14 rounded-full bg-[#1fba11]/12 text-marca flex items-center justify-center">
+                            <Sprout size={26} strokeWidth={1.75} />
+                        </span>
+                        <h2 className="mt-4 text-lg font-medium text-fg">Sua jornada começa no primeiro lançamento</h2>
+                        <p className="mt-2 text-sm text-fg-muted">
+                            Registre entradas e saídas e acompanhe aqui o saldo mês a mês, seus melhores meses e sua constância.
                         </p>
-                        {span && <span className="text-[#1fba11] text-2xl md:text-3xl font-medium">{span}</span>}
+                        <Link to={ROUTES.lancamento} className="mt-6 h-10 px-5 rounded-full bg-brand text-brand-ink text-sm font-semibold inline-flex items-center gap-2 hover:bg-brand-strong transition-colors">
+                            <Plus size={16} /> Registrar lançamento
+                        </Link>
+                    </motion.div>
+                ) : (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2 md:pt-4">
+                        <motion.div variants={itemVariants} className="min-w-0 lg:col-span-4">
+                            <JornadaHero jornada={jornada} />
+                        </motion.div>
+                        <motion.div variants={itemVariants} className="min-w-0 lg:col-span-8 flex">
+                            <SaldoMensalChart jornada={jornada} />
+                        </motion.div>
+                        <motion.div variants={itemVariants} className="min-w-0 lg:col-span-7 flex">
+                            <EntradasSaidasChart meses={jornada.meses} />
+                        </motion.div>
+                        <motion.div variants={itemVariants} className="min-w-0 lg:col-span-5 flex">
+                            <Conquistas jornada={jornada} className="w-full" />
+                        </motion.div>
                     </div>
-                    <p className="text-[10px] md:text-xs uppercase tracking-wider text-neutral-400 font-medium mt-1">
-                        {label}
-                    </p>
-                </div>
-            )}
-        </motion.div>
+                )}
+            </motion.div>
+        </div>
     );
 };
-
 
 export default EvolucaoSaldo;

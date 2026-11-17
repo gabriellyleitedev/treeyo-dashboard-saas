@@ -16,8 +16,19 @@ const CHAVES = [STORAGE_KEYS.lancamentos, STORAGE_KEYS.lembretes, STORAGE_KEYS.n
 const PREFIXO_BACKUP = '@treeyo:backup-demo:';
 const MARCA_DEMO = '@treeyo:demo-ativo';
 
+/** Gerador pseudoaleatório com semente (mulberry32): mesma semente, mesma sequência. */
+function sementeAleatoria(semente: number): () => number {
+  let a = semente;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 function gerarLancamentos(hoje: string): Lancamento[] {
-  let id = 1_000;
+  let id = 10_000;
   const lista: Lancamento[] = [];
   const add = (
     dias: number, tipo: TipoLancamento, valor: number, categoria: string,
@@ -25,27 +36,44 @@ function gerarLancamentos(hoje: string): Lancamento[] {
     metodo: MetodoPagamento = 'Pix', conta = 'Nubank PJ',
   ) => lista.push({ id: id++, tipo, valor, data: somarDias(hoje, dias), dataDisplay: '', categoria, status, metodo, conta, outroBanco: '' });
 
-  // Saldo de abertura
-  add(-45, 'Entrada', 4800, 'Saldo inicial');
+  // ~10 meses de histórico, gerado com sementes fixas: o resultado é sempre o mesmo
+  const DIAS = 300;
+  const aleatorio = sementeAleatoria(42);
+  add(-DIAS, 'Entrada', 3000, 'Saldo inicial');
 
-  // Vendas quase todo dia, com variação (sequência fixa: o resultado é sempre o mesmo)
-  const vendas = [320, 0, 540, 210, 780, 0, 430, 650, 0, 290, 910, 380, 0, 470, 620, 0, 350, 1200, 260, 0, 540, 430, 0, 690, 310, 880, 0, 450, 520, 0, 640, 280, 0, 760, 410, 0, 590, 330, 870, 0, 460, 720, 0, 380, 640];
-  vendas.forEach((valor, i) => {
-    if (valor > 0) add(-44 + i, 'Entrada', valor, i % 3 === 0 ? 'Serviços' : 'Vendas', 'Pago', i % 4 === 0 ? 'Crédito' : 'Pix');
-  });
+  for (let d = -DIAS + 1; d <= 0; d++) {
+    const data = somarDias(hoje, d);
+    const dia = Number(data.slice(8));
+    const progresso = (d + DIAS) / DIAS; // 0 → 1: o negócio cresce ao longo do ano
+    // Um mês fraco no meio do caminho (vendas pela metade)
+    const fraco = d >= -150 && d < -120;
 
-  // Despesas fixas e variáveis
-  add(-40, 'Saída', 1500, 'Aluguel', 'Pago', 'Débito', 'Itaú');
-  add(-38, 'Saída', 189.9, 'Internet', 'Pago', 'Débito');
-  add(-33, 'Saída', 620, 'Fornecedor', 'Pago', 'Pix');
-  add(-26, 'Saída', 340.5, 'Energia', 'Pago', 'Débito');
-  add(-20, 'Saída', 450, 'Contador', 'Pago', 'Pix');
-  add(-15, 'Saída', 980, 'Fornecedor', 'Pago', 'Pix');
-  add(-10, 'Saída', 1500, 'Aluguel', 'Pago', 'Débito', 'Itaú');
-  add(-8, 'Saída', 189.9, 'Internet', 'Pago', 'Débito');
+    // Vendas em ~70% dos dias
+    if (aleatorio() < 0.7) {
+      const base = 180 + progresso * 260;
+      const valor = Math.round(base * (0.4 + aleatorio() * 1.2) * (fraco ? 0.45 : 1));
+      add(d, 'Entrada', valor, aleatorio() < 0.35 ? 'Serviços' : 'Vendas', 'Pago', aleatorio() < 0.25 ? 'Crédito' : 'Pix');
+    }
+
+    // Contas do mês (a última semana fica com os lançamentos fixos abaixo)
+    if (d > -8) continue;
+    if (dia === 5) add(d, 'Saída', 1500, 'Aluguel', 'Pago', 'Débito', 'Itaú');
+    if (dia === 10) add(d, 'Saída', 189.9, 'Internet', 'Pago', 'Débito');
+    if (dia === 15) add(d, 'Saída', 450, 'Contador', 'Pago', 'Pix');
+    if (dia === 20) add(d, 'Saída', Math.round(260 + aleatorio() * 120), 'Energia', 'Pago', 'Débito');
+    if (dia === 8 || dia === 22) add(d, 'Saída', Math.round(450 + aleatorio() * 650), 'Fornecedor', 'Pago', 'Pix');
+    // Marketing começa nos últimos meses e vai crescendo
+    if (dia === 12 && d > -130) add(d, 'Saída', Math.round(150 + progresso * 500), 'Marketing', 'Pago', 'Crédito');
+    // Sobra de caixa vira investimento a partir do 4º mês
+    if (dia === 25 && d > -200) add(d, 'Investimento', Math.round(300 + aleatorio() * 500), aleatorio() < 0.5 ? 'CDB' : 'Tesouro Selic');
+  }
+
+  // Compra pontual que deixa um mês no negativo
+  add(-215, 'Saída', 4200, 'Equipamento', 'Pago', 'Crédito');
+
+  // Última semana
   add(-5, 'Saída', 712.3, 'Fornecedor', 'Pago', 'Crédito');
   add(-2, 'Saída', 95, 'Combustível', 'Pago', 'Dinheiro', 'Espécie');
-  add(-12, 'Investimento', 800, 'CDB');
   add(-1, 'Investimento', 500, 'Tesouro Selic');
 
   // Pendências: atrasadas, vencendo hoje e próximas (alimentam a Fila Inteligente)
