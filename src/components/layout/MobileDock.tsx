@@ -1,0 +1,79 @@
+import { Link, useLocation } from 'react-router-dom';
+import { Search, type LucideIcon } from 'lucide-react';
+import { NAV_ITEMS } from '@/constants/navigation';
+
+interface DockLink {
+    icon: LucideIcon;
+    label: string;
+    href: string;
+    isSearch?: boolean;
+}
+
+const navLinks: DockLink[] = [
+    { icon: Search, label: "Buscar", href: '#', isSearch: true },
+    ...NAV_ITEMS.map((item) => ({ icon: item.icon, label: item.shortLabel, href: item.href })),
+];
+
+const itemClassName = "relative flex flex-col items-center justify-center min-w-[60px] h-full snap-center outline-none border-none bg-transparent";
+
+interface MobileDockProps {
+    onOpenSearch: () => void;
+}
+
+const MobileDock = ({ onOpenSearch }: MobileDockProps) => {
+    const location = useLocation();
+    const isActive = (path: string) => location.pathname === path;
+
+    return (
+        <div className="xl:hidden fixed bottom-6 left-0 right-0 z-[100] flex justify-center px-4 pointer-events-none">
+            <nav className="w-full max-w-[270px] md:max-w-[520px] h-[60px] bg-black/20 backdrop-blur border border-white/10 rounded-full overflow-hidden pointer-events-auto shadow-2xl">
+
+                {/* ÁREA DE SCROLL: */}
+                <div className="flex flex-nowrap items-center h-full px-4 overflow-x-auto overflow-y-hidden no-scrollbar snap-x touch-pan-x">
+                    {navLinks.map((link, idx) => {
+                        const active = isActive(link.href);
+
+                        const conteudo = (
+                            <>
+                                {/* ICONE */}
+                                <div className={`relative z-10 transition-all duration-300 ${active ? 'text-white scale-110' : 'text-neutral-500'}`}>
+                                    <link.icon size={22} strokeWidth={active ? 2.5 : 2} />
+                                </div>
+
+                                <span className={`text-[10px] pt-1 z-10 transition-colors ${active ? 'text-white font-medium' : 'text-neutral-500'}`}>
+                                    {link.label}
+                                </span>
+
+                                {active && (
+                                    <div className="absolute bottom-0 flex flex-col items-center w-full pointer-events-none">
+                                        <div className="absolute w-10 h-8 bg-[#1fba11]/30 blur-lg bottom-[-5px]" />
+                                        <div
+                                            className="h-[5px] w-9 rounded-t-full z-20"
+                                            style={{
+                                                background: '#1fba11',
+                                                boxShadow: '0 0 15px #1fba11, 0 0 15px #1fba11 '
+                                            }}
+                                        />
+                                    </div>
+                                )}
+                            </>
+                        );
+
+                        // "Buscar" abre o modal; os demais itens navegam
+                        return link.isSearch ? (
+                            <button key={idx} type="button" onClick={onOpenSearch} className={itemClassName}>
+                                {conteudo}
+                            </button>
+                        ) : (
+                            <Link key={idx} to={link.href} className={itemClassName}>
+                                {conteudo}
+                            </Link>
+                        );
+                    })}
+                </div>
+            </nav>
+        </div>
+    );
+}
+
+export default MobileDock;

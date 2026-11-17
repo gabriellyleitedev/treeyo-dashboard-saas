@@ -1,0 +1,383 @@
+import { useState, type ReactNode } from "react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Calendar, X } from "lucide-react";
+import { formatarMoeda } from "@/utils/formatters";
+import { mascaraData } from "@/utils/masks";
+import type { PeriodoSaldo, PontoSaldo } from "@/types/saldo";
+
+interface PeriodoPickerProps {
+  /** Recebe as datas inicial e final no formato DD/MM/AAAA */
+  onSelect: (inicio: string, fim: string) => void;
+}
+
+// Seletor de período (datas digitadas DD/MM/AAAA)
+function PeriodoPicker({ onSelect }: PeriodoPickerProps) {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const handleDateChange = (value: string, setter: (valor: string) => void) => setter(mascaraData(value));
+
+  const handleAplicar = () => {
+    if (startDate.length === 10 && endDate.length === 10) {
+      onSelect(startDate, endDate);
+    } else {
+      alert("Digite as datas completas!");
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2 text-left">
+        <label className="text-[11px] text-neutral-500 uppercase font-semibold tracking-widest">A partir do dia:</label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="00/00/0000"
+            value={startDate}
+            onChange={(e) => handleDateChange(e.target.value, setStartDate)}
+            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#1fba11] transition-all cursor-pointer"
+          />
+
+          <div className="absolute right-4 top-3 pointer-events-none">
+            <div className="absolute inset-0 bg-[#1fba11]/40 blur-[8px] rounded-full" />
+            <Calendar className="relative text-[#1fba11]" size={18} />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-2 text-left">
+        <label className="text-[11px] text-neutral-500 uppercase font-semibold tracking-widest">Até o dia:</label>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="00/00/0000"
+            value={endDate}
+            onChange={(e) => handleDateChange(e.target.value, setEndDate)}
+            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#1fba11] transition-all cursor-pointer"
+          />
+
+          <div className="absolute right-4 top-3 pointer-events-none">
+            <div className="absolute inset-0 bg-[#1fba11]/40 blur-[8px] rounded-full" />
+            <Calendar className="relative text-[#1fba11]" size={18} />
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={handleAplicar}
+        className="w-full py-4 mt-2 bg-[#1fba11] text-black font-semibold rounded-2xl hover:shadow-[0_0_20px_rgba(31,186,17,0.2)] transition-all duration-300 cursor-pointer active:scale-95"
+      >
+        Aplicar Período
+      </button>
+    </div>
+  );
+}
+
+const data7d: PontoSaldo[] = [
+  { label: "Seg", day: "Segunda", saldo: 3100 },
+  { label: "Ter", day: "Terça", saldo: 1800 },
+  { label: "Qua", day: "Quarta", saldo: 3900 },
+  { label: "Qui", day: "Quinta", saldo: 2400 },
+  { label: "Sex", day: "Sexta", saldo: 3800 },
+  { label: "Sab", day: "Sábado", saldo: 3200 },
+  { label: "Hoje", day: "Domingo", saldo: 7642.83 }
+];
+
+const data30d: PontoSaldo[] = [
+  { label: "Sem 1", day: "Semana 1", saldo: 4000 },
+  { label: "Sem 2", day: "Semana 2", saldo: 5200 },
+  { label: "Sem 3", day: "Semana 3", saldo: 6478 },
+  { label: "Sem 4", day: "Semana 4", saldo: 7642.83 }
+];
+
+const dataCustomOriginal: PontoSaldo[] = [
+  { label: "Jan", day: "Janeiro", saldo: 4000 },
+  { label: "Jun", day: "Junho", saldo: 7642.83 }
+];
+
+// cx, cy, payload e index são injetados pelo Recharts ao clonar o elemento `dot`
+interface CustomDotProps {
+  data: PontoSaldo[];
+  cx?: number;
+  cy?: number;
+  payload?: PontoSaldo;
+  index?: number;
+}
+
+function CustomDot(props: CustomDotProps) {
+  const { cx, cy, payload, index, data } = props;
+  const isLast = index === data.length - 1;
+  if (isLast && cx !== undefined && cy !== undefined && payload) {
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r={16} fill="white" fillOpacity="0.15" filter="url(#superGlow)" />
+        <circle cx={cx} cy={cy} r={6} fill="white" stroke="#1fba11" strokeWidth={2} />
+        <text x={cx} y={cy - 25} fill="white" fontSize="14" fontWeight="bold" textAnchor="middle" className="drop-shadow-md">
+          {formatarMoeda(payload.saldo)}
+        </text>
+      </g>
+    );
+  }
+  return null;
+}
+
+// --- COMPONENTE PRINCIPAL ---
+interface SaldoMiniChartProps {
+  range: PeriodoSaldo;
+  setRange: (range: PeriodoSaldo) => void;
+}
+
+interface BotaoPeriodo {
+  id: PeriodoSaldo;
+  label: string;
+  icon?: boolean;
+}
+
+export default function SaldoMiniChart({ range, setRange }: SaldoMiniChartProps) {
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [customLabel, setCustomLabel] = useState("Escolher Período");
+  const [filteredCustomData, setFilteredCustomData] = useState(dataCustomOriginal);
+
+  const handleClose = () => setIsCalendarOpen(false);
+
+  const handleDateSelection = (start: string, end: string) => {
+    setCustomLabel(`${start} - ${end}`);
+    setRange("custom");
+
+    setFilteredCustomData([
+      { label: start, day: "Início", saldo: 3500 },
+      { label: "...", day: "Período Selecionado", saldo: 5200 },
+      { label: end, day: "Fim", saldo: 7642.83 }
+    ]);
+
+    handleClose();
+  };
+
+  const data = range === "7d" ? data7d : range === "30d" ? data30d : filteredCustomData;
+
+  const [activeData, setActiveData] = useState<PontoSaldo | null>(null);
+
+  const getSaudacao = (): ReactNode => {
+
+    if (range === "7d") {
+      return (
+        <>
+          Boa, Gabrielly. Seu saldo fechou em{" "}
+          <span className="text-[#1fba11] font-bold">
+            {formatarMoeda(data[data.length - 1].saldo)}
+          </span>. Continue nesse ritmo.
+        </>
+      );
+    }
+
+    if (range === "30d") {
+
+      if (activeData && activeData.label) {
+
+        const index = data.findIndex(d => d.label === activeData.label);
+        const prev = data[index - 1];
+        const diff = prev ? activeData.saldo - prev.saldo : 0;
+
+        if (index === 0) {
+          return (
+            <>
+              Início forte:{" "}
+              <span className="text-[#1fba11] font-bold">
+                {formatarMoeda(activeData.saldo)}
+              </span>. Agora valide o que mais vende.
+            </>
+          );
+        }
+
+        if (index === 1) {
+          return diff >= 0 ? (
+            <>
+              Boa evolução. Repita o que funcionou e corte o que travou.
+            </>
+          ) : (
+            <>
+              Queda detectada. Revise gastos e segure saídas agora.
+            </>
+          );
+        }
+
+        if (index === 2) {
+          return diff >= 0 ? (
+            <>
+              Ritmo consistente. Hora de escalar o que deu retorno.
+            </>
+          ) : (
+            <>
+              Oscilação. Ajuste rápido antes de impactar o mês.
+            </>
+          );
+        }
+
+        if (index === 3) {
+          return diff >= 0 ? (
+            <>
+              Fechamento forte. Mantenha esse padrão no próximo mês.
+            </>
+          ) : (
+            <>
+              Final fraco. Revise estratégia antes do novo ciclo.
+            </>
+          );
+        }
+      }
+
+      return (
+        <>
+          Incrível. Você gerou{" "}
+          <span className="text-[#1fba11] font-bold">
+            {formatarMoeda(data[data.length - 1].saldo)}
+          </span> nos últimos 30 dias.
+        </>
+      );
+    }
+
+    if (range === "custom") {
+
+      const start = filteredCustomData[0];
+      const end = filteredCustomData[2];
+
+      if (start && end) {
+        const diff = end.saldo - start.saldo;
+
+        if (diff > 0) {
+          return <>
+            De {customLabel}: crescimento de {formatarMoeda(diff)}.
+            Continue nesse ritmo!
+          </>;
+        }
+
+        if (diff < 0) {
+          return <>
+            De {customLabel}: queda de {formatarMoeda(Math.abs(diff))}.
+            Revise gastos nesse período.
+          </>;
+        }
+
+        return <>
+          De {customLabel}: saldo estável.
+          Hora de testar melhorias.
+        </>;
+      }
+
+      return <> Período selecionado: {customLabel}</>;
+    }
+    return "";
+  };
+
+  return (
+    <div className="w-full md:p-4 p-0 flex flex-col text-gray-200 font-sans md:bg-black/20 md:border md:border-[#1fba11]/20 md:rounded-[22px] overflow-hidden">
+      <div className="pb-4 md:pt-0 md:px-4 px-1 pt-5">
+        <h3 className="text-neutral-500 md:text-xs text-xs font-semibold uppercase tracking-[0.1em] pb-1 text-left">Evolução do seu saldo</h3>
+        <p className="md:text-xs text-xs text-gray-200 leading-tight italic text-left">{getSaudacao()}</p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-stretch w-full">
+        <div className="w-full min-w-0 md:flex-1 h-64 md:h-[200px] lg:h-[180px] relative overflow-hidden">
+          <div className="absolute left-7 top-[-30px] bottom-[30px] w-[1.5px] bg-gradient-to-b from-transparent via-white/20 to-transparent z-10" />
+
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data} margin={{ top: 20, right: 45, left: 30, bottom: 10 }}>
+              <defs>
+                <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#1fba11" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#1fba11" stopOpacity={0} />
+                </linearGradient>
+                <filter id="superGlow"><feGaussianBlur stdDeviation="6" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+              </defs>
+              <CartesianGrid vertical={false} strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="label" interval={0} tick={{ fill: '#777', fontSize: 10, fontWeight: 'semibold' }} axisLine={false} tickLine={false} dy={15} />
+              <YAxis hide domain={['dataMin - 1000', 'dataMax + 2000']} />
+
+              <Tooltip
+                content={({ active, label }) => {
+                  // Primeiro ponto com o rótulo sob o mouse (mesmo critério do Recharts)
+                  const index = data.findIndex((d) => d.label === label);
+                  const currentData = data[index];
+                  if (active && currentData) {
+
+                    if (currentData !== activeData) {
+                      setActiveData(currentData);
+                    }
+                    const previousValue = data[index - 1]?.saldo;
+                    const diff = previousValue ? ((currentData.saldo - previousValue) / previousValue) * 100 : null;
+                    const comparativoTexto = range === "7d" ? "que ontem" : "que o mês passado";
+
+                    return (
+                      <div className="bg-[#0b0b0b]/20 border border-white/10 rounded-xl px-4 py-3 shadow-2xl backdrop-blur-md">
+                        <p className="text-neutral-400 uppercase text-[9px] tracking-widest mb-1 font-semibold">
+                          {range === "7d" ? currentData.day : `Total de ${currentData.day}`}
+                        </p>
+                        <div className="flex flex-col gap-0.5">
+                          <p className="text-white font-bold text-base">
+                            {formatarMoeda(currentData.saldo)}
+                          </p>
+                          {diff !== null && (
+                            <p className={`text-[11px] font-bold flex items-center gap-1 ${diff >= 0 ? "text-[#1fba11]" : "text-red-500"}`}>
+                              {diff >= 0 ? "↑" : "↓"} {Math.abs(diff).toFixed(1)}%
+                              <span className="text-neutral-400 font-normal">{comparativoTexto}</span>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+                cursor={{ stroke: "#1fba11", strokeWidth: 1, strokeDasharray: "4 4" }}
+              />
+
+              <Area data={data} type="monotone" dataKey="saldo" stroke="#1fba11" strokeWidth={1.5} fill="url(#colorGreen)" dot={<CustomDot data={data} />} animationDuration={1000} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="grid grid-cols-3 md:flex md:flex-col md:justify-center gap-2 md:gap-4 w-full md:w-44 lg:w-48 shrink-0 pb-2">
+          {([
+            { id: '7d', label: '7 Dias' },
+            { id: '30d', label: 'Mensal' },
+            { id: 'custom', label: customLabel, icon: true }
+          ] satisfies BotaoPeriodo[]).map((btn: BotaoPeriodo) => (
+            <button
+              key={btn.id}
+              onClick={() => btn.id === 'custom' ? setIsCalendarOpen(true) : setRange(btn.id)}
+              className={`w-full min-w-0 min-h-11 px-2 md:px-4 py-2 rounded-xl text-[10px] leading-tight text-center font-semibold uppercase tracking-wider md:tracking-widest transition-all duration-300 flex items-center justify-center gap-2
+                ${range === btn.id
+                  ? "bg-[#1fba11] text-black border border-[#1fba11] shadow-[0_0_25px_rgba(31,186,17,0.4)]"
+                  : "bg-white/5 text-neutral-400 border border-white/5 hover:bg-white/10"}`}
+            >
+              {btn.icon && <Calendar size={14} className={`shrink-0 ${range === btn.id ? "text-black" : "text-[#1fba11]"}`} />}
+              {btn.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {isCalendarOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={handleClose} />
+          <div className="relative z-10 w-full max-w-md bg-[#161616]/20 backdrop-blur-md border border-white/10 rounded-[32px] p-6 shadow-2xl">
+
+            {/* --- LUZ VERDE (GLOW) --- */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/25 rounded-full blur-[90px] pointer-events-none" />
+            <div className="flex justify-between items-center mb-6 px-2">
+              <div className="text-left">
+                <h4 className="text-gray-200 font-medium md:text-xl">Filtrar Períodos</h4>
+                <p className="text-neutral-500 text-sm pb-2">Escolha as datas que deseja </p>
+              </div>
+              <button onClick={handleClose} className="p-2 hover:bg-white/5 rounded-full text-neutral-400 transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+              <PeriodoPicker onSelect={handleDateSelection} />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
