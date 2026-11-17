@@ -1,27 +1,41 @@
 import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
+import { motion } from 'framer-motion';
+import { useTheme, type Tema } from '@/context/ThemeContext';
 
-const botaoBase = 'w-9 h-9 flex items-center justify-center rounded-full transition cursor-pointer';
-const ativo = 'bg-[#333333] text-white shadow-md';
-const inativo = 'text-gray-500 hover:bg-white/5';
+const OPCOES: { tema: Tema; icon: typeof Sun; label: string }[] = [
+  { tema: 'light', icon: Sun, label: 'Tema claro' },
+  { tema: 'dark', icon: Moon, label: 'Tema escuro' },
+];
 
+// Controle segmentado claro/escuro; o fundo do ativo desliza entre as opções
 export default function ThemeToggle() {
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { tema, setTema } = useTheme();
 
   return (
-    <div className="flex items-center p-0.5 rounded-full bg-black/40 border border-white/10 relative">
-      <button
-        onClick={() => { if (isDarkMode) toggleTheme(); }}
-        className={`${botaoBase} ${!isDarkMode ? ativo : inativo}`}
-      >
-        <Sun size={16} />
-      </button>
-      <button
-        onClick={() => { if (!isDarkMode) toggleTheme(); }}
-        className={`${botaoBase} ${isDarkMode ? ativo : inativo}`}
-      >
-        <Moon size={16} />
-      </button>
+    <div role="radiogroup" aria-label="Tema" className="flex items-center p-1 rounded-full bg-fg/5 border border-line">
+      {OPCOES.map(({ tema: opcao, icon: Icone, label }) => {
+        const ativo = tema === opcao;
+        return (
+          <button
+            key={opcao}
+            type="button"
+            role="radio"
+            aria-checked={ativo}
+            aria-label={label}
+            onClick={() => setTema(opcao)}
+            className={`relative w-8 h-8 flex items-center justify-center rounded-full transition-colors cursor-pointer ${ativo ? 'text-fg' : 'text-fg-subtle hover:text-fg-muted'}`}
+          >
+            {ativo && (
+              <motion.span
+                layoutId="tema-ativo"
+                className="absolute inset-0 rounded-full bg-card border border-line shadow-[0_2px_8px_var(--tema-sombra)]"
+                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+              />
+            )}
+            <Icone size={15} className="relative" />
+          </button>
+        );
+      })}
     </div>
   );
 }

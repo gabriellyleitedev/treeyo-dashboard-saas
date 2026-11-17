@@ -167,13 +167,13 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
     // Mobile: campos mais altos (alvo de toque) e fonte 16px — abaixo disso o
     // Safari do iPhone dá zoom na página ao focar o campo.
     const inputBaseStyle =
-        "w-full bg-[#161616] backdrop-blur-md border rounded-xl md:rounded-lg relative pl-3 pr-3 py-0 text-base md:text-sm outline-none h-12 md:h-10 transition-all duration-300 placeholder:text-neutral-600";
+        "w-full bg-card backdrop-blur-md border rounded-xl md:rounded-lg relative pl-3 pr-3 py-0 text-base md:text-sm outline-none h-12 md:h-10 transition-all duration-300 placeholder:text-fg-subtle";
 
     const getBorderStyle = (campo: CampoFormulario) => {
         if (erros.includes(campo))
             return "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
 
-        return "border-white/5 focus:border-green-500/50 text-neutral-400";
+        return "border-line focus:border-green-500/50 text-fg-muted";
     };
 
     return (
@@ -246,7 +246,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
                 {formData.metodo === "Dinheiro" ? (
 
-                    <div className={`${inputBaseStyle} border-white/5 flex items-center text-neutral-500 bg-[#0a0a0a] cursor-not-allowed`}>
+                    <div className={`${inputBaseStyle} border-line flex items-center text-fg-subtle bg-card-alt cursor-not-allowed`}>
                         Espécie
                     </div>
 
@@ -281,16 +281,16 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
                 <button
                     type="button"
                     onClick={validarEEnviar}
-                    className="relative w-full md:w-auto h-12 md:h-auto flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-base md:text-sm font-medium text-neutral-200 bg-[#1a1a1a] backdrop-blur-md overflow-hidden group transition-all active:scale-[0.98] cursor-pointer"
+                    className="relative w-full md:w-auto h-12 md:h-auto flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-base md:text-sm font-medium text-fg bg-card backdrop-blur-md overflow-hidden group transition-all active:scale-[0.98] cursor-pointer"
                 >
 
                     <span
-                        className="absolute inset-0 rounded-xl border border-[#1fba11]/40 md:border-neutral-700 group-hover:border-[#1fba11] transition-all duration-300 pointer-events-none"
+                        className="absolute inset-0 rounded-xl border border-[#1fba11]/40 md:border-line group-hover:border-[#1fba11] transition-all duration-300 pointer-events-none"
                     />
 
                     <Check
                         size={16}
-                        className="text-[#1fba11] transition-transform group-hover:scale-110"
+                        className="text-marca transition-transform group-hover:scale-110"
                     />
 
                     <span className="relative">

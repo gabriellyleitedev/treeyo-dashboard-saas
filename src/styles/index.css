@@ -7,24 +7,67 @@
 @custom-variant painel-fixo (@media (min-width: 1024px) and (min-height: 660px));
 
 /*
- * Tokens de design do Treeyo. O Tailwind v4 gera utilitários a partir deles
- * (bg-brand, text-brand, bg-surface-2, border-line, text-entrada...).
- * Componentes novos devem usar estes nomes em vez de hex soltos, para que a
- * identidade visual (e um futuro tema claro) mude em um lugar só.
+ * TEMAS
+ *
+ * Cada cor da interface é um token semântico ("fundo de card", "texto
+ * secundário"...) e não um hex solto. O valor de cada token muda conforme o
+ * atributo data-theme do <html> (definido pelo ThemeContext).
+ *
+ * Utilitários gerados: bg-card, bg-card-alt, bg-surface, text-fg,
+ * text-fg-muted, text-fg-subtle, border-line, text-marca...
+ * Sobreposições usam o próprio texto com opacidade (bg-fg/5, border-fg/10),
+ * o que funciona nos dois temas: clareia no escuro e escurece no claro.
+ *
+ * A sidebar e a dock são escuras nos dois temas (identidade da marca), por
+ * isso continuam com cores fixas.
  */
+:root {
+  color-scheme: dark;
+  --tema-surface: #101411;      /* painel principal */
+  --tema-card: #151a16;         /* cards */
+  --tema-card-alt: #1c221e;     /* campos, hover, card dentro de card */
+  --tema-fg: #e8ece9;           /* texto principal */
+  --tema-fg-muted: #9aa39d;     /* texto secundário */
+  --tema-fg-subtle: #6b746e;    /* rótulos, placeholders */
+  --tema-line: rgb(255 255 255 / 0.08);
+  --tema-marca: #1fba11;        /* verde usado como TEXTO */
+  --tema-sombra: rgb(0 0 0 / 0.55);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --tema-surface: #f3f5f3;
+  --tema-card: #ffffff;
+  --tema-card-alt: #f0f3f0;
+  --tema-fg: #101512;
+  --tema-fg-muted: #59625c;
+  --tema-fg-subtle: #8a938d;
+  --tema-line: rgb(16 21 18 / 0.09);
+  /* o verde da marca sobre branco tem contraste baixo para texto; escurece */
+  --tema-marca: #138a0a;
+  --tema-sombra: rgb(16 21 18 / 0.08);
+}
+
+@theme inline {
+  --color-surface: var(--tema-surface);
+  --color-card: var(--tema-card);
+  --color-card-alt: var(--tema-card-alt);
+  --color-fg: var(--tema-fg);
+  --color-fg-muted: var(--tema-fg-muted);
+  --color-fg-subtle: var(--tema-fg-subtle);
+  --color-line: var(--tema-line);
+  --color-marca: var(--tema-marca);
+  --color-sombra: var(--tema-sombra);
+}
+
 @theme {
-  /* Marca */
+  /* Marca (igual nos dois temas) */
   --color-brand: #1fba11;
   --color-brand-strong: #2ad81a;
   --color-brand-ink: #041a02; /* texto sobre fundo brand */
 
-  /* Superfícies (do fundo para a frente) */
+  /* Fundo atrás do painel e da sidebar: escuro nos dois temas */
   --color-canvas: #0b0e0c;
-  --color-surface: #101411;
-  --color-surface-1: #151a16;
-  --color-surface-2: #1b211d;
-  --color-surface-3: #242b26;
-  --color-line: rgb(255 255 255 / 0.08);
 
   /* Semântica financeira */
   --color-entrada: #1fba11;
@@ -123,4 +166,14 @@
    para dar profundidade sem competir com o conteúdo */
 .bg-painel {
   background-image: radial-gradient(120% 60% at 50% -10%, rgb(31 186 17 / 0.07), transparent 60%);
+}
+
+/* Painel de vidro (popovers sobre fundo desfocado: calendário, notificações).
+   78% de opacidade + desfoque forte: o efeito aparece sem prejudicar a leitura. */
+@utility vidro {
+  background-color: color-mix(in srgb, var(--tema-card) 78%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--tema-line);
+  box-shadow: 0 24px 60px var(--tema-sombra), inset 0 1px 0 rgb(255 255 255 / 0.06);
 }

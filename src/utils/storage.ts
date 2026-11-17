@@ -7,6 +7,8 @@ export const STORAGE_KEYS = {
   perfil: '@treeyo:perfil',
   historicoBusca: 'treeyo-history',
   lembretes: '@treeyo:lembretes',
+  /** Lido também pelo script inline do index.html (manter o mesmo nome) */
+  tema: '@treeyo:tema',
 } as const;
 
 export type ChaveStorage = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

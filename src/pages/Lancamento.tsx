@@ -67,18 +67,18 @@ const Lancamento = () => {
         const config: Record<TipoLancamento, CoresTipo> = {
             "Entrada": {
                 barra: "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]",
-                glow: ativo ? "border-green-500/40 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.15)]" : "border-white/10 bg-[#1a1a1a]"
+                glow: ativo ? "border-green-500/40 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.15)]" : "border-line bg-card"
             },
             "Saída": {
                 barra: ativo ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" : "bg-green-500/50",
-                glow: ativo ? "border-red-500/40 bg-red-500/5 shadow-[0_0_20px_rgba(239,68,68,0.15)]" : "border-white/10 bg-[#1a1a1a]"
+                glow: ativo ? "border-red-500/40 bg-red-500/5 shadow-[0_0_20px_rgba(239,68,68,0.15)]" : "border-line bg-card"
             },
             "Investimento": {
                 barra: ativo ? "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.9)]" : "bg-green-500/50",
-                glow: ativo ? "border-blue-500/40 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.15)]" : "border-white/10 bg-[#1a1a1a]"
+                glow: ativo ? "border-blue-500/40 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.15)]" : "border-line bg-card"
             }
         };
-        if (!ativo) return { barra: "bg-neutral-500/50", glow: "border-white/10 bg-[#1a1a1a]" };
+        if (!ativo) return { barra: "bg-neutral-500/50", glow: "border-line bg-card" };
         return config[tipo];
     };
 
@@ -136,7 +136,7 @@ const Lancamento = () => {
                     variants={itemVariants}
                 />
 
-                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-white/20 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
+                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-fg/15 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
 
                 {/*
                   Celular: tipos (em linha) > formulário > card.
@@ -157,7 +157,7 @@ const Lancamento = () => {
                                     className={`flex items-center justify-start px-1.5 sm:px-2 w-full h-11 md:h-10 rounded-xl md:rounded-lg border transition-all duration-300 cursor-pointer min-w-0 ${cores.glow}`}
                                 >
                                     <span className={`h-6 w-1 shrink-0 rounded-full transition-all duration-300 ${cores.barra}`}></span>
-                                    <span className="pl-1.5 sm:pl-2 text-[13px] sm:text-sm md:text-base font-normal text-gray-200 select-none truncate">{tipo}</span>
+                                    <span className="pl-1.5 sm:pl-2 text-[13px] sm:text-sm md:text-base font-normal text-fg select-none truncate">{tipo}</span>
                                 </button>
                             );
                         })}
@@ -189,7 +189,7 @@ const Lancamento = () => {
                         {ultimoDoTipo ? (
                             <CardLancamento lancamento={ultimoDoTipo} />
                         ) : (
-                            <div className="w-full max-w-[420px] h-[160px] border border-dashed border-white/10 rounded-2xl flex items-center justify-center text-center text-neutral-600 text-sm italic p-4">
+                            <div className="w-full max-w-[420px] h-[160px] border border-dashed border-line rounded-2xl flex items-center justify-center text-center text-fg-subtle text-sm italic p-4">
                                 Nenhum lançamento de {tipoAtivo} para exibir no card.
                             </div>
                         )}
@@ -200,12 +200,12 @@ const Lancamento = () => {
                 <motion.div variants={itemVariantsSutil} className="w-full flex flex-col pt-8 md:pt-16">
 
                     <div className="flex items-baseline justify-between gap-4 mb-4">
-                        <h2 className="text-gray-200 font-medium tracking-wider uppercase text-sm">
+                        <h2 className="text-fg font-medium tracking-wider uppercase text-sm">
                             Últimos Lançamentos
                         </h2>
 
                         {busca.trim() !== "" && (
-                            <span className="text-neutral-500 text-xs">
+                            <span className="text-fg-subtle text-xs">
                                 {listaGeral.length} resultado{listaGeral.length !== 1 && "s"}
                             </span>
                         )}
@@ -213,7 +213,7 @@ const Lancamento = () => {
 
                     {/* Cabeçalho da tabela (tablet/desktop) */}
                     {listaGeral.length > 0 && (
-                        <div className={`hidden md:grid ${COLUNAS_LISTA} px-4 lg:px-6 pb-2 border-b border-white/10 text-[11px] uppercase tracking-wider text-neutral-500`}>
+                        <div className={`hidden md:grid ${COLUNAS_LISTA} px-4 lg:px-6 pb-2 border-b border-line text-[11px] uppercase tracking-wider text-fg-subtle`}>
                             <span>Data</span>
                             <span>Tipo</span>
                             <span>Valor</span>
@@ -239,29 +239,29 @@ const Lancamento = () => {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, x: -30, transition: { duration: 0.2 } }}
-                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-gray-200 py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-white/[0.04] transition-all duration-400 border-b border-white/10`}
+                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-fg py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-fg/[0.04] transition-all duration-400 border-b border-line`}
                                         >
                                             {/* CELULAR: categoria + detalhes numa célula só */}
                                             <div className="md:hidden min-w-0">
-                                                <p className="text-gray-200 truncate">{item.categoria || "-"}</p>
-                                                <p className="text-neutral-500 text-xs truncate">
+                                                <p className="text-fg truncate">{item.categoria || "-"}</p>
+                                                <p className="text-fg-subtle text-xs truncate">
                                                     {formatarDataCurta(item.data)} · {item.tipo} · {item.metodo}
                                                 </p>
                                             </div>
 
-                                            <span className="hidden md:block text-neutral-500">{formatarDataCurta(item.data)}</span>
-                                            <span className="hidden md:block text-gray-200">{item.tipo}</span>
+                                            <span className="hidden md:block text-fg-subtle">{formatarDataCurta(item.data)}</span>
+                                            <span className="hidden md:block text-fg">{item.tipo}</span>
 
                                             {/* VALOR */}
-                                            <span className={`font-semibold whitespace-nowrap ${isEntrada ? 'text-[#1fba11]' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
+                                            <span className={`font-semibold whitespace-nowrap ${isEntrada ? 'text-marca' : isSaida ? 'text-red-500/80' : 'text-blue-500'}`}>
                                                 {isEntrada ? '+ ' : isSaida ? '- ' : ''}
                                                 {formatarMoeda(item.valor)}
                                             </span>
 
-                                            <span className="hidden md:block text-neutral-400 truncate">{item.categoria || "-"}</span>
-                                            <span className="hidden lg:block text-neutral-400 truncate">{item.metodo}</span>
-                                            <span className="hidden lg:block text-neutral-400 truncate">{item.conta}</span>
-                                            <span className="hidden md:block text-neutral-400 truncate">{item.status}</span>
+                                            <span className="hidden md:block text-fg-muted truncate">{item.categoria || "-"}</span>
+                                            <span className="hidden lg:block text-fg-muted truncate">{item.metodo}</span>
+                                            <span className="hidden lg:block text-fg-muted truncate">{item.conta}</span>
+                                            <span className="hidden md:block text-fg-muted truncate">{item.status}</span>
 
                                             <button
                                                 onClick={(e) => {
@@ -270,7 +270,7 @@ const Lancamento = () => {
                                                     setModalOpen(true);
                                                 }}
                                                 aria-label="Excluir lançamento"
-                                                className="justify-self-end opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100 transition-all text-neutral-500 hover:text-red-500 p-2 -m-1 lg:p-1 lg:m-0"
+                                                className="justify-self-end opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100 transition-all text-fg-subtle hover:text-red-500 p-2 -m-1 lg:p-1 lg:m-0"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -278,7 +278,7 @@ const Lancamento = () => {
                                     );
                                 })
                             ) : (
-                                <div className="text-center py-10 md:py-20 text-sm md:text-base text-neutral-600 italic">Nenhum lançamento encontrado.</div>
+                                <div className="text-center py-10 md:py-20 text-sm md:text-base text-fg-subtle italic">Nenhum lançamento encontrado.</div>
                             )}
                         </AnimatePresence>
                     </div>

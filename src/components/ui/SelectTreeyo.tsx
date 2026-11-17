@@ -18,27 +18,27 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
 
                 <Listbox.Button
                     className="
-                        w-full bg-[#161616]
+                        w-full bg-card
                         backdrop-blur-md
-                        border border-white/5
+                        border border-line
                         rounded-xl md:rounded-lg
                         h-12 md:h-10
                         pl-3 pr-8
                         text-base md:text-sm
-                        text-neutral-400
+                        text-fg-muted
                         flex items-center justify-between
                         transition-all
                         focus:border-[#1fba11]
                         "
                 >
 
-                    <span className={`truncate ${!value ? "text-neutral-500" : ""}`}>
+                    <span className={`truncate ${!value ? "text-fg-subtle" : ""}`}>
                         {value || placeholder}
                     </span>
 
                     <ChevronDown
                         size={15}
-                        className="text-neutral-500 absolute right-2"
+                        className="text-fg-subtle absolute right-2"
                     />
 
                 </Listbox.Button>
@@ -49,12 +49,12 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                         top-full
                         mt-1
                         w-full
-                        bg-[#161616]/95
+                        bg-card
                         backdrop-blur-md
-                        border border-white/10
+                        border border-line
                         rounded-lg
 
-                        shadow-[0_10px_30px_rgba(0,0,0,0.6)]
+                        shadow-[0_10px_30px_var(--tema-sombra)]
                         overflow-hidden
                         z-50
                         "
@@ -68,8 +68,8 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                             className={({ active }) =>
                                 `cursor-pointer px-3 py-3 md:py-2 text-base md:text-sm flex items-center justify-between
                                 ${active
-                                    ? "bg-[#1fba11]/10 text-[#1fba11]"
-                                    : "text-gray-200"}`
+                                    ? "bg-[#1fba11]/10 text-marca"
+                                    : "text-fg"}`
                             }
                         >
 
@@ -80,7 +80,7 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                                     <span>{op}</span>
 
                                     {selected && (
-                                        <Check size={14} className="text-[#1fba11]" />
+                                        <Check size={14} className="text-marca" />
                                     )}
 
                                 </>

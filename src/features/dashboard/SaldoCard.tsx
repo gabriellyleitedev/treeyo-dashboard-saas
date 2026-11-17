@@ -17,20 +17,20 @@ export default function SaldoCard({ resumo }: SaldoCardProps) {
   const maiorMovimento = Math.max(1, ...serie14.map((p) => Math.abs(p.movimento)));
 
   return (
-    <div className="w-full h-[180px] rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
+    <div className="w-full h-[180px] rounded-2xl bg-card border border-line pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
       <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
-      <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
-      <h2 className={`text-4xl font-bold tracking-tighter relative z-10 truncate ${saldo < 0 ? 'text-red-400' : 'text-white'}`}>
+      <p className="text-fg-muted text-sm mb-1 relative z-10">Saldo atual</p>
+      <h2 className={`text-4xl font-bold tracking-tighter relative z-10 truncate ${saldo < 0 ? 'text-red-400' : 'text-fg'}`}>
         {formatarCentavos(saldo)}
       </h2>
 
       {temLancamentos ? (
-        <div className={`flex items-center gap-2 mt-2 text-sm font-medium relative z-10 ${subiu ? 'text-[#1fba11]' : 'text-red-400'}`}>
+        <div className={`flex items-center gap-2 mt-2 text-sm font-medium relative z-10 ${subiu ? 'text-marca' : 'text-red-400'}`}>
           {subiu ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
           <span>{subiu ? '+' : '−'}{formatarCentavos(Math.abs(variacaoMes))} este mês</span>
         </div>
       ) : (
-        <Link to={ROUTES.lancamento} className="inline-flex mt-2 text-sm font-medium text-[#1fba11] relative z-10 hover:underline">
+        <Link to={ROUTES.lancamento} className="inline-flex mt-2 text-sm font-medium text-marca relative z-10 hover:underline">
           Registre seu primeiro lançamento →
         </Link>
       )}
@@ -47,7 +47,7 @@ export default function SaldoCard({ resumo }: SaldoCardProps) {
             <div
               key={ponto.data}
               title={`${ponto.data.split('-').reverse().slice(0, 2).join('/')}: ${formatarCentavos(ponto.movimento)}`}
-              className={`flex-1 max-w-[18px] rounded-t-md origin-bottom animate-barGrow ${ponto.movimento > 0 ? 'bg-[#1fba11] shadow-[0_0_12px_rgba(31,186,17,0.6)]' : 'bg-zinc-700/50'}`}
+              className={`flex-1 max-w-[18px] rounded-t-md origin-bottom animate-barGrow ${ponto.movimento > 0 ? 'bg-[#1fba11] shadow-[0_0_12px_rgba(31,186,17,0.6)]' : 'bg-fg/15'}`}
               style={{ height: `${altura}%`, animationDelay: `${index * 60}ms` }}
             />
           );

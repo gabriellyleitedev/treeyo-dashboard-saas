@@ -1,29 +1,14 @@
-import { useState, useEffect } from "react";
-import {
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip
-} from "recharts";
+import { Link } from "react-router-dom";
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import { CalendarDays, Plus } from "lucide-react";
+import { ROUTES } from "@/constants/navigation";
 import { formatarCentavos } from "@/domain/dinheiro";
 import type { PontoSerie } from "@/domain/resumo";
 
-const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-// "2026-11-17" -> "Ter" (dia da semana da data de calendário)
-function diaDaSemana(iso: string): string {
-  const [ano, mes, dia] = iso.split("-").map(Number);
-  return DIAS_SEMANA[new Date(ano, mes - 1, dia).getDay()];
-}
-
+// "2026-11-17" -> "17.11.2026"
+const dataComPontos = (iso: string) => iso.split("-").reverse().join(".");
+// "2026-11-17" -> "17/11"
 const curtaBR = (iso: string) => iso.split("-").reverse().slice(0, 2).join("/");
-
-interface PontoGrafico extends PontoSerie {
-  rotulo: string;
-}
 
 interface MainChartProps {
   serie: readonly PontoSerie[];
@@ -31,128 +16,117 @@ interface MainChartProps {
   className?: string;
 }
 
+// Evolução do saldo: linha limpa, sem eixos; o valor aparece numa pílula no
+// ponto sob o cursor. Rodapé com a variação e o período, como num extrato.
 export default function MainChart({ serie, className = "" }: MainChartProps) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const data: PontoGrafico[] = serie.map((p, i) => ({
-    ...p,
-    rotulo: i === serie.length - 1 ? "Hoje" : diaDaSemana(p.data),
-  }));
-
   const inicio = serie[0]?.saldo ?? 0;
   const fim = serie.at(-1)?.saldo ?? 0;
   const variacao = fim - inicio;
+  // Percentual só faz sentido sobre um saldo inicial positivo
+  const percentual = inicio > 0 ? (variacao / inicio) * 100 : null;
+  const subiu = variacao >= 0;
 
-  // Melhor/pior dia pelo movimento do dia (não pelo saldo acumulado)
-  const comMovimento = serie.filter((p) => p.movimento !== 0);
-  const melhor = comMovimento.reduce<PontoSerie | null>((a, b) => (!a || b.movimento > a.movimento ? b : a), null);
-  const pior = comMovimento.reduce<PontoSerie | null>((a, b) => (!a || b.movimento < a.movimento ? b : a), null);
+  // Folga vertical para a linha não encostar no topo/fundo do card
+  // (a escala acompanha só os valores do período, para a variação ficar visível)
+  const valores = serie.length > 0 ? serie.map((p) => p.saldo) : [0];
+  const min = Math.min(...valores);
+  const max = Math.max(...valores);
+  const folga = Math.max((max - min) * 0.2, 1000); // ao menos R$ 10 de folga
 
   return (
-    <div className={`w-full h-[340px] bg-transparent border-none md:bg-black/20 md:border md:border-white/5 md:rounded-[22px] md:backdrop-blur-md flex flex-col overflow-hidden px-0 ${className}`}>
+    <div className={`w-full h-[320px] rounded-[22px] bg-card border border-line flex flex-col overflow-hidden ${className}`}>
 
-      {/* HEADER */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 pt-4 px-6">
-        <h2 className="text-xs text-gray-200 md:text-sm">
-          Saldo - <span className="text-neutral-400 font-medium">Últimos 7 dias</span>
-        </h2>
-        <p className="text-xs text-neutral-400">
-          <strong className={`font-semibold ${variacao >= 0 ? "text-gray-200" : "text-red-400"}`}>
-            {variacao >= 0 ? "+" : "−"}{formatarCentavos(Math.abs(variacao))}
-          </strong>{" "}no período
-        </p>
+      {/* CABEÇALHO */}
+      <div className="flex items-start justify-between gap-4 px-5 pt-4">
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-medium text-fg">Evolução do saldo</h2>
+          <p className="flex items-center gap-1.5 text-xs text-fg-subtle mt-0.5">
+            Saldo ao fim de cada dia nos últimos
+            <span className="inline-flex items-center gap-1 text-fg-muted">
+              <CalendarDays size={12} /> {serie.length} dias
+            </span>
+          </p>
+        </div>
+        <Link
+          to={ROUTES.lancamento}
+          aria-label="Novo lançamento"
+          className="shrink-0 w-8 h-8 rounded-full border border-line bg-fg/[0.03] text-fg-muted hover:text-marca hover:border-[#1fba11]/50 flex items-center justify-center transition"
+        >
+          <Plus size={15} />
+        </Link>
       </div>
 
-      {/* CHART */}
-      <div className="flex-1 min-h-0 w-full relative">
+      {/* GRÁFICO */}
+      <div className="flex-1 min-h-0 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data}
-            margin={{ top: 16, right: isMobile ? 8 : 16, left: isMobile ? -50 : -5, bottom: 0 }}
-          >
+          <AreaChart data={serie as PontoSerie[]} margin={{ top: 36, right: 0, left: 0, bottom: 4 }}>
             <defs>
-              <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+              <linearGradient id="saldoPreenchimento" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#1fba11" stopOpacity={0.28} />
+                <stop offset="100%" stopColor="#1fba11" stopOpacity={0} />
               </linearGradient>
+              {/* Brilho suave na linha */}
+              <filter id="saldoBrilho" x="-10%" y="-50%" width="120%" height="200%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
 
-            <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.03)" />
-
-            <XAxis
-              dataKey="rotulo"
-              axisLine={false}
-              tickLine={false}
-              height={36}
-              tick={{ fill: "#6b7280", fontSize: 11 }}
-              dy={8}
-              padding={{ left: 20, right: 10 }}
-              tickFormatter={(value: string) => (isMobile && value !== "Hoje" ? value.charAt(0) : value)}
-            />
-
-            <YAxis
-              hide={isMobile}
-              axisLine={false}
-              tickLine={false}
-              width={64}
-              tick={{ fill: "#6b7280", fontSize: 11 }}
-              tickFormatter={(centavos: number) => formatarCentavos(centavos).replace(/,\d{2}$/, "")}
-              domain={["auto", "auto"]}
-            />
+            <XAxis dataKey="data" hide />
+            <YAxis hide domain={[min - folga, max + folga]} />
 
             <Tooltip
+              cursor={{ stroke: "var(--tema-fg-subtle)", strokeWidth: 1, strokeDasharray: "3 4" }}
+              offset={0}
               content={({ active, payload }) => {
                 // O Recharts tipa o payload como any; o item original fica em .payload
-                const ponto = (payload?.[0] as { payload?: PontoGrafico } | undefined)?.payload;
+                const ponto = (payload?.[0] as { payload?: PontoSerie } | undefined)?.payload;
                 if (!active || !ponto) return null;
                 return (
-                  <div className="bg-[#0b0b0b] border border-white/10 rounded-xl px-4 py-3 text-xs shadow-xl">
-                    <p className="text-neutral-400 uppercase text-[10px] mb-1 font-bold">
-                      {ponto.rotulo} · {curtaBR(ponto.data)}
-                    </p>
-                    <p className="text-gray-200 font-bold text-sm">{formatarCentavos(ponto.saldo)}</p>
+                  <div className="-translate-x-1/2 -translate-y-[calc(100%+14px)] rounded-full bg-card border border-line px-2.5 py-1 text-[11px] font-medium text-fg shadow-[0_6px_16px_var(--tema-sombra)] whitespace-nowrap">
+                    {formatarCentavos(ponto.saldo)}
+                    <span className="text-fg-subtle"> · {curtaBR(ponto.data)}</span>
                     {ponto.movimento !== 0 && (
-                      <p className={`mt-1 font-medium ${ponto.movimento > 0 ? "text-[#1fba11]" : "text-red-500"}`}>
-                        {ponto.movimento > 0 ? "+" : "−"}{formatarCentavos(Math.abs(ponto.movimento))} no dia
-                      </p>
+                      <span className={ponto.movimento > 0 ? "text-marca" : "text-red-500"}>
+                        {" "}{ponto.movimento > 0 ? "+" : "−"}{formatarCentavos(Math.abs(ponto.movimento))}
+                      </span>
                     )}
                   </div>
                 );
               }}
-              cursor={{ stroke: "#1fbA11", strokeWidth: 1, strokeDasharray: "3 6" }}
             />
 
             <Area
               type="monotone"
               dataKey="saldo"
-              stroke="#1fbA11"
-              strokeWidth={2.5}
-              fill="url(#colorGreen)"
-              isAnimationActive={true}
+              stroke="#1fba11"
+              strokeWidth={2}
+              fill="url(#saldoPreenchimento)"
+              filter="url(#saldoBrilho)"
+              activeDot={{ r: 5, fill: "var(--tema-card)", stroke: "#1fba11", strokeWidth: 2.5 }}
+              isAnimationActive
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      {/* FOOTER */}
-      <div className="pt-3 px-6 border-t border-white/5 flex justify-between gap-4 text-xs pb-3">
-        <div className="min-w-0">
-          <h3 className="text-neutral-500 uppercase font-semibold mb-1">Melhor dia</h3>
-          <p className="text-[#1fba11] font-semibold truncate">
-            {melhor && melhor.movimento > 0 ? `${diaDaSemana(melhor.data)} • +${formatarCentavos(melhor.movimento)}` : "—"}
+      {/* RODAPÉ */}
+      <div className="flex items-end justify-between gap-4 px-5 pb-4 pt-1">
+        <div>
+          <p className="text-[11px] text-fg-subtle">Variação</p>
+          <p className={`text-lg font-semibold leading-tight ${subiu ? "text-marca" : "text-red-500"}`}>
+            {percentual !== null
+              ? `${subiu ? "+" : "−"}${Math.abs(percentual).toLocaleString("pt-BR", { maximumFractionDigits: 2 })}%`
+              : `${subiu ? "+" : "−"}${formatarCentavos(Math.abs(variacao))}`}
           </p>
         </div>
-        <div className="min-w-0 text-right">
-          <h3 className="text-neutral-500 uppercase font-semibold mb-1">Pior dia</h3>
-          <p className="text-red-500 font-semibold truncate">
-            {pior && pior.movimento < 0 ? `${diaDaSemana(pior.data)} • −${formatarCentavos(Math.abs(pior.movimento))}` : "—"}
+        <div className="text-right">
+          <p className="text-[11px] text-fg-subtle">Período</p>
+          <p className="text-xs text-fg-muted">
+            {serie.length > 0 && `${dataComPontos(serie[0].data)} – ${dataComPontos(serie[serie.length - 1].data)}`}
           </p>
         </div>
       </div>

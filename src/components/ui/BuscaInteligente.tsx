@@ -68,7 +68,7 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
           className="fixed inset-0 z-[99999] flex items-start justify-center pt-16 md:pt-24 px-4 overflow-hidden"
         >
 
-          <div onClick={onClose} className="absolute inset-0 bg-black/20 backdrop-blur-md" />
+          <div onClick={onClose} className="absolute inset-0 bg-card backdrop-blur-md" />
 
           {/* --- LUZ VERDE (GLOW) --- */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/25 rounded-full blur-[90px] pointer-events-none" />
@@ -76,19 +76,19 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
 
           <motion.div
             initial={{ scale: 0.95, y: -20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: -20 }}
-            className="relative w-full max-w-2xl bg-[#0d0d0d]/20 border border-white/10 rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.7)] backdrop-blur-3xl overflow-hidden"
+            className="relative w-full max-w-2xl bg-card/85 border border-line rounded-3xl shadow-[0_25px_70px_var(--tema-sombra)] backdrop-blur-3xl overflow-hidden"
           >
             {/* Input Header */}
-            <div className="flex items-center gap-3 md:gap-4 p-5 md:p-8 border-b border-white/5">
-              <Search className="text-gray-200" size={24} />
+            <div className="flex items-center gap-3 md:gap-4 p-5 md:p-8 border-b border-line">
+              <Search className="text-fg" size={24} />
               <input
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="O que deseja?"
-                className="bg-transparent border-none outline-none w-full text-gray-200 text-xl placeholder:text-neutral-600"
+                className="bg-transparent border-none outline-none w-full text-fg text-xl placeholder:text-fg-subtle"
               />
-              <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transform-all duration-300 cursor-pointer text-neutral-500 transition-colors">
+              <button onClick={onClose} className="p-2 hover:bg-fg/5 rounded-full transform-all duration-300 cursor-pointer text-fg-subtle transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -101,22 +101,22 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                     <div
                       key={i}
                       onClick={() => handleSelect(item)}
-                      className="flex items-center justify-between p-5 rounded-2xl hover:bg-white/[0.08] cursor-pointer group transition-all duration-300 border border-transparent hover:border-white/10"
+                      className="flex items-center justify-between p-5 rounded-2xl hover:bg-fg/[0.08] cursor-pointer group transition-all duration-300 border border-transparent hover:border-line"
                     >
                       <div className="flex items-center gap-5">
-                        <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-neutral-900 text-neutral-400 group-hover:text-[#1fba11] transition-all ">
+                        <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-card text-fg-muted group-hover:text-marca transition-all ">
                           {item.icon || <Search size={20} />}
                         </div>
                         <div>
-                          <p className="text-gray-200 text-lg font-medium">{item.name}</p>
-                          <p className="text-[10px] text-neutral-600 uppercase tracking-[0.2em]">{item.cat || 'Sistema'}</p>
+                          <p className="text-fg text-lg font-medium">{item.name}</p>
+                          <p className="text-[10px] text-fg-subtle uppercase tracking-[0.2em]">{item.cat || 'Sistema'}</p>
                         </div>
                       </div>
-                      <ArrowRight size={18} className="text-neutral-800 group-hover:text-[#1fba11] transition-transform group-hover:translate-x-2" />
+                      <ArrowRight size={18} className="text-fg-subtle group-hover:text-marca transition-transform group-hover:translate-x-2" />
                     </div>
                   ))}
                   {results.length === 0 && (
-                    <div className="py-12 text-center text-neutral-600">Nenhum dado encontrado para "{query}"</div>
+                    <div className="py-12 text-center text-fg-subtle">Nenhum dado encontrado para "{query}"</div>
                   )}
                 </div>
               ) : (
@@ -124,12 +124,12 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
 
                   {/* SUGESTÕES DE ABAS */}
                   <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-neutral-600 font-medium pb-2 pl-1">Sugestões</p>
+                    <p className="text-xs uppercase tracking-[0.2em] text-fg-subtle font-medium pb-2 pl-1">Sugestões</p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       {sugestoes.map((aba, i) => (
-                        <div key={i} onClick={() => handleSelect(aba)} className="flex items-center gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-[#4dff00]/30 hover:bg-[#4dff00]/5 cursor-pointer transition-all group">
-                          <div className="text-neutral-500 group-hover:text-[#1fba11] transition-colors">{aba.icon}</div>
-                          <span className="text-gray-200 text-sm font-medium">{aba.name}</span>
+                        <div key={i} onClick={() => handleSelect(aba)} className="flex items-center gap-4 p-5 rounded-2xl bg-fg/[0.03] border border-line hover:border-[#4dff00]/30 hover:bg-[#4dff00]/5 cursor-pointer transition-all group">
+                          <div className="text-fg-subtle group-hover:text-marca transition-colors">{aba.icon}</div>
+                          <span className="text-fg text-sm font-medium">{aba.name}</span>
                         </div>
                       ))}
                     </div>
@@ -138,17 +138,17 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                   {/* HISTÓRICO LIMPO (LISTA) */}
                   <div>
                     <div className="flex items-center justify-between pb-2 pl-1 pt-4">
-                      <p className="text-xs uppercase tracking-[0.2em] text-neutral-600 font-medium">Recentes</p>
+                      <p className="text-xs uppercase tracking-[0.2em] text-fg-subtle font-medium">Recentes</p>
                       {history.length > 0 && (
-                        <button onClick={() => { setHistory([]); localStorage.removeItem(STORAGE_KEYS.historicoBusca); }} className="text-xs font-medium text-neutral-500 hover:text-red-500 uppercase transform-all duration-300 cursor-pointer">Limpar</button>
+                        <button onClick={() => { setHistory([]); localStorage.removeItem(STORAGE_KEYS.historicoBusca); }} className="text-xs font-medium text-fg-subtle hover:text-red-500 uppercase transform-all duration-300 cursor-pointer">Limpar</button>
                       )}
                     </div>
 
                     {history.length > 0 ? (
                       <div className="space-y-1">
                         {history.map((h, i) => (
-                          <div key={i} onClick={() => setQuery(h)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-white/5 cursor-pointer text-neutral-400 hover:text-white transition-all group">
-                            <History size={16} className="text-neutral-700 group-hover:text-[#1fba11]" />
+                          <div key={i} onClick={() => setQuery(h)} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-fg/5 cursor-pointer text-fg-muted hover:text-fg transition-all group">
+                            <History size={16} className="text-fg-subtle group-hover:text-marca" />
                             <span className="text-base font-medium">{h}</span>
                           </div>
                         ))}
@@ -156,8 +156,8 @@ export default function BuscaInteligente({ isOpen, onClose, navigate, rotasDoSis
                     ) : (
 
                       <div className="flex flex-col items-center justify-center py-6">
-                        <Inbox size={26} className="text-neutral-600 mb-3" />
-                        <p className="text-neutral-600 text-sm">Sem buscas recentes por aqui.</p>
+                        <Inbox size={26} className="text-fg-subtle mb-3" />
+                        <p className="text-fg-subtle text-sm">Sem buscas recentes por aqui.</p>
                       </div>
                     )}
                   </div>

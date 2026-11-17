@@ -62,7 +62,7 @@ const Layout = () => {
         <div className="
           flex-1 bg-surface bg-painel 
           rounded-none border-none
-          lg:m-3 lg:rounded-[2.5rem] lg:border lg:border-white/5 lg:shadow-2xl
+          lg:m-3 lg:rounded-[2.5rem] lg:border lg:border-line lg:shadow-2xl
           overflow-y-auto overflow-x-hidden
           relative
         ">

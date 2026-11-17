@@ -7,6 +7,7 @@ import { formatarCentavos } from "@/domain/dinheiro";
 import type { GrupoPendencia } from "@/domain/resumo";
 import { formatarDataCurta, formatarMoeda } from "@/utils/formatters";
 import type { ResumoFinanceiro } from "./useResumoFinanceiro";
+import TituloSecao from "@/components/ui/TituloSecao";
 
 interface CardFila {
   icon: ReactNode;
@@ -95,11 +96,14 @@ export default function CardsStack({ resumo, previsto7 }: CardsStackProps) {
     setIndex((prev) => (prev + 1) % cards.length);
   };
 
+  const { atrasadas, vencemHoje, proximos7Dias } = resumo.pendencias;
+  const totalPendencias = atrasadas.itens.length + vencemHoje.itens.length + proximos7Dias.itens.length;
+
   return (
     <div className="flex flex-col gap-4 w-full min-w-0">
-      <h2 className="text-gray-200 font-normal text-2xl leading-10">
+      <TituloSecao chip={totalPendencias > 0 ? `${totalPendencias} ${totalPendencias === 1 ? "pendência" : "pendências"}` : "em dia"}>
         Fila Inteligente
-      </h2>
+      </TituloSecao>
 
       {/* Os cards são absolutos (empilhados); a altura fixa reserva o espaço
           do card do topo + os dois que aparecem por baixo (72px cada). */}
@@ -169,16 +173,16 @@ function ActionBlock({ icon, title, status, action, color, isTop }: ActionBlockP
   return (
     <div
       className={`
-        relative rounded-2xl border border-white/10 bg-[#0b0b0b] transition-all duration-300
+        relative rounded-2xl border border-line bg-card transition-all duration-300
         ${isTop ? "p-2 h-auto" : "p-4 h-[64px] sm:h-[56px] opacity-70"} 
       `}
       style={{
         boxShadow: isTop
           ? `
-            0 25px 50px -12px rgba(0,0,0,0.9),
+            0 25px 50px -12px var(--tema-sombra),
             inset 0 -18px 36px -14px ${color}55
           `
-          : "0 10px 25px rgba(0,0,0,0.6)",
+          : "0 10px 25px var(--tema-sombra)",
       }}
     >
 
@@ -201,7 +205,7 @@ function ActionBlock({ icon, title, status, action, color, isTop }: ActionBlockP
             {icon}
           </div>
 
-          <h3 className="text-white font-semibold text-base">
+          <h3 className="text-fg font-semibold text-base">
             {title}
           </h3>
         </div>
@@ -209,7 +213,7 @@ function ActionBlock({ icon, title, status, action, color, isTop }: ActionBlockP
         {/* Conteúdo — só aparece no card ativo */}
         {isTop && (
           <>
-            <div className="flex flex-col gap-2 text-sm text-zinc-400">
+            <div className="flex flex-col gap-2 text-sm text-fg-muted">
               {Array.isArray(status)
                 ? status.map((line, i) => <p key={i}>{line}</p>)
                 : <p>{status}</p>}

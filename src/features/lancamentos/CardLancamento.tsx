@@ -16,16 +16,16 @@ const CardLancamento = ({ lancamento }: CardLancamentoProps) => {
                 key={lancamento.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col h-auto p-3 backdrop-blur-md transform bg-neutral-800 border border-white/10 rounded-[14px] w-full max-w-[420px] shadow-[0_0_30px_rgba(0,0,0,0.1)]"
+                className="flex flex-col h-auto p-3 backdrop-blur-md transform bg-card border border-line rounded-[14px] w-full max-w-[420px] shadow-[0_0_30px_rgba(0,0,0,0.1)]"
             >
                 <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-2 text-neutral-500 text-xs 
+                    <div className="flex items-center gap-2 text-fg-subtle text-xs 
                     ">
                         <FileText size={16} />
                         <span>{formatarDataCurta(lancamento.dataDisplay || lancamento.data)}</span>
                     </div>
                     <span className={`text-[13px] font-normal px-3 py-1 rounded-full w-18 flex justify-center items-center  ${lancamento.status === "Pago" || lancamento.status === "Executado"
-                        ? "bg-green-500/10 text-green-500"
+                        ? "bg-green-500/10 text-marca"
                         : "bg-yellow-500/10 text-yellow-500"
                         }`}>
                         {lancamento.status || "Agora"}
@@ -34,25 +34,25 @@ const CardLancamento = ({ lancamento }: CardLancamentoProps) => {
 
                 <div className="grid grid-cols-2 ">
                     <div >
-                        <p className="text-neutral-500 text-sm font-normal mb-1">
+                        <p className="text-fg-subtle text-sm font-normal mb-1">
                             {lancamento.tipo === "Investimento" ? "Ativo:" : "Categoria:"}
                         </p>
-                        <p className="text-neutral-200 text-sm truncate">{lancamento.categoria}</p>
+                        <p className="text-fg text-sm truncate">{lancamento.categoria}</p>
                     </div>
 
                     <div>
-                        <p className="text-neutral-500 text-sm font-normal mb-1">Conta/Banco</p>
-                        <p className="text-neutral-200 text-sm truncate">{lancamento.conta}</p>
+                        <p className="text-fg-subtle text-sm font-normal mb-1">Conta/Banco</p>
+                        <p className="text-fg text-sm truncate">{lancamento.conta}</p>
                     </div>
 
                     <div>
-                        <p className="text-neutral-500 text-sm font-normal mb-1">Form.Pagamento</p>
-                        <p className="text-neutral-200 text-sm ">{lancamento.metodo}</p>
+                        <p className="text-fg-subtle text-sm font-normal mb-1">Form.Pagamento</p>
+                        <p className="text-fg text-sm ">{lancamento.metodo}</p>
                     </div>
 
-                    <div className="col-span-2 pt-2 border-t border-white/5">
-                        <p className="text-neutral-600 text-[12px] uppercase font-semibold mb-1">Valor do Lançamento</p>
-                        <p className={`text-2xl font-semibold tracking-tighter ${lancamento.tipo === 'Entrada' ? 'text-[#1fba11]' :
+                    <div className="col-span-2 pt-2 border-t border-line">
+                        <p className="text-fg-subtle text-[12px] uppercase font-semibold mb-1">Valor do Lançamento</p>
+                        <p className={`text-2xl font-semibold tracking-tighter ${lancamento.tipo === 'Entrada' ? 'text-marca' :
                                 lancamento.tipo === 'Investimento' ? 'text-blue-500' : 'text-red-500'
                             }`}>
             

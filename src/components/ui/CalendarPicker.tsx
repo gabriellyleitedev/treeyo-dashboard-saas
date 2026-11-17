@@ -1,37 +1,20 @@
-import { useState, useRef, useEffect, type MouseEvent, type ReactNode } from 'react';
-import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown
-} from 'lucide-react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CalendarDays, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import { dataLocalISO, isDataISO } from '@/domain/datas';
 
-const months = [
+const MESES = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
+const DIAS_SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
-const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-
-// "2026-09-23" -> { year: 2026, month: 8, day: 23 } (null se inválida)
-interface DataCalendario {
-  year: number;
-  /** Mês 0-11, como no Date */
-  month: number;
-  day: number;
-}
-
-function parseISO(value: string | undefined): DataCalendario | null {
-  if (!value) return null;
-  const parts = value.split('-');
-  if (parts.length !== 3) return null;
-  const [year, month, day] = [Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])];
-  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
-  return { year, month, day };
-}
+const montarISO = (ano: number, mes0: number, dia: number) =>
+  `${ano}-${String(mes0 + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
 
 interface CalendarPickerProps {
-  /** Data selecionada em ISO (AAAA-MM-DD); se ausente, começa em hoje */
+  /** Data selecionada em ISO (AAAA-MM-DD); se ausente, usa hoje */
   value?: string;
   /** Recebe a data escolhida em ISO (AAAA-MM-DD) */
   onChange?: (dataISO: string) => void;
@@ -39,147 +22,145 @@ interface CalendarPickerProps {
   customTrigger?: ReactNode;
 }
 
-export default function CalendarPicker({
-  value,
-  onChange,
-  customTrigger
-}: CalendarPickerProps) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inicial = parseISO(value);
-  const today = new Date();
+// Seletor de data. Abre num portal com o fundo desfocado (mesmo padrão das
+// notificações): painel de vidro ancorado ao botão no desktop, centralizado
+// no celular.
+export default function CalendarPicker({ value, onChange, customTrigger }: CalendarPickerProps) {
+  const hoje = dataLocalISO();
+  const selecionada = value && isDataISO(value) ? value : hoje;
+  const [anoSel, mesSel, diaSel] = selecionada.split('-').map(Number);
 
-  const [open, setOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(inicial?.day ?? today.getDate());
-  const [month, setMonth] = useState(inicial?.month ?? today.getMonth());
-  const [year, setYear] = useState(inicial?.year ?? today.getFullYear());
+  const gatilhoRef = useRef<HTMLButtonElement>(null);
+  const [ancora, setAncora] = useState<{ top: number; left: number } | null>(null);
+  const aberto = ancora !== null;
 
-  // Quando o `value` vem de fora e muda, sincroniza o calendário
-  const [valueAnterior, setValueAnterior] = useState(value);
-  if (value !== valueAnterior) {
-    setValueAnterior(value);
-    const novo = parseISO(value);
-    if (novo) {
-      setYear(novo.year);
-      setMonth(novo.month);
-      setSelectedDay(novo.day);
-    }
-  }
+  // Mês exibido (navegação), independente da data selecionada
+  const [mes, setMes] = useState(mesSel - 1);
+  const [ano, setAno] = useState(anoSel);
+
+  const abrir = () => {
+    const r = gatilhoRef.current?.getBoundingClientRect();
+    if (!r) return;
+    setMes(mesSel - 1);
+    setAno(anoSel);
+    setAncora({ top: r.bottom + 10, left: r.left + r.width / 2 });
+  };
+  const fechar = () => setAncora(null);
 
   useEffect(() => {
-    function handleClickOutside(e: globalThis.MouseEvent) {
-      if (ref.current && e.target instanceof Node && !ref.current.contains(e.target)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    if (!aberto) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setAncora(null);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [aberto]);
 
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const navegar = (passo: number) => {
+    const d = new Date(ano, mes + passo, 1);
+    setMes(d.getMonth());
+    setAno(d.getFullYear());
+  };
 
-  function prevMonth(e: MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation();
-    if (month === 0) {
-      setMonth(11);
-      setYear(y => y - 1);
-    } else {
-      setMonth(m => m - 1);
-    }
-  }
+  const escolher = (iso: string) => {
+    onChange?.(iso);
+    fechar();
+  };
 
-  function nextMonth(e: MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation();
-    if (month === 11) {
-      setMonth(0);
-      setYear(y => y + 1);
-    } else {
-      setMonth(m => m + 1);
-    }
-  }
-
-  function handleSelect(day: number) {
-    setSelectedDay(day);
-    const formatted = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    if (onChange) onChange(formatted);
-    setOpen(false);
-  }
+  const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
 
   return (
-    <div ref={ref} className="relative">
-      <div onClick={() => setOpen(!open)}>
-        {customTrigger ? customTrigger : (
-          <div className="flex items-center gap-3 px-2 py-1 rounded-3xl bg-white/5 border border-white/10 text-white/80 backdrop-blur-xl hover:bg-white/10 transition cursor-pointer">
-            <CalendarDays size={18} className="text-neutral-400" />
+    <>
+      <button ref={gatilhoRef} type="button" onClick={() => (aberto ? fechar() : abrir())} aria-haspopup="dialog" aria-expanded={aberto} className="cursor-pointer">
+        {customTrigger ?? (
+          <span className="flex items-center gap-2.5 h-9 pl-3 pr-2.5 rounded-full bg-fg/5 border border-line text-fg hover:bg-fg/10 transition">
+            <CalendarDays size={16} className="text-fg-muted" />
             <span className="text-sm font-medium">
-              {String(selectedDay).padStart(2, '0')} {months[month]} {year}
+              {String(diaSel).padStart(2, '0')} {MESES[mesSel - 1]} {anoSel}
             </span>
-            <ChevronDown size={16} className={`text-white/40 transition ${open ? 'rotate-180' : ''}`} />
-          </div>
+            <ChevronDown size={15} className={`text-fg-subtle transition ${aberto ? 'rotate-180' : ''}`} />
+          </span>
         )}
-      </div>
+      </button>
 
-      {/* OVERLAY PARA MOBILE */}
-      {open && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[998] md:hidden"
-            onClick={() => setOpen(false)}
-          />
+      {createPortal(
+        <AnimatePresence>
+          {ancora && (
+            <div className="fixed inset-0 z-[400]">
+              <motion.div
+                className="absolute inset-0 bg-black/25 backdrop-blur-md"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={fechar}
+              />
 
-          <div className="
-            fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-            w-[95%] max-w-[320px] 
-            md:absolute md:top-[calc(100%+12px)] md:left-1/2 md:-translate-x-1/2 md:translate-y-0
-            md:w-[300px]
-            z-[999] p-5
-            bg-[#1a1a1a]/10 backdrop-blur-2xl
-            border border-white/10 rounded-3xl
-            shadow-[0_20px_50px_rgba(0,0,0,0.8)]
-          ">
-            <div className="flex items-center justify-between mb-6">
-              <button onClick={prevMonth} className="p-2 rounded-xl hover:bg-white/10 transition">
-                <ChevronLeft size={20} className="text-white/60" />
-              </button>
-              <div className="flex flex-col items-center">
-                <span className="text-sm font-medium text-gray-200 uppercase tracking-widest">
-                  {months[month]}
-                </span>
-                <span className="text-xs text-white/40">{year}</span>
+              {/* Celular: centralizado. md+: abaixo do botão (posição calculada ao abrir) */}
+              <div className="absolute inset-0 flex items-center justify-center p-4 pointer-events-none md:block md:p-0">
+                <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Escolher data"
+                  initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ '--top': `${ancora.top}px`, '--left': `${ancora.left}px` } as CSSProperties}
+                  className="pointer-events-auto w-full max-w-[300px] p-4 rounded-3xl vidro md:absolute md:top-[var(--top)] md:left-[var(--left)] md:-translate-x-1/2"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <button onClick={() => navegar(-1)} aria-label="Mês anterior" className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:bg-fg/10 transition cursor-pointer">
+                      <ChevronLeft size={18} />
+                    </button>
+                    <p className="text-sm text-fg">
+                      <span className="font-medium">{MESES[mes]}</span> <span className="text-fg-subtle">{ano}</span>
+                    </p>
+                    <button onClick={() => navegar(1)} aria-label="Próximo mês" className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:bg-fg/10 transition cursor-pointer">
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-7 mb-1 text-[10px] font-semibold text-fg-subtle">
+                    {DIAS_SEMANA.map((d, i) => <div key={i} className="text-center py-1">{d}</div>)}
+                  </div>
+
+                  <div className="grid grid-cols-7 gap-0.5">
+                    {Array.from({ length: primeiroDiaSemana }).map((_, i) => <div key={`v${i}`} />)}
+                    {Array.from({ length: diasNoMes }).map((_, i) => {
+                      const dia = i + 1;
+                      const iso = montarISO(ano, mes, dia);
+                      // Compara a data inteira: o dia 17 só fica marcado no mês/ano certos
+                      const ehSelecionado = iso === selecionada;
+                      const ehHoje = iso === hoje;
+                      return (
+                        <button
+                          key={dia}
+                          onClick={() => escolher(iso)}
+                          aria-pressed={ehSelecionado}
+                          aria-current={ehHoje ? 'date' : undefined}
+                          className={`aspect-square flex items-center justify-center rounded-full text-[13px] transition cursor-pointer ${
+                            ehSelecionado
+                              ? 'bg-[#1fba11] text-white font-semibold shadow-[0_4px_14px_rgba(31,186,17,0.35)]'
+                              : ehHoje
+                                ? 'text-marca font-semibold ring-1 ring-[#1fba11]/50 hover:bg-fg/10'
+                                : 'text-fg hover:bg-fg/10'
+                          }`}
+                        >
+                          {dia}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex justify-end mt-3 pt-3 border-t border-line">
+                    <button onClick={() => escolher(hoje)} className="text-xs font-medium text-marca hover:underline cursor-pointer">
+                      Ir para hoje
+                    </button>
+                  </div>
+                </motion.div>
               </div>
-              <button onClick={nextMonth} className="p-2 rounded-xl hover:bg-white/10 transition">
-                <ChevronRight size={20} className="text-white/60" />
-              </button>
             </div>
-
-            <div className="grid grid-cols-7 mb-3 text-[10px] font-bold text-white/30 uppercase tracking-tighter">
-              {weekDays.map((d, i) => (
-                <div key={i} className="text-center">{d}</div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-7 gap-1">
-              {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                <div key={i} />
-              ))}
-              {Array.from({ length: daysInMonth }).map((_, i) => {
-                const day = i + 1;
-                const isSelected = day === selectedDay;
-                return (
-                  <button
-                    key={day}
-                    onClick={() => handleSelect(day)}
-                    className={`aspect-square flex items-center justify-center rounded-xl text-sm font-medium transition ${isSelected ? 'bg-[#1fba11] text-white shadow-[0_0_15px_rgba(31,186,17,0.4)]' : 'text-white/70 hover:bg-white/10'
-                      }`}
-                  >
-                    {day}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </>
+          )}
+        </AnimatePresence>,
+        document.body
       )}
-    </div>
+    </>
   );
 }

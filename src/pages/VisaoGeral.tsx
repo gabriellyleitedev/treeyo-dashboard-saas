@@ -7,6 +7,7 @@ import SaldoCard from '@/features/dashboard/SaldoCard';
 import { useResumoFinanceiro } from '@/features/dashboard/useResumoFinanceiro';
 import Header from '@/components/layout/Header';
 import GlowTopo from '@/components/ui/GlowTopo';
+import TituloSecao from '@/components/ui/TituloSecao';
 import { useNotifications } from '@/context/NotificationContext';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { USUARIO } from '@/constants/usuario';
@@ -86,9 +87,7 @@ function VisaoGeral() {
 
                 {/* SALDO */}
                 <div className="flex flex-col gap-4 min-w-0 lg:col-span-4">
-                    <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px] leading-10">
-                        Visão Geral
-                    </h1>
+                    <TituloSecao as="h1" chip="14 dias">Visão Geral</TituloSecao>
                     <SaldoCard resumo={resumo} />
                 </div>
 
@@ -101,14 +100,14 @@ function VisaoGeral() {
                     Os lembretes ficam com a altura que sobra e rolam por dentro. */}
                 <div className="min-w-0 min-h-0 flex flex-col gap-6 md:col-span-2 lg:col-span-4 lg:row-span-2 md:grid md:grid-cols-2 lg:flex">
                     <RemindersPanel className="lg:shrink" />
-                    <div className="lg:flex-1 lg:min-h-[260px]">
+                    <div className="lg:flex-1 lg:min-h-[300px]">
                         <TreeyoAssistant />
                     </div>
                 </div>
 
                 {/* GRÁFICO: preenche a altura que sobra */}
                 <div className="min-w-0 min-h-0 md:col-span-2 lg:col-span-8 lg:row-start-2 lg:col-start-1">
-                    <MainChart serie={resumo.serie7} className="painel-fixo:h-full" />
+                    <MainChart serie={resumo.serie14} className="painel-fixo:h-full" />
                 </div>
             </section>
         </div>

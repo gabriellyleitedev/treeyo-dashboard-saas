@@ -98,13 +98,13 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-backdrop-blur-md border border-white/10 rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative z-10"
+        className="bg-backdrop-blur-md border border-line rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative z-10"
       >
         {/* --- LUZ VERDE (GLOW) --- */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/20 rounded-full blur-[90px] pointer-events-none" />
         <div className="flex justify-between items-center pb-4">
-          <h3 className=" text-gray-200 font-medium md:text-xl">Novo Lembrete</h3>
-          <button onClick={onClose} className="text-neutral-500 hover:text-white transition-colors"><X size={20} /></button>
+          <h3 className=" text-fg font-medium md:text-xl">Novo Lembrete</h3>
+          <button onClick={onClose} className="text-fg-subtle hover:text-fg transition-colors"><X size={20} /></button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
@@ -114,7 +114,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
             <input
               placeholder="O que você precisa lembrar?"
               value={formData.title}
-              className={`bg-zinc-900/50 border ${errors.title ? 'border-red-500/50' : 'border-white/5'} rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#1fba11]/50 transition-all`}
+              className={`bg-card border ${errors.title ? 'border-red-500/50' : 'border-line'} rounded-xl px-4 py-3 text-sm text-fg outline-none focus:border-[#1fba11]/50 transition-all`}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             />
             {errors.title && <span className="text-[10px] text-red-500 flex items-center gap-1 mt-1 ml-1"><AlertCircle size={10} /> {errors.title}</span>}
@@ -123,7 +123,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
           <div className="grid grid-cols-2 gap-4">
             {/* DATA DIGITÁVEL */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] text-zinc-500 uppercase font-bold ml-1 flex items-center gap-2 ">
+              <label className="text-[10px] text-fg-subtle uppercase font-bold ml-1 flex items-center gap-2 ">
                 <Calendar size={12} /> Data
               </label>
               <input
@@ -131,14 +131,14 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
                 placeholder="DD/MM/AAAA"
                 value={formData.date}
                 onChange={handleDateChange}
-                className={`bg-zinc-900/50 border ${errors.date ? 'border-red-500/50' : 'border-white/5'} rounded-xl px-4 py-3 text-white outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
+                className={`bg-card border ${errors.date ? 'border-red-500/50' : 'border-line'} rounded-xl px-4 py-3 text-fg outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
               />
               {errors.date && <span className="text-[9px] text-red-500 leading-tight">{errors.date}</span>}
             </div>
 
             {/* HORÁRIO DIGITÁVEL */}
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] text-zinc-500 uppercase font-bold ml-1 flex items-center gap-2">
+              <label className="text-[10px] text-fg-subtle uppercase font-bold ml-1 flex items-center gap-2">
                 <Clock size={12} /> Horário
               </label>
               <input
@@ -146,7 +146,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
                 placeholder="00:00"
                 value={formData.time}
                 onChange={handleTimeChange}
-                className={`bg-zinc-900/50 border ${errors.time ? 'border-red-500/50' : 'border-white/5'} rounded-xl px-4 py-3 text-white outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
+                className={`bg-card border ${errors.time ? 'border-red-500/50' : 'border-line'} rounded-xl px-4 py-3 text-fg outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
               />
               {errors.time && <span className="text-[9px] text-red-500 leading-tight">{errors.time}</span>}
             </div>
@@ -154,7 +154,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
 
           <textarea
             placeholder="Algum detalhe extra? (opcional)"
-            className="bg-zinc-900/50 border border-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-[#1fba11]/50 h-24 resize-none transition-all"
+            className="bg-card border border-line rounded-xl px-4 py-3 text-sm text-fg outline-none focus:border-[#1fba11]/50 h-24 resize-none transition-all"
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           />
 

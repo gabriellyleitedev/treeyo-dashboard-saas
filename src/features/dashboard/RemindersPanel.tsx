@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, BellOff } from "lucide-react";
 import ReminderForm, { type Lembrete } from "./ReminderForm";
+import TituloSecao from "@/components/ui/TituloSecao";
 import { dataLocalISO, isDataISO } from "@/domain/datas";
 import { STORAGE_KEYS, isRecord, lerStorage, salvarStorage, textoOuVazio } from "@/utils/storage";
 import { formatarDataCurta } from "@/utils/formatters";
@@ -52,14 +53,14 @@ export default function RemindersPanel({ className = "" }: RemindersPanelProps) 
     <div className={`flex flex-col gap-4 w-full min-w-0 min-h-0 ${className}`}>
 
       {/* HEADER */}
-      <div className="flex items-center justify-between h-10 shrink-0">
-        <h2 className="text-2xl text-gray-200 font-normal">Lembretes</h2>
-
+      <TituloSecao
+        chip={reminders.length - concluidos > 0 ? reminders.length - concluidos : undefined}
+        acao={
         <div className="flex items-center gap-3">
           {concluidos > 0 && (
             <button
               onClick={() => setReminders((prev) => prev.filter((r) => !r.completed))}
-              className="text-xs text-neutral-500 hover:text-red-400 transition-colors cursor-pointer"
+              className="text-xs text-fg-subtle hover:text-red-400 transition-colors cursor-pointer"
             >
               Limpar concluídos
             </button>
@@ -67,18 +68,21 @@ export default function RemindersPanel({ className = "" }: RemindersPanelProps) 
           <button
             onClick={() => setFormAberto(true)}
             aria-label="Novo lembrete"
-            className="text-gray-200 hover:text-[#1fba11] transition duration-300 border border-gray-200 hover:border-[#1fba11] rounded-md w-6 h-6 flex items-center justify-center cursor-pointer"
+            className="w-8 h-8 rounded-full border border-line bg-fg/[0.03] text-fg-muted hover:text-marca hover:border-[#1fba11]/50 transition flex items-center justify-center cursor-pointer"
           >
-            <Plus size={14} />
+            <Plus size={15} />
           </button>
         </div>
-      </div>
+        }
+      >
+        Lembretes
+      </TituloSecao>
 
       {/* LISTA (rola por dentro quando não cabe, para a página não rolar) */}
       {lista.length === 0 ? (
         <button
           onClick={() => setFormAberto(true)}
-          className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 py-6 text-neutral-500 hover:text-neutral-300 hover:border-white/20 transition-colors cursor-pointer"
+          className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-line py-6 text-fg-subtle hover:text-fg hover:border-line transition-colors cursor-pointer"
         >
           <BellOff size={20} />
           <span className="text-sm">Nenhum lembrete. Criar um?</span>
@@ -101,8 +105,8 @@ export default function RemindersPanel({ className = "" }: RemindersPanelProps) 
                     onClick={() => toggleReminder(reminder.id)}
                     aria-pressed={reminder.completed}
                     className={`relative w-full text-left cursor-pointer rounded-xl border px-4 py-1.5 transition-all duration-300 ${reminder.completed
-                      ? "bg-zinc-900/30 border-white/5 opacity-40"
-                      : "bg-[#161616] border-white/5 hover:border-white/10 hover:bg-[#1c1c1c]"
+                      ? "bg-card border-line opacity-40"
+                      : "bg-card border-line hover:border-line hover:bg-card-alt"
                       }`}
                   >
                     {/* BARRA LATERAL (vermelha quando atrasado) */}
@@ -112,10 +116,10 @@ export default function RemindersPanel({ className = "" }: RemindersPanelProps) 
                     />
 
                     <span className="ml-4 flex flex-col">
-                      <span className={`text-[13px] font-semibold tracking-wide uppercase truncate ${reminder.completed ? "line-through text-zinc-600" : "text-zinc-300"}`}>
+                      <span className={`text-[13px] font-semibold tracking-wide uppercase truncate ${reminder.completed ? "line-through text-fg-subtle" : "text-fg"}`}>
                         {reminder.title}
                       </span>
-                      <span className={`text-[14px] font-medium truncate ${reminder.completed ? "line-through text-zinc-700" : atrasado ? "text-red-400/80" : "text-zinc-500"}`}>
+                      <span className={`text-[14px] font-medium truncate ${reminder.completed ? "line-through text-fg-subtle" : atrasado ? "text-red-400/80" : "text-fg-subtle"}`}>
                         {reminder.date === hoje ? "Hoje" : formatarDataCurta(reminder.date)} · {reminder.time}
                         {reminder.description ? ` · ${reminder.description}` : ""}
                       </span>
