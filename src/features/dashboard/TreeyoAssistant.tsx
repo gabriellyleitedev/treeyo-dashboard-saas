@@ -2,7 +2,7 @@ import { Sparkles, Mic, MessageSquare } from 'lucide-react';
 
 const TreeyoAssistant = () => {
     return (
-        <div className="w-full min-w-0">
+        <div className="w-full min-w-0 h-full">
 
             {/* Card Principal */}
             <div className="relative overflow-hidden w-full h-full flex flex-col rounded-3xl border border-white/10 shadow-2xl transition-all duration-300 will-change-transform focus-within:border-[#1fba11]">
@@ -34,7 +34,7 @@ const TreeyoAssistant = () => {
                             <span className="block">Smart IA Assistente</span>
                             <span className="block text-[#1fba11]">Sem Complicação</span>
                         </h3>
-                        <p className="text-gray-400 text-sm leading-relaxed mt-2">
+                        <p className="text-gray-400 text-sm leading-relaxed mt-2 [@media(max-height:820px)]:hidden">
                             Fale com a IA da Treeyo para entender seu financeiro
                             sem planilhas e sem complicação.
                         </p>

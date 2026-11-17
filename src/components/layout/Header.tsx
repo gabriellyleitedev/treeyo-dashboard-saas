@@ -7,17 +7,18 @@ import { useTheme } from '@/context/ThemeContext';
 import { USUARIO } from '@/constants/usuario';
 
 
-const Header = () => {
+interface HeaderProps {
+  /** Data de referência do painel (AAAA-MM-DD) */
+  data: string;
+  onDataChange: (dataISO: string) => void;
+}
+
+const Header = ({ data, onDataChange }: HeaderProps) => {
   const { isDarkMode, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [dataSelecionada, setDataSelecionada] = useState(new Date());
 
-  const handleDateChange = (dateString: string) => {
-    const novaData = new Date(dateString + 'T00:00:00');
-    setDataSelecionada(novaData);
-  };
-
-  const diaParaExibir = dataSelecionada.getDate();
+  const handleDateChange = onDataChange;
+  const diaParaExibir = Number(data.slice(8, 10));
 
   return (
     <header className="sticky top-0 z-50 -mx-4 px-4 md:mx-0 md:px-0 pt-2 pb-1 md:pt-4 md:pb-0 bg-surface/95 md:bg-transparent transition-all duration-300">
@@ -64,6 +65,7 @@ const Header = () => {
         <div className="flex items-center gap-3">
           <CalendarPicker
             onChange={handleDateChange}
+            value={data}
             customTrigger={
               <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 relative">
                 <Calendar size={24} className="text-gray-200" strokeWidth={1.5} />
@@ -94,7 +96,7 @@ const Header = () => {
           <div className='relative'>
             <CalendarPicker
               onChange={handleDateChange}
-              value={dataSelecionada.toISOString().split('T')[0]}
+              value={data}
             />
           </div>
         </div>

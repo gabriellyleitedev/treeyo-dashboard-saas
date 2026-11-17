@@ -1,14 +1,17 @@
-import { useEffect, useRef } from 'react';
-import { TrendingUp } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import CardsStack from '@/features/dashboard/CardsStack';
 import MainChart from '@/features/dashboard/MainChart';
 import RemindersPanel from '@/features/dashboard/RemindersPanel';
 import TreeyoAssistant from '@/features/dashboard/TreeyoAssistant';
+import SaldoCard from '@/features/dashboard/SaldoCard';
+import { useResumoFinanceiro } from '@/features/dashboard/useResumoFinanceiro';
 import Header from '@/components/layout/Header';
 import GlowTopo from '@/components/ui/GlowTopo';
 import { useNotifications } from '@/context/NotificationContext';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { USUARIO } from '@/constants/usuario';
+import { dataLocalISO } from '@/domain/datas';
+import { saldoPrevisto } from '@/domain/resumo';
 import { STORAGE_KEYS, isRecord, lerStorage } from '@/utils/storage';
 
 // Perfil salvo por um futuro cadastro; hoje só o nome é usado
@@ -26,6 +29,11 @@ function VisaoGeral() {
     const { adicionarNotificacao } = useNotifications();
     const { lancamentos } = useLancamentos();
     const hasChecked = useRef(false);
+
+    // Data de referência do painel (o seletor do cabeçalho permite ver outro dia)
+    const [dataRef, setDataRef] = useState(dataLocalISO);
+    const resumo = useResumoFinanceiro(dataRef);
+    const previsto7 = useMemo(() => saldoPrevisto(lancamentos, dataRef, 7), [lancamentos, dataRef]);
 
     // Notificações de boas-vindas / sem lançamentos (uma vez por sessão)
     useEffect(() => {
@@ -49,9 +57,9 @@ function VisaoGeral() {
             adicionarNotificacao({
                 id: 'no-data-alert',
                 modulo: 'lancamentos',
-                titulo: 'Comece a poupar!',
+                titulo: 'Comece a registrar',
                 mensagem: 'Você ainda não registrou nenhuma movimentação este mês.',
-                tipo: 'warning',
+                tipo: 'aviso',
                 data: new Date().toISOString()
             });
             sessionStorage.setItem('@treeyo:empty_alert_notified', 'true');
@@ -61,68 +69,46 @@ function VisaoGeral() {
     }, [adicionarNotificacao, lancamentos.length]);
 
     return (
-        <div className="w-full">
-            <Header />
+        // painel-fixo (≥1024px de largura e ≥660px de altura): a página ocupa
+        // exatamente a altura disponível e não rola; os cards se ajustam.
+        // Fora disso (celular, tablet, notebook muito baixo) a página rola normalmente.
+        <div className="w-full flex flex-col painel-fixo:h-[calc(100dvh-4.25rem)]">
+            <Header data={dataRef} onDataChange={setDataRef} />
 
             <GlowTopo />
 
-            <section className="w-full max-w-[1600px] mx-auto pt-6">
-                {/*
-                  Celular: tudo em 1 coluna.
-                  md: saldo | fila lado a lado; lembretes | assistente lado a lado.
-                  lg+: 2 colunas (8/4) com os títulos alinhados no topo.
-                */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8">
+            {/*
+              Celular: tudo em 1 coluna. md: saldo | fila; resumo | lembretes.
+              lg (3 colunas):  saldo | fila  | lembretes
+                               gráfico       | assistente
+            */}
+            <section className="w-full max-w-[1600px] mx-auto pt-5 flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 painel-fixo:grid-rows-[auto_minmax(0,1fr)] gap-6">
 
-                    {/* COLUNA ESQUERDA */}
-                    <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
+                {/* SALDO */}
+                <div className="flex flex-col gap-4 min-w-0 lg:col-span-4">
+                    <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px] leading-10">
+                        Visão Geral
+                    </h1>
+                    <SaldoCard resumo={resumo} />
+                </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                            {/* SALDO */}
-                            <div className="flex flex-col gap-4 min-w-0">
-                                <h1 className="text-gray-200 font-semibold text-2xl md:text-[26px] leading-10">
-                                    Visão Geral
-                                </h1>
+                {/* FILA INTELIGENTE */}
+                <div className="min-w-0 lg:col-span-4">
+                    <CardsStack resumo={resumo} previsto7={previsto7} />
+                </div>
 
-                                <div className="w-full h-[180px] rounded-2xl bg-neutral-800/40 border border-white/10 pt-2 px-4 relative overflow-hidden backdrop-blur-xl shadow-2xl">
-                                    <div className="absolute -top-10 -left-10 w-40 h-40 bg-[#1fba11]/20 rounded-full blur-3xl pointer-events-none" />
-                                    <p className="text-neutral-400 text-sm mb-1 relative z-10">Saldo atual</p>
-                                    <h2 className="text-4xl font-bold text-white tracking-tighter relative z-10">R$ 6.234,00</h2>
-                                    <div className="flex items-center gap-2 mt-2 text-sm font-medium text-[#1fba11] relative z-10">
-                                        <TrendingUp size={16} />
-                                        <span>+12,4% este mês</span>
-                                    </div>
-
-                                    <div className="absolute bottom-0 left-0 right-0 h-20 flex items-end justify-center gap-[6px] overflow-hidden">
-                                        {[40, 55, 35, 60, 45, 70, 50, 65, 42, 58, 38, 62, 48, 52].map((height, index) => (
-                                            <div
-                                                key={index}
-                                                className={`w-[18px] shrink-0 rounded-t-md origin-bottom animate-barGrow ${index % 2 === 0 ? 'bg-[#1fba11] shadow-[0_0_12px_rgba(31,186,17,0.6)]' : 'bg-zinc-700/50'}`}
-                                                style={{
-                                                    height: `${height}%`,
-                                                    animationDelay: `${index * 80}ms`
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* FILA INTELIGENTE */}
-                            <CardsStack />
-                        </div>
-
-                        {/* GRÁFICO */}
-                        <MainChart />
-                    </div>
-
-                    {/* COLUNA DIREITA */}
-                    <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8 lg:gap-6 content-start min-w-0">
-                        <RemindersPanel />
+                {/* COLUNA DIREITA: lembretes + assistente (ocupa as 2 linhas no desktop).
+                    Os lembretes ficam com a altura que sobra e rolam por dentro. */}
+                <div className="min-w-0 min-h-0 flex flex-col gap-6 md:col-span-2 lg:col-span-4 lg:row-span-2 md:grid md:grid-cols-2 lg:flex">
+                    <RemindersPanel className="lg:shrink" />
+                    <div className="lg:flex-1 lg:min-h-[260px]">
                         <TreeyoAssistant />
                     </div>
+                </div>
 
-                    {/* DRE SIMPLIFICADA (desativada): <SummaryDRE /> em lg:col-span-12 */}
+                {/* GRÁFICO: preenche a altura que sobra */}
+                <div className="min-w-0 min-h-0 md:col-span-2 lg:col-span-8 lg:row-start-2 lg:col-start-1">
+                    <MainChart serie={resumo.serie7} className="painel-fixo:h-full" />
                 </div>
             </section>
         </div>

@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
 /*
+ * Painel sem rolagem (Visão Geral): só em telas largas E altas o bastante.
+ * Em notebooks muito baixos, a página volta a rolar em vez de espremer os cards.
+ */
+@custom-variant painel-fixo (@media (min-width: 1024px) and (min-height: 660px));
+
+/*
  * Tokens de design do Treeyo. O Tailwind v4 gera utilitários a partir deles
  * (bg-brand, text-brand, bg-surface-2, border-line, text-entrada...).
  * Componentes novos devem usar estes nomes em vez de hex soltos, para que a

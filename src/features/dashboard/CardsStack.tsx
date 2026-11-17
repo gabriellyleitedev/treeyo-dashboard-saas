@@ -1,11 +1,12 @@
 import { useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ArrowRight,
-  AlertTriangle,
-  CalendarCheck,
-  TrendingUp,
-} from "lucide-react";
+import { ArrowRight, AlertTriangle, CalendarCheck, CheckCircle2, TrendingUp } from "lucide-react";
+import { ROUTES } from "@/constants/navigation";
+import { formatarCentavos } from "@/domain/dinheiro";
+import type { GrupoPendencia } from "@/domain/resumo";
+import { formatarDataCurta, formatarMoeda } from "@/utils/formatters";
+import type { ResumoFinanceiro } from "./useResumoFinanceiro";
 
 interface CardFila {
   icon: ReactNode;
@@ -21,44 +22,73 @@ interface ActionBlockProps extends CardFila {
   isTop: boolean;
 }
 
-export default function CardsStack() {
-  const cards: CardFila[] = [
-    {
-      icon: <CalendarCheck />,
-      title: "Conciliação Bancária",
+const plural = (n: number, singular: string, pluralTxt: string) => `${n} ${n === 1 ? singular : pluralTxt}`;
 
-      status: [
-        "3 lançamentos pendentes",
-        "2 lançamentos atrasados",
-        "1 lançamento em atraso",],
-      action: "Resolver agora",
-      color: "#1fba11",
-    },
-    {
+// Até 2 itens do grupo, para o usuário reconhecer de que conta se trata
+const linhasDoGrupo = (grupo: GrupoPendencia): string[] =>
+  grupo.itens.slice(0, 2).map((l) => `${l.categoria || l.tipo} · ${formatarMoeda(l.valor)} · ${formatarDataCurta(l.data)}`);
 
+// Monta a fila a partir das pendências reais, da mais urgente para a menos.
+// Só entra card com conteúdo; sem nada pendente, a fila diz que está tudo em dia.
+function montarCards(resumo: ResumoFinanceiro, previsto7: number): CardFila[] {
+  const { atrasadas, vencemHoje, proximos7Dias } = resumo.pendencias;
+  const cards: CardFila[] = [];
+
+  if (atrasadas.itens.length > 0) {
+    cards.push({
       icon: <AlertTriangle />,
-      title: "Alerta Inteligente",
-      status: [
-        "Saldo abaixo do esperado",
-        "Limite de gastos ultrapassado",
-        "Limite de saída ultrapassado",
-      ],
-      action: "Entender o problema",
-      color: "#facc15",
-    },
+      title: "Contas atrasadas",
+      status: [`${plural(atrasadas.itens.length, "pendência", "pendências")} · ${formatarCentavos(atrasadas.total)}`, ...linhasDoGrupo(atrasadas)],
+      action: "Resolver agora",
+      color: "#f05252",
+    });
+  }
 
-    {
-      icon: <TrendingUp />,
-      title: "Previsão de Hoje",
-      status: [
-        "+ R$500 de Entrada",
-        "- R$850 de Saída",
-        "Conta fecha em 13% de queda",
-      ],
-      action: "Ver projeção",
-      color: "#60a5fa",
-    },
-  ];
+  if (vencemHoje.itens.length > 0) {
+    cards.push({
+      icon: <CalendarCheck />,
+      title: "Vencem hoje",
+      status: [`${plural(vencemHoje.itens.length, "pendência", "pendências")} · ${formatarCentavos(vencemHoje.total)}`, ...linhasDoGrupo(vencemHoje)],
+      action: "Ver lançamentos",
+      color: "#facc15",
+    });
+  }
+
+  if (cards.length === 0 && proximos7Dias.itens.length === 0) {
+    cards.push({
+      icon: <CheckCircle2 />,
+      title: "Tudo em dia",
+      status: ["Nenhuma conta atrasada", "Nada vence nos próximos 7 dias"],
+      action: "Registrar lançamento",
+      color: "#1fba11",
+    });
+  }
+
+  cards.push({
+    icon: <TrendingUp />,
+    title: "Previsão 7 dias",
+    status: [
+      `Saldo hoje: ${formatarCentavos(resumo.saldo)}`,
+      `Previsto: ${formatarCentavos(previsto7)}`,
+      proximos7Dias.itens.length > 0
+        ? `${plural(proximos7Dias.itens.length, "pendência", "pendências")} a vencer`
+        : "Sem pendências a vencer",
+    ],
+    action: "Ver lançamentos",
+    color: "#60a5fa",
+  });
+
+  return cards;
+}
+
+interface CardsStackProps {
+  resumo: ResumoFinanceiro;
+  /** Saldo previsto em 7 dias, em centavos */
+  previsto7: number;
+}
+
+export default function CardsStack({ resumo, previsto7 }: CardsStackProps) {
+  const cards = montarCards(resumo, previsto7);
 
   const [index, setIndex] = useState(0);
   const next = () => {
@@ -76,7 +106,7 @@ export default function CardsStack() {
       <div className="relative w-full h-[250px]">
       <AnimatePresence>
         {cards.map((card, i) => {
-          const position = (i - index + cards.length) % cards.length;
+          const position = (i - (index % cards.length) + cards.length) % cards.length;
           if (position > 2) return null;
           const isTop = position === 0;
 
@@ -185,14 +215,15 @@ function ActionBlock({ icon, title, status, action, color, isTop }: ActionBlockP
                 : <p>{status}</p>}
             </div>
 
-            <button
-              className="mt-4 flex items-center gap-4 text-sm font-medium transform duration-300 transition-transform cursor-pointer"
+            <Link
+              to={ROUTES.lancamento}
+              onClick={(e) => e.stopPropagation()}
+              className="mt-4 self-start flex items-center gap-4 text-sm font-medium transition-transform hover:translate-x-0.5"
               style={{ color }}
             >
-
               <span className="flex items-center">{action}</span>
               <ArrowRight size={16} />
-            </button>
+            </Link>
           </>
         )}
       </div>

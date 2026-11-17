@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   notificacoes: '@treeyo:notificacoes',
   perfil: '@treeyo:perfil',
   historicoBusca: 'treeyo-history',
+  lembretes: '@treeyo:lembretes',
 } as const;
 
 export type ChaveStorage = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

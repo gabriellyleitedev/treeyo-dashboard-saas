@@ -2,6 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { X, Calendar, Clock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { mascaraData, mascaraHora } from "@/utils/masks";
+import { brParaDataISO } from "@/domain/datas";
 
 interface ReminderFormData {
   title: string;
@@ -56,14 +57,14 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
     const newErrors: ReminderErrors = {};
     if (!formData.title.trim()) newErrors.title = "Título obrigatório";
 
-    // Validação simples de data (DD/MM/AAAA)
-    if (formData.date.length < 10) {
-      newErrors.date = "Data incompleta (Use DD/MM/AAAA)";
+    // Data precisa existir no calendário (rejeita 31/02)
+    if (!brParaDataISO(formData.date)) {
+      newErrors.date = "Data inválida (use DD/MM/AAAA)";
     }
 
-    // Validação simples de horário (HH:MM)
-    if (formData.time.length < 5) {
-      newErrors.time = "Horário incompleto";
+    // Horário entre 00:00 e 23:59
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(formData.time)) {
+      newErrors.time = "Horário inválido";
     }
 
     setErrors(newErrors);
@@ -74,13 +75,12 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
     e.preventDefault();
     if (!validate()) return;
 
-    // Converte DD/MM/AAAA para YYYY-MM-DD para o banco/painel
-    const [d, m, a] = formData.date.split("/");
-    const formattedDate = `${a}-${m}-${d}`;
+    // validate() já garantiu que a data é válida
+    const formattedDate = brParaDataISO(formData.date) ?? "";
 
     onSave({
       ...formData,
-      id: Math.random().toString(36).substr(2, 9),
+      id: crypto.randomUUID(),
       date: formattedDate,
       completed: false
     });
