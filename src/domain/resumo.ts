@@ -127,3 +127,31 @@ export function pendencias(lancamentos: readonly Lancamento[], hoje: DataISO): P
     proximos7Dias: grupo((dias) => dias > 0 && dias <= 7),
   };
 }
+
+/**
+ * Teto de faturamento anual do MEI (LC 123/2006, art. 18-A): R$ 81.000,00.
+ * No ano de abertura o teto é proporcional (R$ 6.750 por mês); isso entra
+ * quando o cadastro tiver a data de abertura do CNPJ.
+ */
+export const LIMITE_MEI_ANUAL: Centavos = 8_100_000;
+
+export interface LimiteMei {
+  /** Entradas realizadas de 1º de janeiro até hoje */
+  faturado: Centavos;
+  limite: Centavos;
+  /** 0 a 100+ (passa de 100 quando o teto foi estourado) */
+  percentual: number;
+  /** Quanto ainda cabe no ano (zero se estourou) */
+  restante: Centavos;
+}
+
+/** Faturamento do ano-calendário comparado ao teto anual do MEI. */
+export function limiteMei(lancamentos: readonly Lancamento[], hoje: DataISO): LimiteMei {
+  const faturado = totaisDoPeriodo(lancamentos, `${hoje.slice(0, 4)}-01-01`, hoje).entradas;
+  return {
+    faturado,
+    limite: LIMITE_MEI_ANUAL,
+    percentual: (faturado / LIMITE_MEI_ANUAL) * 100,
+    restante: Math.max(LIMITE_MEI_ANUAL - faturado, 0),
+  };
+}

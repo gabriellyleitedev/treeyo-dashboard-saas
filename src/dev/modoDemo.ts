@@ -48,24 +48,36 @@ function gerarLancamentos(hoje: string): Lancamento[] {
     // Um mês fraco no meio do caminho (vendas pela metade)
     const fraco = d >= -150 && d < -120;
 
-    // Vendas em ~70% dos dias
-    if (aleatorio() < 0.7) {
-      const base = 180 + progresso * 260;
-      const valor = Math.round(base * (0.4 + aleatorio() * 1.2) * (fraco ? 0.45 : 1));
-      add(d, 'Entrada', valor, aleatorio() < 0.35 ? 'Serviços' : 'Vendas', 'Pago', aleatorio() < 0.25 ? 'Crédito' : 'Pix');
+    // Vendas em ~90% dos dias, às vezes mais de uma no mesmo dia. Calibrado para
+    // um MEI de verdade: ~R$ 60 mil no ano, perto de 75% do teto de R$ 81 mil
+    if (aleatorio() < 0.9) {
+      const base = 100 + progresso * 150;
+      const vendas = aleatorio() < 0.35 ? 2 : 1;
+      for (let v = 0; v < vendas; v++) {
+        const valor = Math.round(base * (0.3 + aleatorio() * 1.2) * (fraco ? 0.45 : 1));
+        add(d, 'Entrada', valor, aleatorio() < 0.35 ? 'Serviços' : 'Vendas', 'Pago', aleatorio() < 0.25 ? 'Crédito' : 'Pix');
+      }
+    }
+
+    // Gastos miúdos do dia a dia em ~60% dos dias (inclusive na última semana):
+    // é o que faz a linha oscilar como num caixa real
+    if (aleatorio() < 0.6) {
+      const miudos = ['Material', 'Combustível', 'Alimentação', 'Taxas', 'Transporte'] as const;
+      const categoria = miudos[Math.floor(aleatorio() * miudos.length)];
+      add(d, 'Saída', Math.round(15 + aleatorio() * 85), categoria, 'Pago', aleatorio() < 0.5 ? 'Débito' : 'Pix');
     }
 
     // Contas do mês (a última semana fica com os lançamentos fixos abaixo)
     if (d > -8) continue;
-    if (dia === 5) add(d, 'Saída', 1500, 'Aluguel', 'Pago', 'Débito', 'Itaú');
+    if (dia === 5) add(d, 'Saída', 900, 'Aluguel', 'Pago', 'Débito', 'Itaú');
     if (dia === 10) add(d, 'Saída', 189.9, 'Internet', 'Pago', 'Débito');
     if (dia === 15) add(d, 'Saída', 450, 'Contador', 'Pago', 'Pix');
     if (dia === 20) add(d, 'Saída', Math.round(260 + aleatorio() * 120), 'Energia', 'Pago', 'Débito');
-    if (dia === 8 || dia === 22) add(d, 'Saída', Math.round(450 + aleatorio() * 650), 'Fornecedor', 'Pago', 'Pix');
+    if (dia === 8 || dia === 22) add(d, 'Saída', Math.round(300 + aleatorio() * 400), 'Fornecedor', 'Pago', 'Pix');
     // Marketing começa nos últimos meses e vai crescendo
-    if (dia === 12 && d > -130) add(d, 'Saída', Math.round(150 + progresso * 500), 'Marketing', 'Pago', 'Crédito');
+    if (dia === 12 && d > -130) add(d, 'Saída', Math.round(100 + progresso * 250), 'Marketing', 'Pago', 'Crédito');
     // Sobra de caixa vira investimento a partir do 4º mês
-    if (dia === 25 && d > -200) add(d, 'Investimento', Math.round(300 + aleatorio() * 500), aleatorio() < 0.5 ? 'CDB' : 'Tesouro Selic');
+    if (dia === 25 && d > -200) add(d, 'Investimento', Math.round(200 + aleatorio() * 300), aleatorio() < 0.5 ? 'CDB' : 'Tesouro Selic');
   }
 
   // Compra pontual que deixa um mês no negativo

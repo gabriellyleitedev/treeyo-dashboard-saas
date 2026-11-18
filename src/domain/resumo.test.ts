@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Lancamento } from '@/types/lancamento';
-import { inicioDoMes, pendencias, saldoAte, saldoPrevisto, serieDeSaldo, somarDias, totaisDoPeriodo } from './resumo';
+import { LIMITE_MEI_ANUAL, inicioDoMes, limiteMei, pendencias, saldoAte, saldoPrevisto, serieDeSaldo, somarDias, totaisDoPeriodo } from './resumo';
 
 let proximoId = 1;
 function lanc(parcial: Partial<Lancamento> & Pick<Lancamento, 'tipo' | 'valor' | 'data'>): Lancamento {
@@ -95,5 +95,28 @@ describe('pendencias', () => {
     expect(p.vencemHoje.total).toBe(5000);
     expect(p.proximos7Dias.itens).toHaveLength(1);
     expect(p.proximos7Dias.total).toBe(7000);
+  });
+});
+
+describe('limiteMei', () => {
+  it('soma só as entradas realizadas do ano corrente', () => {
+    const lancs = [
+      lanc({ tipo: 'Entrada', valor: 9999, data: '2025-12-31' }), // ano anterior
+      lanc({ tipo: 'Entrada', valor: 40500, data: '2026-03-10' }),
+      lanc({ tipo: 'Saída', valor: 5000, data: '2026-04-01' }), // saída não é faturamento
+      lanc({ tipo: 'Entrada', valor: 700, data: '2026-11-20', status: 'Pendente' }), // não realizada
+    ];
+    expect(limiteMei(lancs, HOJE)).toEqual({
+      faturado: 4_050_000,
+      limite: LIMITE_MEI_ANUAL,
+      percentual: 50,
+      restante: 4_050_000,
+    });
+  });
+
+  it('não deixa o restante negativo quando o teto é estourado', () => {
+    const r = limiteMei([lanc({ tipo: 'Entrada', valor: 90000, data: '2026-06-01' })], HOJE);
+    expect(r.restante).toBe(0);
+    expect(r.percentual).toBeGreaterThan(100);
   });
 });

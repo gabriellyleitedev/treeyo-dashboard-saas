@@ -1,10 +1,17 @@
 @import "tailwindcss";
 
 /*
- * Painel sem rolagem (Visão Geral): só em telas largas E altas o bastante.
- * Em notebooks muito baixos, a página volta a rolar em vez de espremer os cards.
+ * Visão Geral em 3 colunas: largura de desktop E tela deitada. Um iPad Pro em
+ * pé (1024px de largura) fica com as 2 colunas do tablet, que respiram melhor.
  */
-@custom-variant painel-fixo (@media (min-width: 1024px) and (min-height: 660px));
+@custom-variant largo (@media (min-width: 1024px) and (min-aspect-ratio: 1/1));
+
+/*
+ * Painel sem rolagem (Visão Geral): telas com largura de desktop e altas o
+ * bastante (computador e tablet deitado). Em notebooks muito baixos e em
+ * tablets em pé, a página rola em vez de esticar ou espremer os cards.
+ */
+@custom-variant painel-fixo (@media (min-width: 1024px) and (min-height: 660px) and (min-aspect-ratio: 1/1));
 
 /*
  * TEMAS
@@ -176,4 +183,85 @@
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   border: 1px solid var(--tema-line);
   box-shadow: 0 24px 60px var(--tema-sombra), inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+
+/* ---------- Visão Geral no celular: saldo no fundo, folha por cima ----------
+   O saldo fica preso atrás (sticky) e, conforme a folha de conteúdo sobe,
+   recua: encolhe, desfoca e apaga. Animação guiada pela rolagem (CSS puro,
+   roda fora da thread principal). Sem suporte ou com "reduzir movimento",
+   o saldo só rola junto, sem efeito. */
+@keyframes saldo-recua {
+  to {
+    opacity: 0.1;
+    transform: scale(0.88) translateY(-12px);
+    filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .saldo-recua {
+      transform-origin: 50% 0;
+      animation: saldo-recua linear both;
+      animation-timeline: scroll(nearest block);
+      animation-range: 0 340px;
+    }
+  }
+}
+
+/* Entradas da Visão Geral no celular:
+   - .folha-sobe: ao abrir, a folha de conteúdo sobe da parte de baixo
+   - .surge-do-fundo: cada bloco sobe e aparece conforme entra na tela ao rolar
+   - .entra-lateral: ao abrir, a Fila Inteligente chega deslizando da direita
+   - .fila-sai-de-lado: ao rolar, a Fila desliza para a direita enquanto sai
+     pelo topo; depois disso ela fica como fatia na borda (FilaLateral) */
+@keyframes entra-lateral {
+  from {
+    opacity: 0;
+    transform: translateX(80%);
+  }
+}
+
+@keyframes fila-sai-de-lado {
+  to {
+    opacity: 0.4;
+    transform: translateX(85%) scale(0.92);
+  }
+}
+@keyframes folha-sobe {
+  from {
+    opacity: 0;
+    transform: translateY(140px);
+  }
+}
+
+@keyframes surge-do-fundo {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.97);
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .folha-sobe {
+    animation: folha-sobe 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  }
+
+  .entra-lateral {
+    animation: entra-lateral 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .surge-do-fundo {
+      animation: surge-do-fundo linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+
+    .fila-sai-de-lado {
+      animation: fila-sai-de-lado linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
 }

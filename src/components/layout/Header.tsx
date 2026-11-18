@@ -22,7 +22,7 @@ const Header = ({ data, onDataChange }: HeaderProps) => {
       <HeaderMobile />
 
       <header className="hidden md:block sticky top-0 z-50 pt-4">
-        <div className="flex items-center justify-between py-2">
+        <div className="flex items-center justify-between gap-4 py-2">
           <div className="flex items-center gap-3">
             <span className="w-10 h-10 rounded-xl border border-line bg-fg/[0.03] flex items-center justify-center text-fg">
               <LayoutDashboard size={18} strokeWidth={1.75} />
@@ -39,7 +39,7 @@ const Header = ({ data, onDataChange }: HeaderProps) => {
                   <span className="text-[11px] font-medium text-fg-muted bg-fg/5 rounded-md px-1.5 py-0.5 leading-none">Histórico</span>
                 )}
               </div>
-              <p className="text-xs text-fg-subtle">Olá, {USUARIO.nome}. Acompanhe seu caixa e suas pendências.</p>
+              <p className="hidden lg:block text-xs text-fg-subtle">Olá, {USUARIO.nome}. Acompanhe seu caixa e suas pendências.</p>
             </div>
           </div>
 

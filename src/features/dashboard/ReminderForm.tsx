@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { X, Calendar, Clock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { mascaraData, mascaraHora } from "@/utils/masks";
@@ -87,7 +88,9 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
     onClose();
   };
 
-  return (
+  // Portal no body: um ancestral com transform (animações da Visão Geral)
+  // prenderia o "fixed" dentro dele e o modal sairia cortado
+  return createPortal(
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -98,7 +101,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-backdrop-blur-md border border-line rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative z-10"
+        className="bg-card/90 backdrop-blur-xl border border-line rounded-[32px] w-full max-w-sm p-6 shadow-2xl relative z-10"
       >
         {/* --- LUZ VERDE (GLOW) --- */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#1fba11]/20 rounded-full blur-[90px] pointer-events-none" />
@@ -120,7 +123,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
             {errors.title && <span className="text-[10px] text-red-500 flex items-center gap-1 mt-1 ml-1"><AlertCircle size={10} /> {errors.title}</span>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {/* DATA DIGITÁVEL */}
             <div className="flex flex-col gap-2">
               <label className="text-[10px] text-fg-subtle uppercase font-bold ml-1 flex items-center gap-2 ">
@@ -131,7 +134,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
                 placeholder="DD/MM/AAAA"
                 value={formData.date}
                 onChange={handleDateChange}
-                className={`bg-card border ${errors.date ? 'border-red-500/50' : 'border-line'} rounded-xl px-4 py-3 text-fg outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
+                className={`bg-card border ${errors.date ? 'border-red-500/50' : 'border-line'} rounded-xl px-2 py-3 text-fg outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
               />
               {errors.date && <span className="text-[9px] text-red-500 leading-tight">{errors.date}</span>}
             </div>
@@ -146,7 +149,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
                 placeholder="00:00"
                 value={formData.time}
                 onChange={handleTimeChange}
-                className={`bg-card border ${errors.time ? 'border-red-500/50' : 'border-line'} rounded-xl px-4 py-3 text-fg outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
+                className={`bg-card border ${errors.time ? 'border-red-500/50' : 'border-line'} rounded-xl px-2 py-3 text-fg outline-none text-sm focus:border-[#1fba11]/50 transition-all text-center`}
               />
               {errors.time && <span className="text-[9px] text-red-500 leading-tight">{errors.time}</span>}
             </div>
@@ -166,6 +169,7 @@ export default function ReminderForm({ isOpen, onClose, onSave }: ReminderFormPr
           </button>
         </form>
       </motion.div>
-    </div>
+    </div>,
+    document.body,
   );
 }

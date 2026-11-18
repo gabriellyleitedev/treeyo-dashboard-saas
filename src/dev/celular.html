@@ -1,0 +1,131 @@
+<!doctype html>
+<!--
+  Pré-visualização do app numa moldura de celular (só desenvolvimento).
+  Com o `npm run dev` rodando, abra: http://localhost:5173/src/dev/celular.html
+  O app roda num iframe com a largura do aparelho, então as regras de celular
+  (md:hidden, dock, folha da Visão Geral) valem como num telefone de verdade.
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Treeyo · Celular</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+      background: radial-gradient(80% 60% at 50% 0%, #10240e 0%, #070908 60%);
+      color: #c9d1cb;
+    }
+    .barra {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center;
+      padding: 14px 16px 6px; font-size: 13px;
+    }
+    .barra button, .barra select {
+      font: inherit; color: inherit; background: #ffffff0d; border: 1px solid #ffffff1a;
+      border-radius: 999px; padding: 6px 12px; cursor: pointer;
+    }
+    .barra button[aria-pressed="true"] { background: #1fba1126; border-color: #1fba1166; color: #6dff5e; }
+    .palco { flex: 1; width: 100%; display: flex; align-items: center; justify-content: center; padding: 12px 0 24px; }
+    .escala { transform-origin: top center; }
+    .aparelho {
+      position: relative; padding: 12px; border-radius: 58px;
+      background: linear-gradient(145deg, #3a3d3b, #151716 40%, #2a2d2b);
+      box-shadow: 0 40px 80px -20px #000c, inset 0 0 0 1px #ffffff1f, 0 0 0 1px #000;
+    }
+    .tela { position: relative; overflow: hidden; border-radius: 46px; background: #000; }
+    .tela iframe { display: block; border: 0; }
+    .ilha {
+      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+      width: 112px; height: 32px; border-radius: 20px; background: #000; z-index: 2; pointer-events: none;
+    }
+    .botao { position: absolute; width: 3px; border-radius: 2px; background: #2c2f2d; }
+    .dica { font-size: 12px; opacity: .55; padding-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="barra">
+    <select id="rota" aria-label="Tela">
+      <option value="/visao-geral">Visão Geral</option>
+      <option value="/lancamento">Lançamentos</option>
+      <option value="/evolucao-saldo">Evolução do Saldo</option>
+    </select>
+    <span id="aparelhos"></span>
+    <button id="tema" type="button">Tema: escuro</button>
+    <button id="recarregar" type="button">Recarregar</button>
+  </div>
+
+  <div class="palco">
+    <div class="escala" id="escala">
+      <div class="aparelho" id="aparelho">
+        <span class="botao" style="left:-3px; top:120px; height:32px"></span>
+        <span class="botao" style="left:-3px; top:170px; height:56px"></span>
+        <span class="botao" style="left:-3px; top:236px; height:56px"></span>
+        <span class="botao" style="right:-3px; top:190px; height:86px"></span>
+        <div class="tela">
+          <div class="ilha"></div>
+          <iframe id="app" title="Treeyo no celular"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="dica">Role com a roda do mouse ou arraste na tela. A tela atual fica salva no endereço.</p>
+
+  <script>
+    const APARELHOS = {
+      'iPhone 15': [393, 852],
+      'iPhone SE': [375, 667],
+      'Galaxy S24': [384, 832],
+      'Pixel 8 Pro': [412, 892],
+      'iPad Air': [820, 1180],
+    };
+    const app = document.getElementById('app');
+    const rota = document.getElementById('rota');
+    const params = new URLSearchParams(location.search);
+    let aparelho = params.get('aparelho') in APARELHOS ? params.get('aparelho') : 'iPhone 15';
+    if (params.get('rota')) rota.value = params.get('rota');
+
+    const caixa = document.getElementById('aparelhos');
+    for (const nome of Object.keys(APARELHOS)) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = nome;
+      b.onclick = () => { aparelho = nome; aplicar(); };
+      caixa.appendChild(b);
+    }
+
+    // Escala a moldura para caber na altura da janela
+    function encaixar() {
+      const el = document.getElementById('aparelho');
+      const escala = Math.min(1, (innerHeight - 110) / el.offsetHeight);
+      const wrap = document.getElementById('escala');
+      wrap.style.transform = `scale(${escala})`;
+      wrap.style.height = `${el.offsetHeight * escala}px`;
+    }
+
+    function aplicar() {
+      const [w, h] = APARELHOS[aparelho];
+      app.width = w; app.height = h;
+      for (const b of caixa.children) b.setAttribute('aria-pressed', String(b.textContent === aparelho));
+      if (!app.src.endsWith(rota.value)) app.src = rota.value;
+      history.replaceState(null, '', `?aparelho=${encodeURIComponent(aparelho)}&rota=${encodeURIComponent(rota.value)}`);
+      requestAnimationFrame(encaixar);
+    }
+
+    // Tema: mesmo localStorage do app (mesma origem), depois recarrega o iframe
+    const botaoTema = document.getElementById('tema');
+    const temaAtual = () => { try { return JSON.parse(localStorage.getItem('@treeyo:tema')) === 'light' ? 'light' : 'dark'; } catch { return 'dark'; } };
+    const rotuloTema = () => { botaoTema.textContent = `Tema: ${temaAtual() === 'light' ? 'claro' : 'escuro'}`; };
+    botaoTema.onclick = () => {
+      localStorage.setItem('@treeyo:tema', JSON.stringify(temaAtual() === 'light' ? 'dark' : 'light'));
+      rotuloTema(); app.contentWindow.location.reload();
+    };
+
+    document.getElementById('recarregar').onclick = () => app.contentWindow.location.reload();
+    rota.onchange = aplicar;
+    addEventListener('resize', encaixar);
+    rotuloTema();
+    aplicar();
+  </script>
+</body>
+</html>

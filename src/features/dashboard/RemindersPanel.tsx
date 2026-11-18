@@ -6,6 +6,7 @@ import TituloSecao from "@/components/ui/TituloSecao";
 import { dataLocalISO, isDataISO } from "@/domain/datas";
 import { STORAGE_KEYS, isRecord, lerStorage, salvarStorage, textoOuVazio } from "@/utils/storage";
 import { formatarDataCurta } from "@/utils/formatters";
+import { useBordasRolagem } from "@/utils/useBordasRolagem";
 
 // Converte o que veio do storage (descarta itens irreconhecíveis)
 function interpretarLembretes(dados: unknown): Lembrete[] {
@@ -48,6 +49,7 @@ export default function RemindersPanel({ className = "" }: RemindersPanelProps) 
 
   const concluidos = reminders.filter((r) => r.completed).length;
   const lista = [...reminders].sort(ordenar);
+  const { ref: listaRef, estilo: estiloLista } = useBordasRolagem<HTMLUListElement>(lista.length);
 
   return (
     <div className={`flex flex-col gap-4 w-full min-w-0 min-h-0 ${className}`}>
@@ -88,7 +90,8 @@ export default function RemindersPanel({ className = "" }: RemindersPanelProps) 
           <span className="text-sm">Nenhum lembrete. Criar um?</span>
         </button>
       ) : (
-        <ul className="flex flex-col gap-3 min-h-0 overflow-y-auto custom-scroll pr-1">
+        // Item cortado embaixo fica esmaecido: sinal de que a lista continua
+        <ul ref={listaRef} style={estiloLista} className="flex flex-col gap-3 min-h-0 overflow-y-auto custom-scroll pr-1">
           <AnimatePresence mode="popLayout" initial={false}>
             {lista.map((reminder) => {
               const atrasado = !reminder.completed && reminder.date < hoje;
