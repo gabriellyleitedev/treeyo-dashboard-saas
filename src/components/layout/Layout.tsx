@@ -3,10 +3,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Sidebar from './Sidebar';
 import MobileDock from './MobileDock';
-import BuscaInteligente, { type ItemBusca } from '@/components/ui/BuscaInteligente';
-import { NAV_ITEMS, ROUTES } from '@/constants/navigation';
+import BuscaInteligente from '@/components/ui/BuscaInteligente';
 import { useLancamentos } from '@/context/LancamentosContext';
-import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
 import type { ContextoLayout } from './contextoLayout';
 import { useMidia } from '@/utils/useCelular';
 
@@ -63,17 +61,6 @@ const Layout = () => {
 
   const contextoLayout = useMemo((): ContextoLayout => ({ abrirBusca: () => setIsSearchOpen(true) }), []);
 
-  // Itens pesquisáveis no Ctrl+K: telas do menu + lançamentos cadastrados
-  const rotasDoSistema = useMemo((): ItemBusca[] => [
-    ...NAV_ITEMS.map(item => ({ name: item.name, href: item.href, cat: 'Menu' })),
-
-    ...lancamentos.map(l => ({
-      name: `${l.categoria} · ${formatarMoeda(l.valor)}`,
-      href: ROUTES.lancamento,
-      cat: `${l.tipo} · ${formatarDataCurta(l.data)}`,
-      searchData: `${l.tipo} ${l.categoria} ${l.valor} ${l.data} ${l.metodo} ${l.conta} ${l.status}`.toLowerCase()
-    }))
-  ], [lancamentos]);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-canvas">
@@ -128,7 +115,7 @@ const Layout = () => {
         isOpen={isSearchOpen} 
         onClose={() => setIsSearchOpen(false)} 
         navigate={navigate}
-        rotasDoSistema={rotasDoSistema}
+        lancamentos={lancamentos}
       />
     </div>
   );

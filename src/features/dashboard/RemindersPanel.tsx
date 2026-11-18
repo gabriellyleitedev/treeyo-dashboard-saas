@@ -3,28 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus, BellOff } from "lucide-react";
 import ReminderForm, { type Lembrete } from "./ReminderForm";
 import TituloSecao from "@/components/ui/TituloSecao";
-import { dataLocalISO, isDataISO } from "@/domain/datas";
-import { STORAGE_KEYS, isRecord, lerStorage, salvarStorage, textoOuVazio } from "@/utils/storage";
+import { dataLocalISO } from "@/domain/datas";
+import { STORAGE_KEYS, lerStorage, salvarStorage } from "@/utils/storage";
+import { interpretarLembretes } from "./lembretes";
 import { formatarDataCurta } from "@/utils/formatters";
 import { useBordasRolagem } from "@/utils/useBordasRolagem";
-
-// Converte o que veio do storage (descarta itens irreconhecíveis)
-function interpretarLembretes(dados: unknown): Lembrete[] {
-  if (!Array.isArray(dados)) return [];
-  return dados.flatMap((item): Lembrete[] => {
-    if (!isRecord(item) || typeof item.id !== "string") return [];
-    const date = textoOuVazio(item.date);
-    if (!isDataISO(date)) return [];
-    return [{
-      id: item.id,
-      title: textoOuVazio(item.title),
-      description: textoOuVazio(item.description),
-      date,
-      time: textoOuVazio(item.time),
-      completed: item.completed === true,
-    }];
-  });
-}
 
 // Pendentes primeiro, por data/hora; concluídos no fim
 const ordenar = (a: Lembrete, b: Lembrete) =>

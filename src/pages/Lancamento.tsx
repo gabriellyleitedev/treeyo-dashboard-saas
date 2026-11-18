@@ -36,7 +36,8 @@ const Lancamento = () => {
     const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(
         () => TIPOS_LANCAMENTO.find((t) => t === tipoDaUrl) ?? "Entrada"
     );
-    const [busca, setBusca] = useState(""); // Guarda o que o usuário esta digitando no campo de pesquisa
+    // A busca global (Ctrl+K) abre esta tela já filtrada com ?busca=termo
+    const [busca, setBusca] = useState(() => searchParams.get("busca") ?? ""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
     const { lancamentos: lista, adicionarLancamento, removerLancamento } = useLancamentos();
     const { adicionarNotificacao } = useNotifications();

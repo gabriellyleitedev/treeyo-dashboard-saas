@@ -39,6 +39,20 @@ export default function HeaderMobile() {
       <div ref={sentinelaRef} aria-hidden="true" className="md:hidden h-px -mb-px" />
 
       <div className="md:hidden sticky top-0 z-50 -mx-4 px-2.5 pt-2">
+        {/* Ao rolar: faixa de vidro colada no topo da tela, atrás da cápsula.
+            Desfoca o conteúdo que passa por baixo e some aos poucos para baixo. */}
+        <motion.span
+          aria-hidden="true"
+          initial={false}
+          animate={{ opacity: rolou ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="pointer-events-none absolute inset-x-0 top-0 -bottom-6 backdrop-blur-xl backdrop-saturate-150"
+          style={{
+            background: 'linear-gradient(to bottom, color-mix(in srgb, var(--tema-surface) 75%, transparent) 40%, transparent)',
+            maskImage: 'linear-gradient(to bottom, black 55%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 55%, transparent)',
+          }}
+        />
         <motion.div
           initial={false}
           animate={rolou
@@ -46,7 +60,7 @@ export default function HeaderMobile() {
             : { paddingLeft: 6, paddingRight: 6, paddingTop: 6, paddingBottom: 6 }}
           transition={{ type: 'spring', stiffness: 400, damping: 36 }}
           className={`relative flex items-center justify-between rounded-[26px] transition-[background-color,box-shadow,border-color,backdrop-filter] duration-300 border ${
-            rolou ? 'vidro' : 'border-transparent'
+            rolou ? 'vidro-forte' : 'border-transparent'
           }`}
         >
           {/* PERFIL */}

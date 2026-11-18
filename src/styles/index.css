@@ -185,6 +185,16 @@
   box-shadow: 0 24px 60px var(--tema-sombra), inset 0 1px 0 rgb(255 255 255 / 0.06);
 }
 
+/* Vidro mais transparente (cabeçalho do celular ao rolar): o conteúdo que
+   passa por baixo aparece desfocado, como no iOS. */
+@utility vidro-forte {
+  background-color: color-mix(in srgb, var(--tema-card) 45%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--tema-line) 80%, rgb(255 255 255 / 0.08));
+  box-shadow: 0 12px 32px var(--tema-sombra), inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
 /* ---------- Visão Geral no celular: saldo no fundo, folha por cima ----------
    O saldo fica preso atrás (sticky) e, conforme a folha de conteúdo sobe,
    recua: encolhe, desfoca e apaga. Animação guiada pela rolagem (CSS puro,
