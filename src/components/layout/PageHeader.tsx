@@ -89,26 +89,25 @@ export function PageHeaderMobile({
 // seletor de tema e notificações.
 export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, modulo, variants }: PageHeaderDesktopProps) {
     return (
-        <motion.header className="hidden md:flex flex-row items-center justify-between w-full h-18 gap-4 shrink-0 mt-2" variants={variants}>
-            <div>
-                <h1 className="text-fg font-semibold text-2xl whitespace-nowrap">
-                    <span className="hidden lg:inline text-fg-muted font-normal">Dashboard / </span>{titulo}
-                </h1>
-            </div>
+        <motion.header className="hidden md:flex items-center justify-between w-full h-14 gap-4 shrink-0 mt-2" variants={variants}>
+            {/* Título fino à esquerda */}
+            <h1 className="text-fg font-light text-[28px] tracking-[-0.02em] leading-none truncate">{titulo}</h1>
 
-            {onBuscaChange && <div className="flex items-center group relative">
-                <Search className="absolute left-3 w-4 h-4 text-fg group-focus-within:text-marca transition-colors z-10" />
-                <input
-                    autoComplete="off"
-                    value={busca}
-                    onChange={(e) => onBuscaChange(e.target.value)}
-                    type="text"
-                    placeholder={placeholder}
-                    className="bg-card text-sm text-fg pl-10 pr-4 py-2 rounded-full border border-line w-56 h-8 focus:w-62 focus:outline-none focus:border-green-500/20 transition-all duration-300 placeholder:text-fg-subtle cursor-pointer"
-                />
-            </div>}
-
-            <div className="ml-auto flex items-center gap-3">
+            {/* À direita: busca em pílula, sol, lua e sino */}
+            <div className="flex items-center gap-3 shrink-0">
+                {onBuscaChange && (
+                    <div className="flex items-center group relative">
+                        <Search className="absolute left-3 w-3.5 h-3.5 text-fg-subtle group-focus-within:text-marca transition-colors z-10 pointer-events-none" />
+                        <input
+                            autoComplete="off"
+                            value={busca}
+                            onChange={(e) => onBuscaChange(e.target.value)}
+                            type="text"
+                            placeholder={placeholder}
+                            className="w-52 lg:w-60 h-10 bg-fg/5 text-xs text-fg pl-8 pr-3 rounded-full border border-line focus:w-72 focus:outline-none focus:border-marca/30 transition-all duration-300 placeholder:text-fg-subtle"
+                        />
+                    </div>
+                )}
                 <ThemeToggle />
                 <NotificationBell modulo={modulo} />
             </div>

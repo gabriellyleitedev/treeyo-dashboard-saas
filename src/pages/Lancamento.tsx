@@ -138,7 +138,7 @@ const Lancamento = () => {
                     variants={itemVariants}
                 />
 
-                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-fg/15 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
+                <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-fg/15 to-transparent mt-6 mb-6 md:mt-3 md:mb-5 h-px shrink-0" />
 
                 {/*
                   Celular: tipos em linha > formulário > card.
@@ -147,9 +147,9 @@ const Lancamento = () => {
                 */}
                 <motion.div
                     variants={itemVariants}
-                    className="recua-ao-sair relative z-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[9rem_332px_minmax(0,26rem)] xl:justify-center gap-6 md:gap-8 xl:gap-12 items-center"
+                    className="recua-ao-sair relative z-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[9rem_332px_minmax(0,26rem)] xl:justify-center gap-6 md:gap-8 xl:gap-x-20 2xl:gap-x-28 items-center"
                 >
-                    <div className="md:col-span-2 xl:col-span-1 grid grid-cols-3 gap-2 md:gap-3 xl:flex xl:flex-col xl:justify-center">
+                    <div className="md:col-span-2 xl:col-span-1 grid grid-cols-3 gap-2 md:gap-4 xl:flex xl:flex-col xl:justify-center">
                         {TIPOS_LANCAMENTO.map((tipo) => {
                             const cores = coresDoBotao(tipo);
                             return (
