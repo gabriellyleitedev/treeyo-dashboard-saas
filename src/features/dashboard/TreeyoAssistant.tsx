@@ -20,7 +20,7 @@ const TreeyoAssistant = () => {
                 {/* Brilho Verde (Glow) no fundo */}
                 <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#1fba11]/30 blur-[60px] rounded-full"></div>
 
-                <div className="relative z-10 flex flex-col justify-center h-full">
+                <div className="relative z-10 flex flex-col">
 
                     <div className="flex flex-col px-5 pt-5 pb-4">
                         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1fba11] to-[#0d5c08] flex items-center justify-center shadow-[0_0_30px_rgba(31,186,17,0.5)]">
@@ -34,7 +34,7 @@ const TreeyoAssistant = () => {
                             <span className="block">Smart IA Assistente</span>
                             <span className="block text-marca">Sem Complicação</span>
                         </h3>
-                        <p className="text-fg-muted text-sm leading-relaxed mt-2 [@media(max-height:820px)]:hidden">
+                        <p className="text-fg-muted text-sm leading-relaxed mt-2">
                             Fale com a IA da Treeyo para entender seu financeiro
                             sem planilhas e sem complicação.
                         </p>

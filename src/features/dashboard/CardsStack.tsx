@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { ROUTES } from "@/constants/navigation";
 import type { ResumoFinanceiro } from "./useResumoFinanceiro";
 import TituloSecao from "@/components/ui/TituloSecao";
 import { PELES, PELES_SOBRIAS, montarCards, plural, type CardFila } from "./fila";
@@ -92,7 +91,7 @@ export default function CardsStack({ resumo, previsto7 }: CardsStackProps) {
   );
 }
 
-export function CartaoFila({ icon: Icone, title, status, action, color }: CardFila) {
+export function CartaoFila({ icon: Icone, title, status, action, color, destino }: CardFila) {
   return (
     <div className="relative flex flex-col h-[180px] p-4">
       <div className="flex items-center gap-2.5">
@@ -109,7 +108,7 @@ export function CartaoFila({ icon: Icone, title, status, action, color }: CardFi
       </div>
 
       <Link
-        to={ROUTES.lancamento}
+        to={destino}
         onClick={(e) => e.stopPropagation()}
         className="mt-auto self-start flex items-center gap-2 text-[13px] font-medium hover:gap-3 transition-all"
         style={{ color }}

@@ -132,7 +132,9 @@ function VisaoGeral() {
                     Os lembretes ficam com a altura que sobra e rolam por dentro. */}
                 <div className="order-6 largo:order-none min-w-0 min-h-0 flex flex-col gap-9 md:gap-6 md:col-span-2 largo:col-span-4 largo:row-span-2 md:grid md:grid-cols-2 largo:flex">
                     <RemindersPanel className="largo:flex-1 surge-do-fundo" />
-                    <div className="shrink-0 largo:h-[300px] 2xl:h-[340px] surge-do-fundo">
+                    {/* Altura do próprio conteúdo (antes era fixa e cortava em cima e embaixo).
+                        Não estica: celular até 300px, maiores até 340px. Celular/tablet: centralizado; desktop: à direita */}
+                    <div className="shrink-0 surge-do-fundo w-full max-w-[300px] sm:max-w-[340px] mx-auto largo:mx-0 largo:self-end">
                         <TreeyoAssistant />
                     </div>
                 </div>

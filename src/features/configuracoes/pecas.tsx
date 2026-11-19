@@ -104,7 +104,13 @@ interface SegmentadoProps<T extends string> {
 // Escolha entre poucas opções, com a pílula deslizando até a escolhida
 export function Segmentado<T extends string>({ valor, opcoes, aoMudar, rotulo, id }: SegmentadoProps<T>) {
     return (
-        <div role="radiogroup" aria-label={rotulo} className="inline-flex flex-wrap items-center gap-1 p-1 rounded-full bg-fg/[0.05] border border-line">
+        // Celular: ocupa a largura toda com as opções do mesmo tamanho (não quebra linha)
+        <div
+            role="radiogroup"
+            aria-label={rotulo}
+            className="grid w-full sm:w-auto sm:inline-flex items-center gap-1 p-1 rounded-full bg-fg/[0.05] border border-line"
+            style={{ gridTemplateColumns: `repeat(${opcoes.length}, minmax(0, 1fr))` }}
+        >
             {opcoes.map((op) => {
                 const ativo = op.valor === valor;
                 return (
@@ -114,7 +120,7 @@ export function Segmentado<T extends string>({ valor, opcoes, aoMudar, rotulo, i
                         role="radio"
                         aria-checked={ativo}
                         onClick={() => aoMudar(op.valor)}
-                        className={`relative h-8 px-3.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${ativo ? "text-fg" : "text-fg-subtle hover:text-fg-muted"}`}
+                        className={`relative h-9 sm:h-8 px-2 sm:px-3.5 rounded-full text-[13px] font-medium whitespace-nowrap transition-colors cursor-pointer ${ativo ? "text-fg" : "text-fg-subtle hover:text-fg-muted"}`}
                     >
                         {ativo && (
                             <motion.span

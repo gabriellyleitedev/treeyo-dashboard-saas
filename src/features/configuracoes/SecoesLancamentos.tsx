@@ -93,7 +93,7 @@ export function SecaoPadroes() {
                     <input
                         aria-label="Nome do banco"
                         className={estiloCampo}
-                        placeholder="Adicionar banco (ex.: Caixa)"
+                        placeholder="Outro banco (ex.: Caixa)"
                         value={novoBanco}
                         onChange={(e) => setNovoBanco(e.target.value)}
                     />
@@ -106,12 +106,16 @@ export function SecaoPadroes() {
     );
 }
 
+const LIMITE_INICIAL = 6;
+
 const OPCOES_TIPO = TIPOS_LANCAMENTO.map((t) => ({ valor: t, rotulo: ABA_TIPO[t] }));
 
 export function SecaoCategorias() {
     const { lancamentos, substituirLancamentos } = useLancamentos();
     const [tipo, setTipo] = useState<TipoLancamento>("Saída");
     const [editando, setEditando] = useState<{ de: string; para: string } | null>(null);
+    // Mostra as mais usadas; o resto abre num toque (sem rolagem dentro do cartão)
+    const [verTodas, setVerTodas] = useState(false);
 
     const todas = useMemo(() => categoriasComContagem(lancamentos), [lancamentos]);
     const doTipo = todas.filter((c) => c.tipo === tipo);
@@ -135,14 +139,15 @@ export function SecaoCategorias() {
             descricao="Corrija nomes ou junte categorias repetidas. A mudança vale para todos os lançamentos."
         >
             <div className="pb-4">
-                <Segmentado id="categorias-tipo" rotulo="Tipo" valor={tipo} opcoes={OPCOES_TIPO} aoMudar={(t) => { setTipo(t); setEditando(null); }} />
+                <Segmentado id="categorias-tipo" rotulo="Tipo" valor={tipo} opcoes={OPCOES_TIPO} aoMudar={(t) => { setTipo(t); setEditando(null); setVerTodas(false); }} />
             </div>
 
             {doTipo.length === 0 ? (
                 <p className="py-6 text-sm text-fg-subtle text-center">Nenhuma categoria ainda. Elas aparecem aqui conforme você lança.</p>
             ) : (
-                <ul className="py-1 -mx-2 max-h-[340px] overflow-y-auto custom-scroll">
-                    {doTipo.map((c) => {
+                <>
+                <ul className="py-1 -mx-2">
+                    {(verTodas ? doTipo : doTipo.slice(0, LIMITE_INICIAL)).map((c) => {
                         const ativo = editando?.de === c.nome;
                         return (
                             <li key={c.nome} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-fg/[0.03]">
@@ -177,6 +182,16 @@ export function SecaoCategorias() {
                         );
                     })}
                 </ul>
+                {doTipo.length > LIMITE_INICIAL && (
+                    <button
+                        type="button"
+                        onClick={() => setVerTodas((v) => !v)}
+                        className="mt-1 h-10 w-full rounded-xl text-sm font-medium text-fg-muted hover:text-fg hover:bg-fg/[0.04] transition cursor-pointer"
+                    >
+                        {verTodas ? "Mostrar menos" : `Ver todas (${doTipo.length})`}
+                    </button>
+                )}
+                </>
             )}
         </Secao>
     );

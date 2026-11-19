@@ -2,10 +2,15 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Check, List, Plus, TrendingUp } from "lucide-react";
+import { ROUTES } from "@/constants/navigation";
+import { useLancamentos } from "@/context/LancamentosContext";
+import { dataISOParaBR, dataLocalISO } from "@/domain/datas";
+import { toastComDesfazer } from "@/features/lancamentos/desfazer";
+import { statusDoTipo, type Lancamento } from "@/types/lancamento";
 import type { ResumoFinanceiro } from "./useResumoFinanceiro";
-import { CartaoFila } from "./CardsStack";
-import { PELES_SOBRIAS as PELES, montarCards, plural } from "./fila";
+import CartaoVivo, { type AcaoCartao } from "./CartaoVivo";
+import { montarCards, peleViva, plural, type CardFila } from "./fila";
 
 // Fila Inteligente no celular, depois que ela sai da tela ao rolar: os cartões
 // deslizam para o lado e ficam presos na borda direita como três fatias
@@ -67,15 +72,15 @@ export default function FilaLateral({ resumo, previsto7, visivel }: FilaLateralP
             abrir, a fatia SE TRANSFORMA no cartão grande (e volta ao fechar) */}
         {!aberta && ordem.map((card, i) => {
           const sobra = ((1 - FATIAS[i].escala) / 2) * 100;
-          // Pele pela posição do cartão na fila (0 = principal), igual à da tela
-          const pele = PELES[cards.indexOf(card)];
+          // Mesma cor do cartão na tela da Fila: a fatia vira o cartão ao abrir
+          const pele = peleViva(card.color);
           return (
             <motion.span
               key={card.id}
               layoutId={reduzir ? undefined : `fila-${card.id}`}
               aria-hidden="true"
               className="absolute w-[150px] overflow-hidden"
-              style={{ left: FATIAS[i].esquerda, top: `${sobra}%`, bottom: `${sobra}%`, borderRadius: 20, background: pele.fundo, boxShadow: pele.sombra }}
+              style={{ left: FATIAS[i].esquerda, top: `${sobra}%`, bottom: `${sobra}%`, borderRadius: 20, background: pele.fundo, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35), -6px 8px 20px rgba(0,0,0,0.35)" }}
               transition={{ type: "spring", stiffness: 320, damping: 34 }}
             >
               <span className="absolute inset-0" style={{ background: "radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,0.10), transparent 55%)" }} />
@@ -89,10 +94,10 @@ export default function FilaLateral({ resumo, previsto7, visivel }: FilaLateralP
             className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center gap-1.5"
             style={{ left: FATIAS[2].esquerda + 6 }}
           >
-            <span className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: `${frente.color}26`, color: frente.color }}>
+            <span className="w-8 h-8 rounded-full flex items-center justify-center bg-white/25 border border-white/40" style={{ color: peleViva(frente.color).tinta }}>
               <IconeFrente size={16} />
             </span>
-            <span className="text-[13px] font-semibold text-white leading-none">{total}</span>
+            <span className="text-[13px] font-semibold leading-none" style={{ color: peleViva(frente.color).tinta }}>{total}</span>
           </span>
         )}
       </motion.button>
@@ -101,6 +106,7 @@ export default function FilaLateral({ resumo, previsto7, visivel }: FilaLateralP
         {aberta && (
           <TelaFila
             cards={cards}
+            resumo={resumo}
             total={total}
             reduzir={!!reduzir}
             onFechar={() => setAberta(false)}
@@ -113,7 +119,8 @@ export default function FilaLateral({ resumo, previsto7, visivel }: FilaLateralP
 }
 
 interface TelaFilaProps {
-  cards: ReturnType<typeof montarCards>;
+  cards: CardFila[];
+  resumo: ResumoFinanceiro;
   total: number;
   reduzir: boolean;
   onFechar: () => void;
@@ -122,7 +129,48 @@ interface TelaFilaProps {
 // Tela da Fila. O fundo só aparece (fade); quem se move são os cartões, que
 // crescem a partir das fatias da borda (layoutId), como no vídeo de referência.
 // Fecha arrastando para a direita, pela seta ou com Esc. Fica abaixo da dock.
-function TelaFila({ cards, total, reduzir, onFechar }: TelaFilaProps) {
+function TelaFila({ cards, resumo, total, reduzir, onFechar }: TelaFilaProps) {
+  const { atualizarLancamento } = useLancamentos();
+  const urgentes = [...resumo.pendencias.atrasadas.itens, ...resumo.pendencias.vencemHoje.itens];
+
+  // Pagou/recebeu agora: a data passa a ser hoje (igual à tela de Lançamentos)
+  const concluir = (item: Lancamento) => {
+    const hoje = dataLocalISO();
+    atualizarLancamento({ ...item, status: statusDoTipo(item.tipo, true), data: hoje, dataDisplay: dataISOParaBR(hoje) });
+    const verbo = item.tipo === "Entrada" ? "recebido" : item.tipo === "Saída" ? "pago" : "aplicado";
+    toastComDesfazer(`${item.categoria || item.tipo} marcado como ${verbo}`, () => atualizarLancamento(item));
+  };
+
+  const novo = (tipo: Lancamento["tipo"]) => `${ROUTES.lancamento}?tipo=${encodeURIComponent(tipo)}`;
+
+  // Botões de cada cartão: o que dá para fazer a partir dele
+  const acoesDo = (card: CardFila): AcaoCartao[] => {
+    if (card.id === "atencao" && urgentes.length > 0) {
+      const primeiro = urgentes[0];
+      return [
+        { rotulo: `Marcar ${primeiro.categoria || primeiro.tipo} como ${primeiro.tipo === "Entrada" ? "recebido" : "pago"}`, icone: Check, aoTocar: () => concluir(primeiro) },
+        { rotulo: "Ver todas", icone: List, para: card.destino },
+        { rotulo: "Novo gasto", icone: Plus, para: novo("Saída") },
+      ];
+    }
+    if (card.id === "atencao") {
+      return [
+        { rotulo: "Recebi dinheiro", icone: ArrowDownLeft, para: novo("Entrada") },
+        { rotulo: "Gastei dinheiro", icone: ArrowUpRight, para: novo("Saída") },
+      ];
+    }
+    if (card.id === "proximos") {
+      return [
+        { rotulo: "Ver pendências", icone: List, para: card.destino },
+        { rotulo: "Anotar conta a pagar", icone: Plus, para: novo("Saída") },
+      ];
+    }
+    return [
+      { rotulo: "Ver evolução do saldo", icone: TrendingUp, para: card.destino },
+      { rotulo: "Ver lançamentos", icone: List, para: ROUTES.lancamento },
+    ];
+  };
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onFechar();
     window.addEventListener("keydown", onKey);
@@ -166,26 +214,38 @@ function TelaFila({ cards, total, reduzir, onFechar }: TelaFilaProps) {
         </span>
       </motion.div>
 
-      <div className="flex-1 overflow-y-auto px-4 pb-32 flex flex-col gap-3">
-        {cards.map((card, i) => (
-          <motion.div
-            key={card.id}
-            layoutId={reduzir ? undefined : `fila-${card.id}`}
-            className="relative overflow-hidden shrink-0"
-            style={{ borderRadius: 22, background: PELES[i].fundo, boxShadow: PELES[i].sombra }}
-            transition={{ type: "spring", stiffness: 320, damping: 34, delay: i * 0.04 }}
-          >
-            <span aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,0.10), transparent 55%)" }} />
-            {/* O texto só aparece depois que o cartão cresceu (senão "espreme") */}
-            <motion.div
-              initial={reduzir ? false : { opacity: 0 }}
-              animate={{ opacity: 1, transition: { delay: 0.28 + i * 0.04 } }}
-              exit={{ opacity: 0, transition: { duration: 0.08 } }}
-            >
-              <CartaoFila {...card} />
-            </motion.div>
-          </motion.div>
-        ))}
+      <div className="flex-1 overflow-y-auto px-4 pt-1 pb-32 flex flex-col gap-6">
+        {cards.map((card, i) => {
+          const pele = peleViva(card.color);
+          return (
+            <div key={card.id} className="relative shrink-0">
+              {/* Brilho colorido embaixo, como o cartão "acendendo" a mesa */}
+              <motion.span
+                aria-hidden="true"
+                className="absolute inset-x-6 -bottom-3 h-12 rounded-full blur-2xl pointer-events-none"
+                style={{ backgroundColor: pele.brilho }}
+                initial={reduzir ? false : { opacity: 0 }}
+                animate={{ opacity: 0.55, transition: { delay: 0.3 + i * 0.05 } }}
+                exit={{ opacity: 0, transition: { duration: 0.08 } }}
+              />
+              <motion.div
+                layoutId={reduzir ? undefined : `fila-${card.id}`}
+                className="relative overflow-hidden"
+                style={{ borderRadius: 24, background: pele.fundo, boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -1px 0 rgba(0,0,0,0.08)" }}
+                transition={{ type: "spring", stiffness: 320, damping: 34, delay: i * 0.04 }}
+              >
+                {/* O conteúdo só aparece depois que o cartão cresceu (senão "espreme") */}
+                <motion.div
+                  initial={reduzir ? false : { opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0, transition: { delay: 0.28 + i * 0.05 } }}
+                  exit={{ opacity: 0, transition: { duration: 0.08 } }}
+                >
+                  <CartaoVivo card={card} acoes={acoesDo(card)} aoNavegar={onFechar} />
+                </motion.div>
+              </motion.div>
+            </div>
+          );
+        })}
       </div>
     </motion.div>
   );
