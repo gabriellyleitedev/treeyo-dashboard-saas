@@ -2,7 +2,7 @@ import { LayoutDashboard } from 'lucide-react';
 import CalendarPicker from '@/components/ui/CalendarPicker';
 import NotificationBell from '@/components/ui/NotificationBell';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import { USUARIO } from '@/constants/usuario';
+import { usePreferencias } from '@/context/PreferenciasContext';
 import { dataLocalISO } from '@/domain/datas';
 import HeaderMobile from './HeaderMobile';
 
@@ -15,6 +15,7 @@ interface HeaderProps {
 // Cabeçalho da Visão Geral. Celular: HeaderMobile (perfil, busca, sino).
 // md+: título, seletor de data, tema e notificações.
 const Header = ({ data, onDataChange }: HeaderProps) => {
+  const { preferencias } = usePreferencias();
   const ehHoje = data === dataLocalISO();
 
   return (
@@ -39,7 +40,7 @@ const Header = ({ data, onDataChange }: HeaderProps) => {
                   <span className="text-[11px] font-medium text-fg-muted bg-fg/5 rounded-md px-1.5 py-0.5 leading-none">Histórico</span>
                 )}
               </div>
-              <p className="hidden lg:block text-xs text-fg-subtle">Olá, {USUARIO.nome}. Acompanhe seu caixa e suas pendências.</p>
+              <p className="hidden lg:block text-xs text-fg-subtle">Olá, {preferencias.apelido || preferencias.nomeCompleto.split(' ')[0]}. Acompanhe seu caixa e suas pendências.</p>
             </div>
           </div>
 

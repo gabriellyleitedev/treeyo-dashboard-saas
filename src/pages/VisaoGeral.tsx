@@ -13,25 +13,15 @@ import GlowTopo from '@/components/ui/GlowTopo';
 import TituloSecao from '@/components/ui/TituloSecao';
 import { useNotifications } from '@/context/NotificationContext';
 import { useLancamentos } from '@/context/LancamentosContext';
-import { USUARIO } from '@/constants/usuario';
+import { usePreferencias } from '@/context/PreferenciasContext';
+import { boasVindas } from '@/domain/preferencias';
 import { dataLocalISO } from '@/domain/datas';
 import { saldoPrevisto } from '@/domain/resumo';
-import { STORAGE_KEYS, isRecord, lerStorage } from '@/utils/storage';
-
-// Perfil salvo por um futuro cadastro; hoje só o nome é usado
-interface Perfil {
-    nome?: string;
-}
-
-// Qualquer valor salvo conta como perfil existente; o nome só é usado se for texto
-const interpretarPerfil = (dados: unknown): Perfil | null => {
-    if (!dados) return null;
-    return { nome: isRecord(dados) && typeof dados.nome === 'string' ? dados.nome : undefined };
-};
 
 function VisaoGeral() {
     const { adicionarNotificacao } = useNotifications();
     const { lancamentos } = useLancamentos();
+    const { preferencias } = usePreferencias();
     const hasChecked = useRef(false);
 
     // Data de referência do painel (o seletor do cabeçalho permite ver outro dia)
@@ -57,13 +47,11 @@ function VisaoGeral() {
     useEffect(() => {
         if (hasChecked.current) return;
 
-        const perfil = lerStorage(STORAGE_KEYS.perfil, null, interpretarPerfil);
-
-        if (perfil && !sessionStorage.getItem('@treeyo:welcome_notified')) {
+        if (!sessionStorage.getItem('@treeyo:welcome_notified')) {
             adicionarNotificacao({
                 id: `welcome-${Date.now()}`,
                 modulo: 'geral',
-                titulo: `Bem-vinda, ${perfil.nome || USUARIO.apelido}!`,
+                titulo: `${boasVindas(preferencias.saudacao)}, ${preferencias.apelido || preferencias.nomeCompleto}!`,
                 mensagem: 'Seu dashboard está atualizado.',
                 tipo: 'info',
                 data: new Date().toISOString()
@@ -84,7 +72,7 @@ function VisaoGeral() {
         }
 
         hasChecked.current = true;
-    }, [adicionarNotificacao, lancamentos.length]);
+    }, [adicionarNotificacao, lancamentos.length, preferencias.saudacao, preferencias.apelido, preferencias.nomeCompleto]);
 
     return (
         // painel-fixo (≥1024px de largura e ≥660px de altura): a página ocupa

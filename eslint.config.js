@@ -28,7 +28,7 @@ export default defineConfig([
       // contextos exportam o Provider e o hook juntos
       'react-refresh/only-export-components': ['error', {
         allowConstantExport: true,
-        allowExportNames: ['useNotifications', 'useLancamentos', 'useTheme'],
+        allowExportNames: ['useNotifications', 'useLancamentos', 'useTheme', 'usePreferencias'],
       }],
     },
   },

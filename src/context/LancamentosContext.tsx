@@ -15,6 +15,8 @@ interface LancamentosContextValue {
   /** Substitui o lançamento de mesmo id (edição, "marcar como pago") */
   atualizarLancamento: (alterado: Lancamento) => void;
   removerLancamento: (id: Lancamento['id']) => void;
+  /** Troca a lista inteira (renomear categoria, apagar tudo) */
+  substituirLancamentos: (lista: Lancamento[]) => void;
 }
 
 const LancamentosContext = createContext<LancamentosContextValue | null>(null);
@@ -78,9 +80,11 @@ export function LancamentosProvider({ children }: LancamentosProviderProps) {
     setLancamentos((prev) => prev.filter((l) => l.id !== id));
   }, []);
 
+  const substituirLancamentos = useCallback((lista: Lancamento[]) => setLancamentos(lista), []);
+
   const value = useMemo(
-    () => ({ lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento }),
-    [lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento]
+    () => ({ lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento, substituirLancamentos }),
+    [lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento, substituirLancamentos]
   );
 
   return <LancamentosContext.Provider value={value}>{children}</LancamentosContext.Provider>;

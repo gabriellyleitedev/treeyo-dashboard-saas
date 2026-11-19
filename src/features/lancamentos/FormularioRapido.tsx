@@ -4,7 +4,8 @@ import toast from "react-hot-toast";
 import { novoIdLancamento } from "@/utils/id";
 import { dataISOParaBR, dataLocalISO } from "@/domain/datas";
 import { MENSAGENS_ERRO_VALOR, centavosParaTexto, validarValor } from "@/domain/dinheiro";
-import { contaRecente, ultimoDaCategoria } from "@/domain/extrato";
+import { ultimoDaCategoria } from "@/domain/extrato";
+import { usePreferencias } from "@/context/PreferenciasContext";
 import { interpretarFrase, type Rascunho } from "@/domain/lancamentoRapido";
 import { statusDoTipo, type Lancamento, type TipoLancamento } from "@/types/lancamento";
 import { FALTA_CATEGORIA, PERGUNTA_CATEGORIA_CURTA, TITULO_NOVO, statusLeigo } from "./textos";
@@ -25,6 +26,8 @@ interface FormularioRapidoProps {
 // o histórico e mostra numa linha; "Mais detalhes" abre o formulário completo.
 export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetalhar, aoMudarTipo }: FormularioRapidoProps) {
     const hoje = dataLocalISO();
+    const { preferencias } = usePreferencias();
+    const padroes = { metodo: preferencias.metodoPadrao, conta: preferencias.bancoPadrao, bancos: preferencias.bancos };
     const [frase, setFrase] = useState("");
     const [doFrase, setDoFrase] = useState<Rascunho | null>(null);
     const [valor, setValor] = useState("");
@@ -35,7 +38,7 @@ export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetal
         setFrase(texto);
         setErro(null);
         if (!texto.trim()) { setDoFrase(null); return; }
-        const r = interpretarFrase(texto, hoje, historico);
+        const r = interpretarFrase(texto, hoje, historico, padroes);
         setDoFrase(r);
         setValor(r.valor !== null ? centavosParaTexto(r.valor) : "");
         setCategoria(r.categoria);
@@ -46,10 +49,10 @@ export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetal
     const anterior = ultimoDaCategoria(historico, categoria);
     const data = doFrase?.data ?? hoje;
     const realizado = doFrase ? doFrase.status === "Pago" || doFrase.status === "Executado" : data <= hoje;
-    const metodo = doFrase?.origem.metodo === "frase" ? doFrase.metodo : anterior?.metodo ?? doFrase?.metodo ?? "Pix";
+    const metodo = doFrase?.origem.metodo === "frase" ? doFrase.metodo : anterior?.metodo ?? doFrase?.metodo ?? preferencias.metodoPadrao;
     const conta = metodo === "Dinheiro"
         ? "Espécie"
-        : doFrase?.origem.conta === "frase" ? doFrase.conta : (anterior && anterior.metodo !== "Dinheiro" ? anterior.conta : null) ?? contaRecente(historico) ?? "Nubank PJ";
+        : doFrase?.origem.conta === "frase" ? doFrase.conta : (anterior && anterior.metodo !== "Dinheiro" ? anterior.conta : null) ?? preferencias.bancoPadrao;
     const status = statusDoTipo(tipo, realizado);
 
     const montar = (centavos: number, id: number): Lancamento => ({

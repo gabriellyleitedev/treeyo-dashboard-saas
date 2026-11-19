@@ -5,7 +5,8 @@ import { ChevronRight, Delete, Plus, SlidersHorizontal, X } from "lucide-react";
 import { novoIdLancamento } from "@/utils/id";
 import { dataISOParaBR, dataLocalISO } from "@/domain/datas";
 import { VALOR_MAXIMO_CENTAVOS } from "@/domain/dinheiro";
-import { categoriasFrequentes, contaRecente, ultimoDaCategoria } from "@/domain/extrato";
+import { categoriasFrequentes, ultimoDaCategoria } from "@/domain/extrato";
+import { usePreferencias } from "@/context/PreferenciasContext";
 import {
     OPERADORES, avaliar, centavosParaPedaco, formatarPedaco, isOperador, teclar, temConta, type Tecla,
 } from "@/domain/calculadora";
@@ -38,6 +39,7 @@ const MOLA = { type: "spring", stiffness: 520, damping: 34 } as const;
 // confirma deslizando o botão até o fim.
 export default function TecladoLancamento({ tipoInicial, historico, aoFechar, aoConfirmar, aoDetalhar }: TecladoLancamentoProps) {
     const hoje = dataLocalISO();
+    const { preferencias } = usePreferencias();
     const [tipo, setTipo] = useState<TipoLancamento>(tipoInicial);
     const [expr, setExpr] = useState<string[]>([]);
     const [categoria, setCategoria] = useState("");
@@ -63,8 +65,8 @@ export default function TecladoLancamento({ tipoInicial, historico, aoFechar, ao
 
     // O que não é digitado: completa com a última vez da categoria (como o formulário rápido)
     const anterior = ultimoDaCategoria(historico, categoria);
-    const metodo = anterior?.metodo ?? "Pix";
-    const contaBancaria = metodo === "Dinheiro" ? "Espécie" : (anterior?.conta || contaRecente(historico) || "Nubank PJ");
+    const metodo = anterior?.metodo ?? preferencias.metodoPadrao;
+    const contaBancaria = metodo === "Dinheiro" ? "Espécie" : (anterior && anterior.metodo !== "Dinheiro" ? anterior.conta : preferencias.bancoPadrao);
     const status = statusDoTipo(tipo, true);
 
     const problema =

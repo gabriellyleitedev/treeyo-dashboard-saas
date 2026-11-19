@@ -145,13 +145,13 @@ export interface LimiteMei {
   restante: Centavos;
 }
 
-/** Faturamento do ano-calendário comparado ao teto anual do MEI. */
-export function limiteMei(lancamentos: readonly Lancamento[], hoje: DataISO): LimiteMei {
+/** Faturamento do ano-calendário comparado ao teto anual (ajustável em Configurações). */
+export function limiteMei(lancamentos: readonly Lancamento[], hoje: DataISO, limite: Centavos = LIMITE_MEI_ANUAL): LimiteMei {
   const faturado = totaisDoPeriodo(lancamentos, `${hoje.slice(0, 4)}-01-01`, hoje).entradas;
   return {
     faturado,
-    limite: LIMITE_MEI_ANUAL,
-    percentual: (faturado / LIMITE_MEI_ANUAL) * 100,
-    restante: Math.max(LIMITE_MEI_ANUAL - faturado, 0),
+    limite,
+    percentual: (faturado / limite) * 100,
+    restante: Math.max(limite - faturado, 0),
   };
 }

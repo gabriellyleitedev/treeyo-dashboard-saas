@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion, useSpring, useTransform } from 'framer-motion';
-import { Grip, Search, X, type LucideIcon } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, Grip, PiggyBank, Search, X, type LucideIcon } from 'lucide-react';
+import ConteudoAvatar from '@/components/ui/Avatar';
+import { usePreferencias } from '@/context/PreferenciasContext';
 import { NAV_ITEMS, ROUTES, type Rota } from '@/constants/navigation';
 
 // Dock presa ao rodapé, com entalhe "líquido": a barra de vidro ocupa a largura
@@ -223,51 +225,16 @@ const MobileDock = ({ onOpenSearch }: MobileDockProps) => {
                             role="dialog"
                             aria-modal="true"
                             aria-label="Mais opções"
-                            className="md:hidden fixed inset-x-0 bottom-0 z-[120] rounded-t-[2rem] bg-card border-t border-line px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+                            className="md:hidden fixed inset-x-0 bottom-0 z-[120] max-h-[92dvh] overflow-y-auto overscroll-contain rounded-t-[2rem] bg-card border-t border-line px-4 pt-3 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
                             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
                             transition={{ type: 'spring', stiffness: 420, damping: 40 }}
                         >
                             <div className="mx-auto w-10 h-1 rounded-full bg-fg/15 mb-4" />
-
-                            <div className="flex items-center justify-between mb-4">
-                                <p className="text-base font-semibold text-fg">Menu</p>
-                                <button
-                                    type="button"
-                                    onClick={() => setMaisAberto(false)}
-                                    aria-label="Fechar"
-                                    className="w-9 h-9 rounded-full bg-fg/5 border border-line flex items-center justify-center text-fg-muted cursor-pointer"
-                                >
-                                    <X size={18} />
-                                </button>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={() => { setMaisAberto(false); onOpenSearch(); }}
-                                className="w-full h-12 mb-4 rounded-full bg-fg/5 border border-line flex items-center gap-3 px-4 text-sm text-fg-subtle cursor-pointer"
-                            >
-                                <Search size={18} />
-                                Buscar telas e lançamentos
-                            </button>
-
-                            <div className="grid grid-cols-3 gap-2">
-                                {NAV_ITEMS.map((item) => {
-                                    const ativoItem = pathname === item.href;
-                                    return (
-                                        <Link
-                                            key={item.href}
-                                            to={item.href}
-                                            aria-current={ativoItem ? 'page' : undefined}
-                                            className={`flex flex-col items-center justify-center gap-2 rounded-2xl py-4 px-2 text-center border transition-colors ${
-                                                ativoItem ? 'bg-[#1fba11]/10 border-[#1fba11]/30 text-marca' : 'bg-fg/[0.03] border-line text-fg-muted'
-                                            }`}
-                                        >
-                                            <item.icon size={22} />
-                                            <span className="text-xs font-medium leading-tight">{item.name}</span>
-                                        </Link>
-                                    );
-                                })}
-                            </div>
+                            <FolhaMenu
+                                pathname={pathname}
+                                aoFechar={() => setMaisAberto(false)}
+                                aoBuscar={() => { setMaisAberto(false); onOpenSearch(); }}
+                            />
                         </motion.div>
                     </>
                 )}
@@ -275,6 +242,135 @@ const MobileDock = ({ onOpenSearch }: MobileDockProps) => {
         </>
     );
 };
+
+// Atalhos de novo lançamento: abrem a tela de Lançamentos já com o teclado
+const ACOES_RAPIDAS = [
+    { tipo: 'Entrada', rotulo: 'Recebi', icone: ArrowDownLeft, cor: 'text-[#1fba11] bg-[#1fba11]/12' },
+    { tipo: 'Saída', rotulo: 'Gastei', icone: ArrowUpRight, cor: 'text-red-400 bg-red-500/12' },
+    { tipo: 'Investimento', rotulo: 'Investi', icone: PiggyBank, cor: 'text-blue-400 bg-blue-500/12' },
+] as const;
+
+const TELAS = NAV_ITEMS.filter((i) => i.section === 'Geral');
+
+// Cor do ícone de cada tela (o quadradinho colorido do menu)
+const COR_TELA: Partial<Record<Rota, string>> = {
+    [ROUTES.visaoGeral]: 'text-[#1fba11] bg-[#1fba11]/12',
+    [ROUTES.lancamento]: 'text-sky-400 bg-sky-500/12',
+    [ROUTES.evolucaoSaldo]: 'text-violet-400 bg-violet-500/12',
+    [ROUTES.resultado]: 'text-amber-400 bg-amber-500/12',
+    [ROUTES.fluxoProjetado]: 'text-pink-400 bg-pink-500/12',
+};
+
+// Cada bloco da folha entra um pouco depois do anterior
+const surgir = (i: number) => ({
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0 },
+    transition: { delay: 0.05 + i * 0.035, type: 'spring' as const, stiffness: 420, damping: 32 },
+});
+
+interface FolhaMenuProps {
+    pathname: string;
+    aoFechar: () => void;
+    aoBuscar: () => void;
+}
+
+// Conteúdo da folha "Mais": perfil, busca, atalhos de lançamento e as telas
+function FolhaMenu({ pathname, aoFechar, aoBuscar }: FolhaMenuProps) {
+    const { preferencias } = usePreferencias();
+
+    return (
+        <>
+            {/* Perfil: leva para Configurações */}
+            <motion.div {...surgir(0)} className="flex items-center gap-2 mb-4">
+                <Link
+                    to={ROUTES.configuracoes}
+                    onClick={aoFechar}
+                    className="flex-1 min-w-0 flex items-center gap-3 p-2 -m-2 rounded-2xl active:bg-fg/[0.05] transition-colors"
+                >
+                    <span className="w-12 h-12 shrink-0 rounded-full p-[2px] bg-gradient-to-br from-[#3ee52c] to-[#0d5c08]">
+                        <span className="w-full h-full rounded-full bg-surface flex items-center justify-center text-marca text-sm font-semibold overflow-hidden">
+                            <ConteudoAvatar />
+                        </span>
+                    </span>
+                    <span className="min-w-0 flex-1">
+                        <span className="block text-[15px] font-medium text-fg truncate">{preferencias.nomeCompleto || preferencias.apelido}</span>
+                        <span className="flex items-center gap-0.5 text-xs text-fg-subtle">
+                            <span className="truncate">{preferencias.nomeNegocio || 'Ver perfil e configurações'}</span>
+                            <ChevronRight size={13} className="shrink-0" />
+                        </span>
+                    </span>
+                </Link>
+                <button
+                    type="button"
+                    onClick={aoFechar}
+                    aria-label="Fechar"
+                    className="w-9 h-9 shrink-0 rounded-full bg-fg/5 border border-line flex items-center justify-center text-fg-muted cursor-pointer"
+                >
+                    <X size={18} />
+                </button>
+            </motion.div>
+
+            <motion.button
+                {...surgir(1)}
+                type="button"
+                onClick={aoBuscar}
+                className="w-full h-12 mb-5 rounded-full bg-fg/5 border border-line flex items-center gap-3 px-4 text-sm text-fg-subtle cursor-pointer"
+            >
+                <Search size={18} />
+                Buscar telas e lançamentos
+            </motion.button>
+
+            {/* Novo lançamento */}
+            <motion.p {...surgir(2)} className="px-1 mb-2 text-[11px] font-medium uppercase tracking-[0.14em] text-fg-subtle">Anotar agora</motion.p>
+            <div className="grid grid-cols-3 gap-2 mb-6">
+                {ACOES_RAPIDAS.map(({ tipo, rotulo, icone: Icone, cor }, i) => (
+                    <motion.div key={tipo} {...surgir(3 + i)}>
+                        <Link
+                            to={`${ROUTES.lancamento}?tipo=${encodeURIComponent(tipo)}`}
+                            onClick={aoFechar}
+                            className="h-[72px] rounded-2xl bg-fg/[0.04] border border-line flex flex-col items-center justify-center gap-1.5 active:scale-95 transition-transform"
+                        >
+                            <span className={`w-8 h-8 rounded-full flex items-center justify-center ${cor}`}><Icone size={17} strokeWidth={2} /></span>
+                            <span className="text-[13px] font-medium text-fg">{rotulo}</span>
+                        </Link>
+                    </motion.div>
+                ))}
+            </div>
+
+            {/* Telas */}
+            <motion.p {...surgir(6)} className="px-1 mb-2 text-[11px] font-medium uppercase tracking-[0.14em] text-fg-subtle">Telas</motion.p>
+            <ul className="rounded-3xl bg-fg/[0.03] border border-line overflow-hidden divide-y divide-line">
+                {TELAS.map((item, i) => {
+                    const atual = pathname === item.href;
+                    return (
+                        <motion.li key={item.href} {...surgir(7 + i)}>
+                            <Link
+                                to={item.href}
+                                aria-current={atual ? 'page' : undefined}
+                                onClick={aoFechar}
+                                className={`flex items-center gap-3 px-3.5 py-3 transition-colors active:bg-fg/[0.06] ${atual ? 'bg-fg/[0.05]' : ''}`}
+                            >
+                                <span className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${COR_TELA[item.href] ?? 'text-fg-muted bg-fg/[0.06]'}`}>
+                                    <item.icon size={19} strokeWidth={1.75} />
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                    <span className="flex items-center gap-2">
+                                        <span className="text-sm font-medium text-fg truncate">{item.name}</span>
+                                        {item.emBreve && <span className="shrink-0 text-[10px] font-medium text-fg-subtle border border-line rounded-full px-1.5 py-px">Em breve</span>}
+                                    </span>
+                                    <span className="block text-xs text-fg-subtle truncate">{item.descricao}</span>
+                                </span>
+                                {atual
+                                    ? <span className="shrink-0 w-2 h-2 rounded-full bg-[#1fba11] shadow-[0_0_8px_rgba(31,186,17,0.7)]" aria-label="Tela atual" />
+                                    : <ChevronRight size={16} className="shrink-0 text-fg-subtle" />}
+                            </Link>
+                        </motion.li>
+                    );
+                })}
+            </ul>
+        </>
+    );
+}
 
 // Ícone da aba na barra. O da aba ativa afunda e some: ele aparece na bolha.
 function IconeAba({ ativo, children }: { ativo: boolean; children: ReactNode }) {

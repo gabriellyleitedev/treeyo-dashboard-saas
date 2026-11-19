@@ -6,7 +6,9 @@ import { ChevronDown, ChevronRight, LogOut, Search, Settings, User } from 'lucid
 import NotificationBell from '@/components/ui/NotificationBell';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { ROUTES } from '@/constants/navigation';
-import { USUARIO } from '@/constants/usuario';
+import { usePreferencias } from '@/context/PreferenciasContext';
+import ConteudoAvatar from '@/components/ui/Avatar';
+import { boasVindas } from '@/domain/preferencias';
 import { useLayout } from './contextoLayout';
 
 // Cabeçalho do celular.
@@ -16,6 +18,7 @@ import { useLayout } from './contextoLayout';
 // (IntersectionObserver funciona com o contêiner de rolagem do Layout).
 export default function HeaderMobile() {
   const { abrirBusca } = useLayout();
+  const { preferencias } = usePreferencias();
   const sentinelaRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLButtonElement>(null);
   const [rolou, setRolou] = useState(false);
@@ -81,12 +84,12 @@ export default function HeaderMobile() {
               className="rounded-full p-[2px] bg-gradient-to-br from-[#3ee52c] to-[#0d5c08] shrink-0"
             >
               <span className="w-full h-full rounded-full bg-surface flex items-center justify-center text-marca text-[13px] font-semibold">
-                {USUARIO.iniciais}
+                <ConteudoAvatar />
               </span>
             </motion.span>
             <span className="flex flex-col leading-tight">
               <span className="flex items-center gap-1 text-fg font-medium text-[15px]">
-                Olá, {USUARIO.apelido}
+                Olá, {preferencias.apelido || preferencias.nomeCompleto.split(' ')[0]}
                 <ChevronDown size={14} className={`text-fg-subtle transition-transform ${menu ? 'rotate-180' : ''}`} />
               </span>
               <AnimatePresence initial={false}>
@@ -97,7 +100,7 @@ export default function HeaderMobile() {
                     exit={{ opacity: 0, height: 0 }}
                     className="text-xs text-fg-subtle overflow-hidden"
                   >
-                    Bem-vinda de volta
+                    {boasVindas(preferencias.saudacao)} de volta
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -137,6 +140,7 @@ interface MenuPerfilProps {
 // Menu do perfil: painel de vidro sobre a tela desfocada (mesmo padrão das
 // notificações e do calendário).
 function MenuPerfil({ posicao, onFechar }: MenuPerfilProps) {
+  const { preferencias } = usePreferencias();
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onFechar();
     window.addEventListener('keydown', onKey);
@@ -167,12 +171,12 @@ function MenuPerfil({ posicao, onFechar }: MenuPerfilProps) {
         <div className="flex items-center gap-3 p-3 rounded-2xl bg-fg/[0.04]">
           <span className="w-11 h-11 rounded-full p-[2px] bg-gradient-to-br from-[#3ee52c] to-[#0d5c08] shrink-0">
             <span className="w-full h-full rounded-full bg-surface flex items-center justify-center text-marca text-sm font-semibold">
-              {USUARIO.iniciais}
+              <ConteudoAvatar />
             </span>
           </span>
           <div className="min-w-0">
-            <p className="text-[15px] font-medium text-fg truncate">{USUARIO.nomeCompleto}</p>
-            <p className="text-xs text-fg-subtle">Conta pessoal</p>
+            <p className="text-[15px] font-medium text-fg truncate">{preferencias.nomeCompleto || preferencias.apelido}</p>
+            <p className="text-xs text-fg-subtle">{preferencias.nomeNegocio || (preferencias.ehMei ? 'Conta MEI' : 'Conta pessoal')}</p>
           </div>
         </div>
 
@@ -185,11 +189,11 @@ function MenuPerfil({ posicao, onFechar }: MenuPerfilProps) {
         <div className="h-px bg-line mx-2" />
 
         <nav className="py-1">
-          <button type="button" className={item} onClick={onFechar}>
+          <Link to={ROUTES.configuracoes} className={item} onClick={onFechar}>
             <User size={17} className="text-fg-muted" />
             <span className="flex-1 text-left">Meu perfil</span>
             <ChevronRight size={16} className="text-fg-subtle" />
-          </button>
+          </Link>
           <Link to={ROUTES.configuracoes} className={item} onClick={onFechar}>
             <Settings size={17} className="text-fg-muted" />
             <span className="flex-1 text-left">Configurações</span>

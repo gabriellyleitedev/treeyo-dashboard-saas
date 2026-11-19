@@ -5,7 +5,8 @@ import SelectTreeyo from '@/components/ui/SelectTreeyo';
 import toast from "react-hot-toast";
 import { brParaDataISO, dataISOParaBR, dataLocalISO } from "@/domain/datas";
 import { MENSAGENS_ERRO_VALOR, centavosParaTexto, reaisParaCentavos, validarValor } from "@/domain/dinheiro";
-import { categoriasFrequentes, contaRecente, ultimoDaCategoria } from "@/domain/extrato";
+import { categoriasFrequentes, ultimoDaCategoria } from "@/domain/extrato";
+import { usePreferencias } from "@/context/PreferenciasContext";
 import { interpretarFrase } from "@/domain/lancamentoRapido";
 import { mascaraData } from "@/utils/masks";
 import {
@@ -37,16 +38,6 @@ interface FormLancamento {
 
 type CampoFormulario = keyof FormLancamento;
 
-const BANCOS = [
-    "Nubank PJ",
-    "Itaú",
-    "Banco Inter",
-    "Bradesco",
-    "C6 Bank",
-    "Santander",
-    "Outro"
-];
-
 interface FormularioLancamentoProps {
     tipoSelecionado: TipoLancamento;
     aoConfirmar: (novo: Lancamento) => void;
@@ -62,10 +53,6 @@ interface FormularioLancamentoProps {
     aoMudarTipo?: (tipo: TipoLancamento) => void;
 }
 
-/** Banco salvo -> campos do select (o que não está na lista vira "Outro") */
-const contaParaCampos = (conta: string) =>
-    BANCOS.includes(conta) ? { conta, outroBanco: "" } : { conta: "Outro", outroBanco: conta };
-
 const ESPECIE = { conta: "Espécie", outroBanco: "" };
 
 const realizadoNoStatus = (status: StatusLancamento | "") => status === "Pago" || status === "Executado";
@@ -79,7 +66,15 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
 
     // Data local: toISOString() usaria UTC e sugeriria "amanhã" após as 21h
     const hojeISO = dataLocalISO();
-    const contaPadrao = contaRecente(historico) ?? BANCOS[0];
+    // Bancos e padrões vêm de Configurações; "Outro" permite digitar qualquer um
+    const { preferencias } = usePreferencias();
+    const BANCOS = [...preferencias.bancos, "Outro"];
+    const contaPadrao = preferencias.bancoPadrao || BANCOS[0];
+    const padroes = { metodo: preferencias.metodoPadrao, conta: contaPadrao, bancos: preferencias.bancos };
+
+    /** Banco salvo -> campos do select (o que não está na lista vira "Outro") */
+    const contaParaCampos = (conta: string) =>
+        BANCOS.includes(conta) ? { conta, outroBanco: "" } : { conta: "Outro", outroBanco: conta };
 
     const [formData, setFormData] = useState<FormLancamento>(() => editando ? {
         data: editando.data,
@@ -103,8 +98,8 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
         categoria: "",
         valor: "",
         status: statusDoTipo(tipoSelecionado, true),
-        metodo: "Pix",
-        ...contaParaCampos(contaPadrao),
+        metodo: preferencias.metodoPadrao,
+        ...(preferencias.metodoPadrao === "Dinheiro" ? ESPECIE : contaParaCampos(contaPadrao)),
     });
 
     const [frase, setFrase] = useState("");
@@ -175,7 +170,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
         setFrase(texto);
         limparErros();
         if (!texto.trim()) return;
-        const r = interpretarFrase(texto, hojeISO, historico);
+        const r = interpretarFrase(texto, hojeISO, historico, padroes);
         if (r.origem.tipo !== "padrao" && r.tipo !== tipoSelecionado) aoMudarTipo?.(r.tipo);
         setFormData({
             data: r.data,

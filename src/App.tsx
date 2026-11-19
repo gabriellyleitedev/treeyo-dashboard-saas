@@ -6,6 +6,8 @@ import VisaoGeral from '@/pages/VisaoGeral'
 import Lancamento from '@/pages/Lancamento'
 import EvolucaoSaldo from '@/pages/EvolucaoSaldo'
 import EmBreve from '@/pages/EmBreve'
+import Configuracoes from '@/pages/Configuracoes'
+import { PreferenciasProvider } from '@/context/PreferenciasContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { LancamentosProvider } from '@/context/LancamentosContext';
 import { NotificationProvider } from '@/context/NotificationContext';
@@ -27,6 +29,7 @@ const toastOptions: DefaultToastOptions = {
 function App() {
   return (
     <ThemeProvider>
+      <PreferenciasProvider>
       <LancamentosProvider>
         <NotificationProvider>
           <Routes>
@@ -42,7 +45,7 @@ function App() {
               {/* Telas ainda não construídas */}
               <Route path={ROUTES.resultado} element={<EmBreve titulo="Resultado" />} />
               <Route path={ROUTES.fluxoProjetado} element={<EmBreve titulo="Fluxo de Caixa Projetado" />} />
-              <Route path={ROUTES.configuracoes} element={<EmBreve titulo="Configurações" />} />
+              <Route path={ROUTES.configuracoes} element={<Configuracoes />} />
 
               {/* Qualquer URL desconhecida volta para a Visão Geral */}
               <Route path="*" element={<Navigate to={ROUTES.visaoGeral} replace />} />
@@ -50,6 +53,7 @@ function App() {
           </Routes>
         </NotificationProvider>
       </LancamentosProvider>
+      </PreferenciasProvider>
 
       <Analytics />
 

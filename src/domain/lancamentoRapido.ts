@@ -248,13 +248,20 @@ function categoriaConhecida(texto: string, categorias: readonly string[]): strin
 
 const comMaiuscula = (texto: string) => texto.charAt(0).toUpperCase() + texto.slice(1);
 
+/** O que usar quando nem a frase nem o histórico dizem (vem de Configurações) */
+export interface PadroesLancamento {
+  metodo: MetodoPagamento;
+  conta: string;
+  bancos: readonly string[];
+}
+
 /** Interpreta a frase e completa o lançamento com o histórico. */
-export function interpretarFrase(frase: string, hoje: DataISO, historico: readonly Lancamento[]): Rascunho {
+export function interpretarFrase(frase: string, hoje: DataISO, historico: readonly Lancamento[], padroes?: PadroesLancamento): Rascunho {
   const tokens = tokenizar(frase);
   const recentes = [...historico].sort(ordenarRecentes);
   const categorias = [...new Set(recentes.map((l) => l.categoria.trim()).filter(Boolean))];
   const contas = [
-    ...new Set([...recentes.map((l) => l.conta.trim()), ...BANCOS_SUGERIDOS].filter((c) => c && c !== CONTA_ESPECIE)),
+    ...new Set([...recentes.map((l) => l.conta.trim()), ...(padroes?.bancos ?? BANCOS_SUGERIDOS)].filter((c) => c && c !== CONTA_ESPECIE)),
   ];
 
   const data = extrairData(tokens, hoje);
@@ -274,10 +281,10 @@ export function interpretarFrase(frase: string, hoje: DataISO, historico: readon
   const tipo: TipoLancamento = tipoDaFrase ?? anterior?.tipo ?? (/^cliente\b/.test(normalizar(categoria)) ? 'Entrada' : 'Saída');
   const origemTipo: Origem = tipoDaFrase ? 'frase' : anterior ? 'historico' : 'padrao';
 
-  const metodo: MetodoPagamento = metodoDaFrase ?? anterior?.metodo ?? 'Pix';
+  const metodo: MetodoPagamento = metodoDaFrase ?? anterior?.metodo ?? padroes?.metodo ?? 'Pix';
   const conta = metodo === 'Dinheiro'
     ? CONTA_ESPECIE
-    : contaDaFrase ?? (anterior && anterior.metodo !== 'Dinheiro' ? anterior.conta : null) ?? contaRecente(historico) ?? BANCOS_SUGERIDOS[0];
+    : contaDaFrase ?? (anterior && anterior.metodo !== 'Dinheiro' ? anterior.conta : null) ?? (padroes ? padroes.conta : contaRecente(historico) ?? BANCOS_SUGERIDOS[0]);
 
   const dataFinal = data ?? hoje;
   // Sem "paguei"/"a pagar" na frase, a data decide: futuro ainda vai acontecer

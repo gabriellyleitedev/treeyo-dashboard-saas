@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MoreHorizontal, PanelLeftClose, PanelLeftOpen, Search, type LucideIcon } from 'lucide-react';
-import { NAV_ITEMS } from '@/constants/navigation';
-import { USUARIO } from '@/constants/usuario';
+import { NAV_ITEMS, ROUTES } from '@/constants/navigation';
+import { usePreferencias } from '@/context/PreferenciasContext';
+import ConteudoAvatar from '@/components/ui/Avatar';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { dataLocalISO } from '@/domain/datas';
 import { limiteMei } from '@/domain/resumo';
@@ -31,7 +32,8 @@ const compacto = (centavos: number) =>
 const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch, flutuante = false }: SidebarProps) => {
     const { pathname } = useLocation();
     const { lancamentos } = useLancamentos();
-    const mei = useMemo(() => limiteMei(lancamentos, dataLocalISO()), [lancamentos]);
+    const { preferencias } = usePreferencias();
+    const mei = useMemo(() => limiteMei(lancamentos, dataLocalISO(), preferencias.limiteMei), [lancamentos, preferencias.limiteMei]);
 
     return (
         <aside
@@ -87,8 +89,8 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch, flutuante = false 
                 </ul>
             </nav>
 
-            {/* TETO DO MEI */}
-            <div className="px-3 pb-3">
+            {/* TETO DO MEI (só para quem marcou "Sou MEI" em Configurações) */}
+            {preferencias.ehMei && <div className="px-3 pb-3">
                 {isCollapsed ? (
                     <AnelMei percentual={mei.percentual} titulo={`Limite MEI: ${compacto(mei.faturado)} de ${compacto(mei.limite)}`} />
                 ) : (
@@ -115,28 +117,28 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, onOpenSearch, flutuante = false 
                         </p>
                     </div>
                 )}
-            </div>
+            </div>}
 
             {/* PERFIL */}
             <div className={`border-t border-white/[0.06] px-3 py-3 flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
                 <div aria-hidden="true" className="rounded-full p-[2px] bg-gradient-to-br from-[#3ee52c] to-[#0d5c08] shrink-0">
                     <div className="w-8 h-8 rounded-full bg-canvas flex items-center justify-center text-[11px] font-semibold text-[#3ee52c]">
-                        {USUARIO.iniciais}
+                        <ConteudoAvatar />
                     </div>
                 </div>
                 {!isCollapsed && (
                     <>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm text-neutral-100 font-medium truncate">{USUARIO.nomeCompleto}</p>
-                            <p className="text-[11px] text-neutral-500 truncate">Conta MEI</p>
+                            <p className="text-sm text-neutral-100 font-medium truncate">{preferencias.nomeCompleto || preferencias.apelido}</p>
+                            <p className="text-[11px] text-neutral-500 truncate">{preferencias.nomeNegocio || (preferencias.ehMei ? 'Conta MEI' : 'Conta pessoal')}</p>
                         </div>
-                        <button
-                            type="button"
-                            aria-label="Menu do perfil"
+                        <Link
+                            to={ROUTES.configuracoes}
+                            aria-label="Configurações do perfil"
                             className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:text-neutral-100 hover:bg-white/[0.06] transition-colors cursor-pointer"
                         >
                             <MoreHorizontal size={16} />
-                        </button>
+                        </Link>
                     </>
                 )}
             </div>

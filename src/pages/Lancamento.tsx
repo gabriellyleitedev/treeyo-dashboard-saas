@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { Check, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import FormularioLancamento from '@/features/lancamentos/FormularioLancamento';
@@ -28,21 +28,29 @@ const TIPO_NOTIFICACAO: Record<TipoLancamento, TipoNotificacao> = { "Entrada": "
 
 const Lancamento = () => {
     const hoje = dataLocalISO();
-    // Formulário no modal: novo (de um tipo), editando ou repetindo um lançamento
-    const [modal, setModal] = useState<{ tipo: TipoLancamento; editando?: LancamentoItem; modelo?: LancamentoItem } | null>(() => {
-        const tipo = TIPOS_LANCAMENTO.find((t) => t === new URLSearchParams(window.location.search).get("tipo"));
-        return tipo ? { tipo } : null;
-    });
+    // Formulário completo no modal: editando, repetindo ou "Mais opções"
+    const [modal, setModal] = useState<{ tipo: TipoLancamento; editando?: LancamentoItem; modelo?: LancamentoItem } | null>(null);
     const fecharModal = useCallback(() => setModal(null), []);
     const { ref: refTopo, top: topoTop } = useTopoTravado<HTMLDivElement>();
+
+    // Os atalhos (Visão Geral, menu do celular) abrem esta tela com
+    // ?tipo=Entrada|Saída|Investimento: o teclado de novo lançamento já abre
+    const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const tipoDaUrl = TIPOS_LANCAMENTO.find((t) => t === searchParams.get("tipo")) ?? null;
+
     // Teclado de novo lançamento, tela de sucesso e item recém-criado em destaque na lista
-    const [teclado, setTeclado] = useState<TipoLancamento | null>(null);
+    const [teclado, setTeclado] = useState<TipoLancamento | null>(tipoDaUrl);
     const [sucesso, setSucesso] = useState<{ lancamento: LancamentoItem; origem?: { x: number; y: number } } | null>(null);
     const [destaque, setDestaque] = useState<number | null>(null);
-    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(() => modal?.tipo ?? "Entrada");
+    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(tipoDaUrl ?? "Entrada");
 
-    // Os atalhos da Visão Geral abrem esta tela com ?tipo=Entrada|Saída|Investimento
-    const [searchParams] = useSearchParams();
+    // Atalho tocado já estando nesta tela: a página não remonta, então reabre aqui
+    const [chaveAnterior, setChaveAnterior] = useState(location.key);
+    if (chaveAnterior !== location.key) {
+        setChaveAnterior(location.key);
+        if (tipoDaUrl) { setTeclado(tipoDaUrl); setTipoAtivo(tipoDaUrl); }
+    }
     // A busca global (Ctrl+K) abre esta tela já filtrada com ?busca=termo
     const [busca, setBusca] = useState(() => searchParams.get("busca") ?? ""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
