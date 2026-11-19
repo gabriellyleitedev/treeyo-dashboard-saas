@@ -17,7 +17,7 @@ import { containerVariants, itemVariants, itemVariantsSutil } from '@/utils/anim
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
 import { toastComDesfazer } from '@/features/lancamentos/desfazer';
 import { dataISOParaBR, dataLocalISO } from '@/domain/datas';
-import { filtrarExtrato, situacaoDe } from '@/domain/extrato';
+import { filtrarExtrato, ordenarPorCadastro, situacaoDe } from '@/domain/extrato';
 import { TIPOS_LANCAMENTO, statusDoTipo, type Lancamento as LancamentoItem, type TipoLancamento } from '@/types/lancamento';
 import type { TipoNotificacao } from '@/types/notificacao';
 
@@ -52,7 +52,8 @@ const Lancamento = () => {
     // Busca com o mesmo índice da busca global: sem acento, por palavra,
     // e entende "novembro", "1.350", "atrasado", "pendente"...
     const listaGeral = useMemo(
-        () => filtrarExtrato(lista, { periodo: "tudo", tipo: "todos", situacao: "todas", termo: busca }, hoje),
+        // Ordem de chegada: o último cadastrado aparece primeiro
+        () => filtrarExtrato(lista, { periodo: "tudo", tipo: "todos", situacao: "todas", termo: busca }, hoje).sort(ordenarPorCadastro),
         [lista, busca, hoje]
     );
 
@@ -137,11 +138,11 @@ const Lancamento = () => {
         return `${Number(dia)} ${MESES[Number(mes) - 1]} ${ano}  |  ${doMes} ${doMes === 1 ? nome[0] : nome[1]} este mês`;
     }, [lista, tipoAtivo, hoje]);
 
-    // Último lançamento de cada tipo (card do meio; ignora a busca)
+    // Último lançamento cadastrado de cada tipo (card do meio; ignora a busca)
     const ultimos = useMemo(() => {
-        const ordenados = filtrarExtrato(lista, { periodo: "tudo", tipo: "todos", situacao: "todas", termo: "" }, hoje);
+        const ordenados = [...lista].sort(ordenarPorCadastro);
         return Object.fromEntries(TIPOS_LANCAMENTO.map((t) => [t, ordenados.find((l) => l.tipo === t) ?? null])) as Record<TipoLancamento, LancamentoItem | null>;
-    }, [lista, hoje]);
+    }, [lista]);
 
     return (
         <div className="w-full">

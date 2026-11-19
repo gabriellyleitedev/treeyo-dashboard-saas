@@ -10,6 +10,7 @@ import {
     OPERADORES, avaliar, centavosParaPedaco, formatarPedaco, isOperador, teclar, temConta, type Tecla,
 } from "@/domain/calculadora";
 import { TIPOS_LANCAMENTO, statusDoTipo, type Lancamento, type TipoLancamento } from "@/types/lancamento";
+import { ABA_TIPO, PERGUNTA_CATEGORIA } from "./textos";
 
 interface TecladoLancamentoProps {
     tipoInicial: TipoLancamento;
@@ -67,9 +68,9 @@ export default function TecladoLancamento({ tipoInicial, historico, aoFechar, ao
     const status = statusDoTipo(tipo, true);
 
     const problema =
-        resultado === null || resultado <= 0 ? "Digite um valor"
-        : resultado > VALOR_MAXIMO_CENTAVOS ? "Valor acima do limite"
-        : !categoria.trim() ? (tipo === "Investimento" ? "Escolha o ativo" : "Escolha a categoria")
+        resultado === null || resultado <= 0 ? "Digite quanto foi"
+        : resultado > VALOR_MAXIMO_CENTAVOS ? "Esse valor é alto demais"
+        : !categoria.trim() ? PERGUNTA_CATEGORIA[tipo]
         : null;
 
     const montar = (centavos: number): Lancamento => ({
@@ -168,7 +169,7 @@ export default function TecladoLancamento({ tipoInicial, historico, aoFechar, ao
                                 className={`relative h-8 px-3.5 rounded-full text-[13px] font-medium transition-colors cursor-pointer ${tipo === t ? "text-fg" : "text-fg-subtle hover:text-fg-muted"}`}
                             >
                                 {tipo === t && <motion.span layoutId="teclado-tipo" transition={MOLA} className="absolute inset-0 rounded-full bg-card border border-line shadow-[0_2px_8px_var(--tema-sombra)]" />}
-                                <span className="relative">{t}</span>
+                                <span className="relative">{ABA_TIPO[t]}</span>
                             </button>
                         ))}
                     </div>
@@ -214,7 +215,7 @@ export default function TecladoLancamento({ tipoInicial, historico, aoFechar, ao
                                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                                     className="text-xs text-fg-subtle"
                                 >
-                                    {categoria ? <>em <span className="text-fg-muted font-medium">{categoria}</span></> : "R$ · valor do lançamento"}
+                                    {categoria ? <>em <span className="text-fg-muted font-medium">{categoria}</span></> : "Quanto foi?"}
                                 </motion.p>
                             )}
                         </AnimatePresence>
@@ -263,7 +264,7 @@ export default function TecladoLancamento({ tipoInicial, historico, aoFechar, ao
                     <Deslizar
                         progresso={progresso}
                         cor={cor}
-                        dica={problema ?? "Deslize para confirmar"}
+                        dica={problema ?? "Arraste para salvar"}
                         pronto={!problema}
                         aviso={aviso}
                         aoConfirmar={confirmar}
@@ -422,7 +423,7 @@ function Deslizar({ progresso, cor, dica, pronto, aviso, aoConfirmar, confirmarR
                 ref={botao}
                 role="button"
                 tabIndex={0}
-                aria-label="Deslize para confirmar"
+                aria-label="Arraste para salvar"
                 drag={pronto && !enviado ? "x" : false}
                 dragConstraints={{ left: 0, right: maximo }}
                 dragElastic={0.04}

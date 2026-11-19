@@ -9,6 +9,9 @@ import { categoriasFrequentes, contaRecente, ultimoDaCategoria } from "@/domain/
 import { interpretarFrase } from "@/domain/lancamentoRapido";
 import { mascaraData } from "@/utils/masks";
 import {
+    EXEMPLO_CATEGORIA, FALTA_CATEGORIA, PERGUNTA_CATEGORIA_CURTA, PERGUNTA_METODO, TITULO_NOVO, statusLeigo,
+} from "./textos";
+import {
     METODOS_PAGAMENTO,
     STATUS_INVESTIMENTO,
     STATUS_PAGAMENTO,
@@ -216,10 +219,12 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
             // Mensagem específica quando só um campo tem problema conhecido
             const mensagem =
                 novosErros.length === 1 && novosErros[0] === "dataDisplay"
-                    ? "Data inválida. Use DD/MM/AAAA"
+                    ? "Data errada. Escreva assim: 25/12/2026"
                     : novosErros.length === 1 && !valor.ok
                         ? MENSAGENS_ERRO_VALOR[valor.erro]
-                        : "Por favor, preencha todos os campos";
+                        : novosErros.length === 1 && novosErros[0] === "categoria"
+                            ? FALTA_CATEGORIA[tipoSelecionado]
+                            : "Falta preencher os campos marcados";
 
             setTimeout(() => {
                 toast.error(mensagem);
@@ -286,21 +291,21 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
 
             <div className="text-center mb-4">
                 <h2 className="text-base md:text-lg font-bold uppercase tracking-wide text-fg">
-                    {editando ? "Editar lançamento" : tipoSelecionado === "Investimento" ? "Novo investimento" : `Nova ${tipoSelecionado.toLowerCase()}`}
+                    {editando ? "Editar lançamento" : TITULO_NOVO[tipoSelecionado]}
                 </h2>
                 <p className="text-xs text-fg-muted mt-1">
-                    {editando ? (editando.categoria || editando.tipo) : "O Treeyo preenche o que já sabe."}
+                    {editando ? (editando.categoria || editando.tipo) : "Preencha o básico. O Treeyo completa o resto."}
                 </p>
             </div>
 
             {/* Frase rápida: preenche os campos abaixo */}
             {!editando && (
-                <Campo rotulo="Lançamento rápido" opcional className="mb-3">
+                <Campo rotulo="Escreva do seu jeito" opcional className="mb-3">
                     <input
                         autoComplete="off"
                         enterKeyHint="done"
                         className={estiloCampo()}
-                        placeholder="Ex.: internet 189,90 ontem"
+                        placeholder="Ex.: paguei a internet 189,90 ontem"
                         value={frase}
                         onChange={(e) => handleFrase(e.target.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") validarEEnviar(); }}
@@ -310,7 +315,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
 
             <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-3 gap-y-3">
 
-                <Campo rotulo="Data" obrigatorio>
+                <Campo rotulo="Quando?" obrigatorio>
                     <span className="relative block">
                         <input
                             type="text"
@@ -324,16 +329,16 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
                     </span>
                 </Campo>
 
-                <Campo rotulo={tipoSelecionado === "Investimento" ? "Ativo" : "Categoria"} obrigatorio>
+                <Campo rotulo={PERGUNTA_CATEGORIA_CURTA[tipoSelecionado]} obrigatorio>
                     <input
                         className={estiloCampo("categoria")}
-                        placeholder={tipoSelecionado === "Investimento" ? "CDB..." : tipoSelecionado === "Entrada" ? "Vendas..." : "Aluguel..."}
+                        placeholder={EXEMPLO_CATEGORIA[tipoSelecionado]}
                         value={formData.categoria}
                         onChange={(e) => escolherCategoria(e.target.value)}
                     />
                 </Campo>
 
-                <Campo rotulo="Valor" obrigatorio>
+                <Campo rotulo="Quanto?" obrigatorio>
                     <input
                         type="text"
                         inputMode="decimal"
@@ -344,27 +349,31 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
                     />
                 </Campo>
 
-                <Campo rotulo="Situação" obrigatorio>
+                <Campo rotulo="Já aconteceu?" obrigatorio>
                     <SelectTreeyo
                         value={statusAtual}
                         onChange={(v) => handleChange("status", v)}
-                        placeholder={tipoSelecionado === "Investimento" ? "Executado/Agendado" : "Pago/Pendente"}
+                        placeholder="Escolha"
                         options={tipoSelecionado === "Investimento" ? STATUS_INVESTIMENTO : STATUS_PAGAMENTO}
+                        rotulos={Object.fromEntries(
+                            [...STATUS_PAGAMENTO, ...STATUS_INVESTIMENTO].map((s) => [s, statusLeigo(tipoSelecionado, s)])
+                        )}
                     />
                 </Campo>
 
-                <Campo rotulo="Pagamento" obrigatorio>
+                <Campo rotulo={PERGUNTA_METODO[tipoSelecionado]} obrigatorio>
                     <SelectTreeyo
                         value={formData.metodo}
                         onChange={(v) => handleChange("metodo", v)}
-                        placeholder="Pix, débito..."
+                        placeholder="Pix, cartão..."
                         options={METODOS_PAGAMENTO}
+                        rotulos={{ Débito: "Cartão de débito", Crédito: "Cartão de crédito", Dinheiro: "Dinheiro vivo" }}
                     />
                 </Campo>
 
-                <Campo rotulo="Conta" obrigatorio>
+                <Campo rotulo="Em qual banco?" obrigatorio>
                     {formData.metodo === "Dinheiro" ? (
-                        <div className={`${estiloCampo()} flex items-center text-fg-subtle cursor-not-allowed`}>Espécie</div>
+                        <div className={`${estiloCampo()} flex items-center text-fg-subtle cursor-not-allowed`}>Dinheiro em mãos</div>
                     ) : formData.conta === "Outro" ? (
                         <input
                             className={estiloCampo("conta")}
@@ -387,7 +396,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
             {/* Categorias mais usadas deste tipo: um toque preenche */}
             {sugestoes.length > 0 && (
                 <div className="flex items-center gap-1 mt-3 text-xs overflow-x-auto no-scrollbar whitespace-nowrap">
-                    <span className="text-fg-subtle mr-1 shrink-0">Mais usadas:</span>
+                    <span className="text-fg-subtle mr-1 shrink-0">Você já usou:</span>
                     {sugestoes.map((s) => (
                         <button
                             key={s}
@@ -418,7 +427,7 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editand
                     className="h-11 rounded-lg bg-[#1fba11] text-brand-ink text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#2ad81a] active:scale-[0.99] transition-colors cursor-pointer"
                 >
                     <Check size={16} />
-                    {editando ? "Salvar" : "Confirmar"}
+                    Salvar
                 </button>
 
             </div>

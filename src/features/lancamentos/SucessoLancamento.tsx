@@ -12,7 +12,7 @@ interface SucessoLancamentoProps {
 }
 
 const FUNDO: Record<TipoLancamento, string> = { Entrada: "#1fba11", Saída: "#ef4444", Investimento: "#3b82f6" };
-const FRASE: Record<TipoLancamento, string> = { Entrada: "Entrada registrada", Saída: "Saída registrada", Investimento: "Investimento registrado" };
+const FRASE: Record<TipoLancamento, string> = { Entrada: "Pronto! Entrada salva", Saída: "Pronto! Gasto salvo", Investimento: "Pronto! Investimento salvo" };
 const DURACAO_MS = 2400;
 
 // Tela cheia de confirmação: a cor do tipo se expande a partir do botão, o ✓

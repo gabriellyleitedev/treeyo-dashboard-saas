@@ -76,10 +76,10 @@ export function validarValor(texto: string): { ok: true; centavos: Centavos } | 
 }
 
 export const MENSAGENS_ERRO_VALOR: Record<ErroValor, string> = {
-  obrigatorio: 'Informe o valor',
-  invalido: 'Valor inválido. Use o formato 1.500,00',
+  obrigatorio: 'Diga quanto foi',
+  invalido: 'Valor estranho. Escreva assim: 1.500,00',
   zero: 'O valor precisa ser maior que zero',
-  acima_do_limite: 'Valor acima do limite permitido',
+  acima_do_limite: 'Esse valor é alto demais',
 };
 
 /** 150050 -> "1.500,50" (texto para preencher o campo de valor, sem "R$") */

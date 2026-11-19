@@ -8,9 +8,12 @@ interface SelectTreeyoProps<T extends string> {
     onChange: (valor: T) => void;
     options: readonly T[];
     placeholder: string;
+    /** Texto mostrado no lugar do valor (ex.: "Pago" aparece como "Já paguei") */
+    rotulos?: Partial<Record<T, string>>;
 }
 
-export default function SelectTreeyo<T extends string>({ value, onChange, options, placeholder }: SelectTreeyoProps<T>) {
+export default function SelectTreeyo<T extends string>({ value, onChange, options, placeholder, rotulos }: SelectTreeyoProps<T>) {
+    const rotulo = (op: T) => rotulos?.[op] ?? op;
     return (
 
         <Listbox value={value} onChange={onChange}>
@@ -21,7 +24,7 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
                 >
 
                     <span className={`truncate ${!value ? "text-fg-subtle" : ""}`}>
-                        {value || placeholder}
+                        {value ? rotulo(value) : placeholder}
                     </span>
 
                     <ChevronDown
@@ -65,7 +68,7 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
 
                                 <>
 
-                                    <span>{op}</span>
+                                    <span>{rotulo(op)}</span>
 
                                     {selected && (
                                         <Check size={14} className="text-marca" />

@@ -39,12 +39,13 @@
   --tema-line: rgb(255 255 255 / 0.08);
   --tema-marca: #1fba11;        /* verde usado como TEXTO */
   --tema-sombra: rgb(0 0 0 / 0.55);
-  /* Vidro escuro (cards de Lançamentos): mais escuro que o painel */
-  --vidro-fundo-topo: rgb(8 10 9 / 0.72);
-  --vidro-fundo-base: rgb(3 4 3 / 0.82);
+  /* Vidro escuro (cards de Lançamentos): escuro, mas deixando passar a luz
+     verde de trás (antes era quase preto e parecia um buraco na tela) */
+  --vidro-fundo-topo: rgb(22 26 24 / 0.55);
+  --vidro-fundo-base: rgb(14 17 15 / 0.65);
   --vidro-borda: rgb(255 255 255 / 0.10);
   --vidro-brilho: rgb(255 255 255 / 0.16);
-  --vidro-camada: rgb(0 0 0 / 0.55);
+  --vidro-camada: rgb(255 255 255 / 0.03);
 }
 
 :root[data-theme="light"] {

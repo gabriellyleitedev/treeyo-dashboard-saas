@@ -56,6 +56,14 @@ export function ordenarRecentes(a: Lancamento, b: Lancamento): number {
   return b.data.localeCompare(a.data) || b.id - a.id;
 }
 
+/**
+ * Ordem de chegada: o cadastrado por último primeiro, seja qual for a data
+ * do lançamento. O id é o instante do cadastro (ver utils/id).
+ */
+export function ordenarPorCadastro(a: Lancamento, b: Lancamento): number {
+  return b.id - a.id;
+}
+
 /** Lançamentos que passam em todos os filtros, do mais recente ao mais antigo. */
 export function filtrarExtrato(
   lancamentos: readonly Lancamento[],

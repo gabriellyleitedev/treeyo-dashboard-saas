@@ -6,6 +6,7 @@ import {
   filtrarExtrato,
   fimDoMes,
   intervaloDoPeriodo,
+  ordenarPorCadastro,
   situacaoDe,
   ultimoDaCategoria,
   type FiltroExtrato,
@@ -55,6 +56,14 @@ describe('intervaloDoPeriodo', () => {
   it('fimDoMes respeita fevereiro e ano bissexto', () => {
     expect(fimDoMes('2026-02-10')).toBe('2026-02-28');
     expect(fimDoMes('2028-02-10')).toBe('2028-02-29');
+  });
+});
+
+describe('ordenarPorCadastro', () => {
+  it('o cadastrado por último vem primeiro, mesmo com data mais antiga', () => {
+    const agendadoAntes = lanc({ tipo: 'Saída', valor: 10, data: '2026-12-01', categoria: 'Agendado antes' });
+    const lancadoAgora = lanc({ tipo: 'Saída', valor: 10, data: '2026-11-01', categoria: 'Lançado agora' });
+    expect([agendadoAntes, lancadoAgora].sort(ordenarPorCadastro).map((l) => l.categoria)).toEqual(['Lançado agora', 'Agendado antes']);
   });
 });
 

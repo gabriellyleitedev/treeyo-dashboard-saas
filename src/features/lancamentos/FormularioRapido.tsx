@@ -7,6 +7,7 @@ import { MENSAGENS_ERRO_VALOR, centavosParaTexto, validarValor } from "@/domain/
 import { contaRecente, ultimoDaCategoria } from "@/domain/extrato";
 import { interpretarFrase, type Rascunho } from "@/domain/lancamentoRapido";
 import { statusDoTipo, type Lancamento, type TipoLancamento } from "@/types/lancamento";
+import { FALTA_CATEGORIA, PERGUNTA_CATEGORIA_CURTA, TITULO_NOVO, statusLeigo } from "./textos";
 
 interface FormularioRapidoProps {
     tipo: TipoLancamento;
@@ -18,7 +19,6 @@ interface FormularioRapidoProps {
     aoMudarTipo: (tipo: TipoLancamento) => void;
 }
 
-const NOVO: Record<TipoLancamento, string> = { Entrada: "Nova entrada", Saída: "Nova saída", Investimento: "Novo investimento" };
 
 // Formulário compacto, sempre visível ao lado do card: frase rápida, valor e
 // categoria. O resto (data, situação, pagamento, conta) o Treeyo completa com
@@ -72,7 +72,7 @@ export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetal
     const confirmar = () => {
         const v = validarValor(valor);
         if (!v.ok) { setErro("valor"); toast.error(MENSAGENS_ERRO_VALOR[v.erro]); return; }
-        if (!categoria.trim()) { setErro("categoria"); toast.error(tipo === "Investimento" ? "Informe o ativo" : "Informe a categoria"); return; }
+        if (!categoria.trim()) { setErro("categoria"); toast.error(FALTA_CATEGORIA[tipo]); return; }
         aoConfirmar(montar(v.centavos, novoIdLancamento()));
         limpar();
     };
@@ -93,41 +93,41 @@ export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetal
             className="vidro-escuro w-full flex flex-col gap-2.5 p-4 rounded-[28px]"
         >
             <div className="flex items-center justify-between gap-2">
-                <p className="text-xs text-fg-muted">{NOVO[tipo]}</p>
+                <p className="text-xs text-fg-muted">{TITULO_NOVO[tipo]}</p>
                 <button
                     type="button"
                     onClick={detalhar}
                     className="flex items-center gap-1 text-xs text-fg-muted hover:text-fg transition cursor-pointer"
                 >
-                    <SlidersHorizontal size={13} /> Mais detalhes
+                    <SlidersHorizontal size={13} /> Mais opções
                 </button>
             </div>
 
             <input
-                aria-label="Lançamento rápido"
+                aria-label="Escreva do seu jeito"
                 autoComplete="off"
                 enterKeyHint="done"
                 className={campo(false)}
-                placeholder="Escreva: internet 189,90 ontem"
+                placeholder="Escreva do seu jeito: paguei a luz 189,90 ontem"
                 value={frase}
                 onChange={(e) => escreverFrase(e.target.value)}
             />
 
             <div className="grid grid-cols-2 gap-2">
                 <input
-                    aria-label="Valor"
+                    aria-label="Quanto?"
                     inputMode="decimal"
                     autoComplete="off"
                     className={campo(erro === "valor")}
-                    placeholder="R$ 0,00"
+                    placeholder="Quanto? R$ 0,00"
                     value={valor}
                     onChange={(e) => { setValor(e.target.value); setErro(null); }}
                 />
                 <input
-                    aria-label={tipo === "Investimento" ? "Ativo" : "Categoria"}
+                    aria-label={PERGUNTA_CATEGORIA_CURTA[tipo]}
                     autoComplete="off"
                     className={campo(erro === "categoria")}
-                    placeholder={tipo === "Investimento" ? "Ativo" : "Categoria"}
+                    placeholder={PERGUNTA_CATEGORIA_CURTA[tipo]}
                     value={categoria}
                     onChange={(e) => { setCategoria(e.target.value); setErro(null); }}
                 />
@@ -135,7 +135,7 @@ export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetal
 
             {/* O que o Treeyo completa sozinho */}
             <p className="text-[11px] text-fg-subtle truncate">
-                {quando} · {metodo} · {conta} · <span className={realizado ? "" : "text-yellow-500"}>{status}</span>
+                {quando} · {metodo} · {conta === "Espécie" ? "Dinheiro em mãos" : conta} · <span className={realizado ? "" : "text-yellow-500"}>{statusLeigo(tipo, status)}</span>
             </p>
 
             <div className="grid grid-cols-2 gap-2 mt-auto">
@@ -150,7 +150,7 @@ export default function FormularioRapido({ tipo, historico, aoConfirmar, aoDetal
                     type="submit"
                     className="h-11 rounded-full bg-[#1fba11] text-brand-ink text-sm font-semibold flex items-center justify-center gap-1.5 hover:bg-[#2ad81a] active:scale-[0.98] transition cursor-pointer"
                 >
-                    <Check size={15} /> Confirmar
+                    <Check size={15} /> Salvar
                 </button>
             </div>
         </form>
