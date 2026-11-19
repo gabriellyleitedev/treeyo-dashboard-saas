@@ -126,6 +126,10 @@ export default function MainChart({ series, className = "" }: MainChartProps) {
             Sem movimentações nos últimos {periodo} dias
           </p>
         )}
+        {/* absolute inset-0: o gráfico ocupa exatamente o espaço do card. Solto
+            no flex, o Recharts guardava a altura da primeira medida e, quando o
+            card crescia (painel sem rolagem), sobrava um vão embaixo. */}
+        <div className="absolute inset-0">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={serie as PontoSerie[]}
@@ -236,6 +240,7 @@ export default function MainChart({ series, className = "" }: MainChartProps) {
             />
           </AreaChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       {/* RODAPÉ */}

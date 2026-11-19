@@ -80,6 +80,37 @@
 }
 
 @theme {
+  /* Site: frase da abertura entrando pela direita (como no site antigo) */
+  --animate-entra-direita: entra-direita 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  @keyframes entra-direita {
+    from {
+      opacity: 0;
+      transform: translateX(120px);
+    }
+  }
+
+  /* Site: brilho que corre pelas palavras em destaque */
+  --animate-brilho-texto: brilho-texto 4s ease-in-out infinite;
+  @keyframes brilho-texto {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: -150% 0;
+    }
+  }
+
+  /* Site: brilho verde atrás do celular respirando */
+  --animate-neon-respira: neon-respira 3s ease-in-out infinite alternate;
+  @keyframes neon-respira {
+    from {
+      opacity: 0.6;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   /* Marca (igual nos dois temas) */
   --color-brand: #1fba11;
   --color-brand-strong: #2ad81a;
@@ -217,6 +248,14 @@
     opacity: 0.1;
     transform: scale(0.88) translateY(-12px);
     filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-entra-direita,
+  .animate-brilho-texto,
+  .animate-neon-respira {
+    animation: none;
   }
 }
 

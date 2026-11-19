@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster, type DefaultToastOptions } from "react-hot-toast";
 import { Analytics } from '@vercel/analytics/react';
@@ -12,6 +13,9 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { LancamentosProvider } from '@/context/LancamentosContext';
 import { NotificationProvider } from '@/context/NotificationContext';
 import { ROUTES } from '@/constants/navigation';
+
+// O site é carregado à parte: quem abre o painel não baixa o código do site
+const Inicio = lazy(() => import('@/site/paginas/Inicio'));
 
 const toastOptions: DefaultToastOptions = {
   style: {
@@ -33,8 +37,11 @@ function App() {
       <LancamentosProvider>
         <NotificationProvider>
           <Routes>
+            {/* Site público */}
+            <Route path="/" element={<Suspense fallback={<div className="min-h-svh bg-[#070a08]" />}><Inicio /></Suspense>} />
+
+            {/* Painel */}
             <Route element={<Layout />}>
-              <Route path="/" element={<Navigate to={ROUTES.visaoGeral} replace />} />
               <Route path={ROUTES.visaoGeral} element={<VisaoGeral />} />
               <Route path={ROUTES.lancamento} element={<Lancamento />} />
               <Route path={ROUTES.evolucaoSaldo} element={<EvolucaoSaldo />} />
