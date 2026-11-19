@@ -12,6 +12,8 @@ import {
 interface LancamentosContextValue {
   lancamentos: Lancamento[];
   adicionarLancamento: (novo: Lancamento) => void;
+  /** Substitui o lançamento de mesmo id (edição, "marcar como pago") */
+  atualizarLancamento: (alterado: Lancamento) => void;
   removerLancamento: (id: Lancamento['id']) => void;
 }
 
@@ -68,13 +70,17 @@ export function LancamentosProvider({ children }: LancamentosProviderProps) {
     setLancamentos((prev) => [novo, ...prev]);
   }, []);
 
+  const atualizarLancamento = useCallback((alterado: Lancamento) => {
+    setLancamentos((prev) => prev.map((l) => (l.id === alterado.id ? alterado : l)));
+  }, []);
+
   const removerLancamento = useCallback((id: Lancamento['id']) => {
     setLancamentos((prev) => prev.filter((l) => l.id !== id));
   }, []);
 
   const value = useMemo(
-    () => ({ lancamentos, adicionarLancamento, removerLancamento }),
-    [lancamentos, adicionarLancamento, removerLancamento]
+    () => ({ lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento }),
+    [lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento]
   );
 
   return <LancamentosContext.Provider value={value}>{children}</LancamentosContext.Provider>;

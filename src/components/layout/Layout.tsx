@@ -89,7 +89,7 @@ const Layout = () => {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 transition-all duration-500 flex flex-col h-screen p-0 relative">
+      <main className="flex-1 min-w-0 transition-all duration-500 flex flex-col h-screen p-0 relative">
         {/* O PAINEL COM A BORDA QUE VOCÊ QUERIA */}
         <div className="
           flex-1 bg-surface bg-painel 

@@ -1,15 +1,18 @@
-import { useState, type ChangeEvent } from "react";
-import { Check } from "lucide-react";
+import { useMemo, useState, type ChangeEvent, type ReactNode } from "react";
+import { CalendarDays, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import SelectTreeyo from '@/components/ui/SelectTreeyo';
 import toast from "react-hot-toast";
 import { brParaDataISO, dataISOParaBR, dataLocalISO } from "@/domain/datas";
-import { MENSAGENS_ERRO_VALOR, validarValor } from "@/domain/dinheiro";
+import { MENSAGENS_ERRO_VALOR, centavosParaTexto, reaisParaCentavos, validarValor } from "@/domain/dinheiro";
+import { categoriasFrequentes, contaRecente, ultimoDaCategoria } from "@/domain/extrato";
+import { interpretarFrase } from "@/domain/lancamentoRapido";
 import { mascaraData } from "@/utils/masks";
 import {
     METODOS_PAGAMENTO,
     STATUS_INVESTIMENTO,
     STATUS_PAGAMENTO,
+    statusDoTipo,
     type Lancamento,
     type MetodoPagamento,
     type StatusLancamento,
@@ -44,26 +47,75 @@ const BANCOS = [
 interface FormularioLancamentoProps {
     tipoSelecionado: TipoLancamento;
     aoConfirmar: (novo: Lancamento) => void;
+    /** Lançamentos já feitos: de onde vêm o autopreenchimento e as sugestões */
+    historico: readonly Lancamento[];
+    /** Presente = editando este lançamento */
+    editando?: Lancamento | null;
+    /** "Repetir": começa com os dados deste lançamento, com a data de hoje */
+    modelo?: Lancamento | null;
+    /** Fecha o formulário (modal) */
+    aoCancelar?: () => void;
+    /** A frase rápida indicou outro tipo (ex.: "recebi..." com Saída selecionada) */
+    aoMudarTipo?: (tipo: TipoLancamento) => void;
 }
 
-const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancamentoProps) => {
+/** Banco salvo -> campos do select (o que não está na lista vira "Outro") */
+const contaParaCampos = (conta: string) =>
+    BANCOS.includes(conta) ? { conta, outroBanco: "" } : { conta: "Outro", outroBanco: conta };
+
+const ESPECIE = { conta: "Espécie", outroBanco: "" };
+
+const realizadoNoStatus = (status: StatusLancamento | "") => status === "Pago" || status === "Executado";
+
+// Formulário de lançamento. O que o Treeyo já sabe vem preenchido:
+// - data de hoje, Pix e a conta usada por último;
+// - situação pela data (futuro fica pendente);
+// - categoria já usada traz a forma de pagamento e a conta da última vez;
+// - a frase rápida ("internet 189,90 ontem") preenche tudo de uma vez.
+const FormularioLancamento = ({ tipoSelecionado, aoConfirmar, historico, editando, modelo, aoCancelar, aoMudarTipo }: FormularioLancamentoProps) => {
 
     // Data local: toISOString() usaria UTC e sugeriria "amanhã" após as 21h
     const hojeISO = dataLocalISO();
+    const contaPadrao = contaRecente(historico) ?? BANCOS[0];
 
-    const [formData, setFormData] = useState<FormLancamento>({
+    const [formData, setFormData] = useState<FormLancamento>(() => editando ? {
+        data: editando.data,
+        dataDisplay: dataISOParaBR(editando.data),
+        categoria: editando.categoria,
+        valor: centavosParaTexto(reaisParaCentavos(editando.valor)),
+        status: editando.status,
+        metodo: editando.metodo,
+        ...(editando.metodo === "Dinheiro" ? ESPECIE : contaParaCampos(editando.conta)),
+    } : modelo ? {
+        data: modelo.data,
+        dataDisplay: dataISOParaBR(modelo.data),
+        categoria: modelo.categoria,
+        valor: modelo.valor > 0 ? centavosParaTexto(reaisParaCentavos(modelo.valor)) : "",
+        status: statusDoTipo(tipoSelecionado, realizadoNoStatus(modelo.status)),
+        metodo: modelo.metodo,
+        ...(modelo.metodo === "Dinheiro" ? ESPECIE : contaParaCampos(modelo.conta)),
+    } : {
         data: hojeISO,
         dataDisplay: dataISOParaBR(hojeISO),
         categoria: "",
         valor: "",
-        status: "",
-        metodo: "",
-        conta: "",
-        outroBanco: ""
+        status: statusDoTipo(tipoSelecionado, true),
+        metodo: "Pix",
+        ...contaParaCampos(contaPadrao),
     });
 
+    const [frase, setFrase] = useState("");
+    // Campos que o usuário escolheu à mão não são sobrescritos pelo histórico
+    const [tocados, setTocados] = useState({ status: Boolean(editando), metodo: Boolean(editando), conta: Boolean(editando) });
     const [erros, setErros] = useState<CampoFormulario[]>([]);
     const [shake, setShake] = useState(false);
+
+    // O status muda de vocabulário com o tipo (Pago/Pendente x Executado/Agendado)
+    const statusAtual: StatusLancamento | "" = formData.status
+        ? statusDoTipo(tipoSelecionado, realizadoNoStatus(formData.status))
+        : "";
+
+    const sugestoes = useMemo(() => categoriasFrequentes(historico, tipoSelecionado, 4), [historico, tipoSelecionado]);
 
     const limparErros = () => {
         if (erros.length > 0) setErros([]);
@@ -71,12 +123,29 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
 
     const handleChange = <K extends CampoFormulario>(campo: K, valor: FormLancamento[K]) => {
         limparErros();
+        if (campo === "status" || campo === "metodo" || campo === "conta") setTocados((t) => ({ ...t, [campo]: true }));
         setFormData(prev => ({
             ...prev,
             [campo]: valor,
-            // pagamento em dinheiro não tem banco
-            ...(campo === "metodo" && valor === "Dinheiro" ? { conta: "Espécie", outroBanco: "" } : {})
+            // pagamento em dinheiro não tem banco; ao sair do dinheiro, volta a conta usual
+            ...(campo === "metodo" && valor === "Dinheiro" ? ESPECIE : {}),
+            ...(campo === "metodo" && valor !== "Dinheiro" && prev.metodo === "Dinheiro" ? contaParaCampos(contaPadrao) : {})
         }));
+    };
+
+    // Categoria conhecida: traz a forma de pagamento e a conta da última vez
+    const escolherCategoria = (categoria: string) => {
+        limparErros();
+        const anterior = ultimoDaCategoria(historico, categoria);
+        setFormData(prev => {
+            if (!anterior) return { ...prev, categoria };
+            return {
+                ...prev,
+                categoria,
+                ...(!tocados.metodo ? { metodo: anterior.metodo } : {}),
+                ...(!tocados.conta ? (anterior.metodo === "Dinheiro" ? ESPECIE : contaParaCampos(anterior.conta)) : {}),
+            };
+        });
     };
 
     const handleDataChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,21 +153,44 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
         limparErros();
 
         const val = mascaraData(e.target.value);
+        const iso = brParaDataISO(val);
 
         // Data incompleta ou inexistente (ex.: 31/02) fica vazia e é barrada
-        // na validação, em vez de manter silenciosamente a data anterior
+        // na validação, em vez de manter silenciosamente a data anterior.
+        // Sem escolha manual, a situação acompanha a data: futuro fica pendente.
         setFormData(prev => ({
             ...prev,
             dataDisplay: val,
-            data: brParaDataISO(val) ?? ""
+            data: iso ?? "",
+            ...(iso && !tocados.status ? { status: statusDoTipo(tipoSelecionado, iso <= hojeISO) } : {})
         }));
 
+    };
+
+    // Frase rápida: preenche todos os campos de uma vez enquanto o usuário escreve
+    const handleFrase = (texto: string) => {
+        setFrase(texto);
+        limparErros();
+        if (!texto.trim()) return;
+        const r = interpretarFrase(texto, hojeISO, historico);
+        if (r.origem.tipo !== "padrao" && r.tipo !== tipoSelecionado) aoMudarTipo?.(r.tipo);
+        setFormData({
+            data: r.data,
+            dataDisplay: dataISOParaBR(r.data),
+            categoria: r.categoria,
+            valor: r.valor !== null ? centavosParaTexto(r.valor) : "",
+            status: r.status,
+            metodo: r.metodo,
+            ...(r.metodo === "Dinheiro" ? ESPECIE : contaParaCampos(r.conta)),
+        });
+        setTocados({ status: r.origem.status === "frase", metodo: r.origem.metodo === "frase", conta: r.origem.conta === "frase" });
     };
 
     const validarEEnviar = () => {
 
         const novosErros: CampoFormulario[] = [];
-        const { status, metodo } = formData;
+        const { metodo } = formData;
+        const status = statusAtual;
 
         const bancoFinal =
             formData.conta === "Outro"
@@ -146,157 +238,187 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
             // O modelo salvo ainda está em reais; a migração para centavos é a próxima etapa
             valor: valor.centavos / 100,
             conta: bancoFinal,
-            id: Date.now(),
+            outroBanco: formData.conta === "Outro" ? formData.outroBanco : "",
+            id: editando?.id ?? Date.now(),
             tipo: tipoSelecionado
         });
 
         setErros([]);
+        setFrase("");
+        setTocados({ status: false, metodo: false, conta: false });
 
+        // Mantém data, forma de pagamento e conta: o próximo lançamento costuma ser parecido
         setFormData(prev => ({
             ...prev,
             categoria: "",
             valor: "",
-            status: "",
-            metodo: "",
-            conta: "",
-            outroBanco: ""
+            status: statusDoTipo(tipoSelecionado, !prev.data || prev.data <= hojeISO),
         }));
 
     };
 
-    // Mobile: campos mais altos (alvo de toque) e fonte 16px — abaixo disso o
-    // Safari do iPhone dá zoom na página ao focar o campo.
-    const inputBaseStyle =
-        "w-full bg-card backdrop-blur-md border rounded-xl md:rounded-lg relative pl-3 pr-3 py-0 text-base md:text-sm outline-none h-12 md:h-10 transition-all duration-300 placeholder:text-fg-subtle";
+    // Campos preenchidos (fundo sutil, sem borda forte). Mobile: mais altos
+    // (alvo de toque) e fonte 16px — abaixo disso o Safari do iPhone dá zoom.
+    const estiloCampo = (campo?: CampoFormulario) =>
+        `w-full h-11 md:h-10 rounded-lg bg-fg/[0.05] border px-3 text-base md:text-[13px] text-fg outline-none transition-colors placeholder:text-fg-subtle focus:border-fg/25 ${campo && erros.includes(campo) ? "border-red-400/70" : "border-fg/[0.07]"}`;
 
-    const getBorderStyle = (campo: CampoFormulario) => {
-        if (erros.includes(campo))
-            return "border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]";
-
-        return "border-line focus:border-green-500/50 text-fg-muted";
-    };
+    // Progresso do preenchimento (as barrinhas do topo): valor, categoria, data e pagamento
+    const progresso = [
+        validarValor(formData.valor).ok,
+        formData.categoria.trim() !== "",
+        formData.data !== "",
+        Boolean(statusAtual && formData.metodo && (formData.conta === "Outro" ? formData.outroBanco.trim() : formData.conta)),
+    ];
 
     return (
 
         <motion.div
             animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
-            style={{ position: "relative", zIndex: 999 }}
-            className="w-full max-w-[480px] mx-auto md:mx-0 md:max-w-none"
+            className="relative w-full rounded-[22px] border border-line bg-card p-4 md:p-5"
         >
 
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            {/* Barrinhas: acendem conforme os campos obrigatórios ficam prontos */}
+            <div className="grid grid-cols-4 gap-2 mb-4" aria-hidden="true">
+                {progresso.map((ok, i) => (
+                    <span key={i} className={`h-[3px] rounded-full transition-colors duration-300 ${ok ? "bg-[#1fba11]" : "bg-fg/10"}`} />
+                ))}
+            </div>
 
-                <input
-                    type="text"
-                    inputMode="numeric"
-                    aria-label="Data"
-                    placeholder="DD/MM/AAAA"
-                    className={`${inputBaseStyle} ${getBorderStyle("dataDisplay")}`}
-                    value={formData.dataDisplay}
-                    onChange={handleDataChange}
-                />
+            <div className="text-center mb-4">
+                <h2 className="text-base md:text-lg font-bold uppercase tracking-wide text-fg">
+                    {editando ? "Editar lançamento" : tipoSelecionado === "Investimento" ? "Novo investimento" : `Nova ${tipoSelecionado.toLowerCase()}`}
+                </h2>
+                <p className="text-xs text-fg-muted mt-1">
+                    {editando ? (editando.categoria || editando.tipo) : "O Treeyo preenche o que já sabe."}
+                </p>
+            </div>
 
-                <input
-                    aria-label={tipoSelecionado === "Investimento" ? "Tipo de ativo" : "Categoria"}
-                    className={`${inputBaseStyle} ${getBorderStyle("categoria")}`}
-                    placeholder={
-                        tipoSelecionado === "Investimento"
-                            ? "Tipo de Ativo (CDB...)"
-                            : "Categoria"
-                    }
-                    value={formData.categoria}
-                    onChange={(e) =>
-                        handleChange("categoria", e.target.value)
-                    }
-                />
-
-                <input
-                    type="text"
-                    inputMode="decimal"
-                    aria-label="Valor em reais"
-                    placeholder="Valor (R$)"
-                    className={`${inputBaseStyle} ${getBorderStyle("valor")}`}
-                    value={formData.valor}
-                    onChange={(e) =>
-                        handleChange("valor", e.target.value)
-                    }
-                />
-
-                <SelectTreeyo
-                    value={formData.status}
-                    onChange={(v) => handleChange("status", v)}
-                    placeholder={
-                        tipoSelecionado === "Investimento"
-                            ? "Status"
-                            : "Pago/Pendente"
-                    }
-                    options={
-                        tipoSelecionado === "Investimento"
-                            ? STATUS_INVESTIMENTO
-                            : STATUS_PAGAMENTO
-                    }
-                />
-
-                <SelectTreeyo
-                    value={formData.metodo}
-                    onChange={(v) => handleChange("metodo", v)}
-                    placeholder="Form. Pagamento"
-                    options={METODOS_PAGAMENTO}
-                />
-
-                {formData.metodo === "Dinheiro" ? (
-
-                    <div className={`${inputBaseStyle} border-line flex items-center text-fg-subtle bg-card-alt cursor-not-allowed`}>
-                        Espécie
-                    </div>
-
-                ) : formData.conta === "Outro" ? (
-
+            {/* Frase rápida: preenche os campos abaixo */}
+            {!editando && (
+                <Campo rotulo="Lançamento rápido" opcional className="mb-3">
                     <input
-                        autoFocus
-                        className={`${inputBaseStyle} ${getBorderStyle("conta")}`}
-                        placeholder="Qual banco?"
-                        value={formData.outroBanco}
-                        onChange={(e) =>
-                            handleChange("outroBanco", e.target.value)
-                        }
+                        autoComplete="off"
+                        enterKeyHint="done"
+                        className={estiloCampo()}
+                        placeholder="Ex.: internet 189,90 ontem"
+                        value={frase}
+                        onChange={(e) => handleFrase(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") validarEEnviar(); }}
                     />
+                </Campo>
+            )}
 
-                ) : (
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-3 gap-y-3">
 
+                <Campo rotulo="Data" obrigatorio>
+                    <span className="relative block">
+                        <input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="DD/MM/AAAA"
+                            className={`${estiloCampo("dataDisplay")} pr-9`}
+                            value={formData.dataDisplay}
+                            onChange={handleDataChange}
+                        />
+                        <CalendarDays size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted pointer-events-none" />
+                    </span>
+                </Campo>
+
+                <Campo rotulo={tipoSelecionado === "Investimento" ? "Ativo" : "Categoria"} obrigatorio>
+                    <input
+                        className={estiloCampo("categoria")}
+                        placeholder={tipoSelecionado === "Investimento" ? "CDB..." : tipoSelecionado === "Entrada" ? "Vendas..." : "Aluguel..."}
+                        value={formData.categoria}
+                        onChange={(e) => escolherCategoria(e.target.value)}
+                    />
+                </Campo>
+
+                <Campo rotulo="Valor" obrigatorio>
+                    <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="R$ 0,00"
+                        className={estiloCampo("valor")}
+                        value={formData.valor}
+                        onChange={(e) => handleChange("valor", e.target.value)}
+                    />
+                </Campo>
+
+                <Campo rotulo="Situação" obrigatorio>
                     <SelectTreeyo
-                        value={formData.conta}
-                        onChange={(v) => handleChange("conta", v)}
-                        placeholder="Banco"
-                        options={BANCOS}
+                        value={statusAtual}
+                        onChange={(v) => handleChange("status", v)}
+                        placeholder={tipoSelecionado === "Investimento" ? "Executado/Agendado" : "Pago/Pendente"}
+                        options={tipoSelecionado === "Investimento" ? STATUS_INVESTIMENTO : STATUS_PAGAMENTO}
                     />
+                </Campo>
 
-                )}
+                <Campo rotulo="Pagamento" obrigatorio>
+                    <SelectTreeyo
+                        value={formData.metodo}
+                        onChange={(v) => handleChange("metodo", v)}
+                        placeholder="Pix, débito..."
+                        options={METODOS_PAGAMENTO}
+                    />
+                </Campo>
+
+                <Campo rotulo="Conta" obrigatorio>
+                    {formData.metodo === "Dinheiro" ? (
+                        <div className={`${estiloCampo()} flex items-center text-fg-subtle cursor-not-allowed`}>Espécie</div>
+                    ) : formData.conta === "Outro" ? (
+                        <input
+                            className={estiloCampo("conta")}
+                            placeholder="Qual banco?"
+                            value={formData.outroBanco}
+                            onChange={(e) => handleChange("outroBanco", e.target.value)}
+                        />
+                    ) : (
+                        <SelectTreeyo
+                            value={formData.conta}
+                            onChange={(v) => handleChange("conta", v)}
+                            placeholder="Banco"
+                            options={BANCOS}
+                        />
+                    )}
+                </Campo>
 
             </div>
 
-            <div className="flex items-center justify-center pt-1 md:pt-3">
+            {/* Categorias mais usadas deste tipo: um toque preenche */}
+            {sugestoes.length > 0 && (
+                <div className="flex items-center gap-1 mt-3 text-xs overflow-x-auto no-scrollbar whitespace-nowrap">
+                    <span className="text-fg-subtle mr-1 shrink-0">Mais usadas:</span>
+                    {sugestoes.map((s) => (
+                        <button
+                            key={s}
+                            type="button"
+                            onClick={() => escolherCategoria(s)}
+                            className={`shrink-0 px-2 py-1 rounded-md transition cursor-pointer ${formData.categoria.trim() === s ? "text-fg bg-fg/[0.08]" : "text-fg-muted hover:text-fg hover:bg-fg/5"}`}
+                        >
+                            {s}
+                        </button>
+                    ))}
+                </div>
+            )}
 
-                {/* Mobile: botão largo e alto (ação principal da tela, ao alcance do polegar) */}
+            <div className="grid grid-cols-2 gap-3 mt-5">
+
+                {/* Secundário escuro + principal em verde Treeyo, como na referência */}
+                <button
+                    type="button"
+                    onClick={aoCancelar}
+                    className="h-11 rounded-lg bg-fg/[0.05] border border-fg/[0.08] text-sm font-medium text-fg hover:bg-fg/[0.09] transition cursor-pointer"
+                >
+                    Cancelar
+                </button>
+
                 <button
                     type="button"
                     onClick={validarEEnviar}
-                    className="relative w-full md:w-auto h-12 md:h-auto flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-base md:text-sm font-medium text-fg bg-card backdrop-blur-md overflow-hidden group transition-all active:scale-[0.98] cursor-pointer"
+                    className="h-11 rounded-lg bg-[#1fba11] text-brand-ink text-sm font-semibold flex items-center justify-center gap-2 hover:bg-[#2ad81a] active:scale-[0.99] transition-colors cursor-pointer"
                 >
-
-                    <span
-                        className="absolute inset-0 rounded-xl border border-[#1fba11]/40 md:border-line group-hover:border-[#1fba11] transition-all duration-300 pointer-events-none"
-                    />
-
-                    <Check
-                        size={16}
-                        className="text-marca transition-transform group-hover:scale-110"
-                    />
-
-                    <span className="relative">
-                        Confirmar {tipoSelecionado}
-                    </span>
-
+                    <Check size={16} />
+                    {editando ? "Salvar" : "Confirmar"}
                 </button>
 
             </div>
@@ -306,5 +428,21 @@ const FormularioLancamento = ({ tipoSelecionado, aoConfirmar }: FormularioLancam
     );
 
 };
+
+/** Rótulo pequeno acima do campo (o placeholder some ao digitar; o rótulo fica) */
+function Campo({ rotulo, obrigatorio, opcional, className = "", children }: {
+    rotulo: string; obrigatorio?: boolean; opcional?: boolean; className?: string; children: ReactNode;
+}) {
+    return (
+        <label className={`flex flex-col gap-1.5 min-w-0 ${className}`}>
+            <span className="text-xs font-medium text-fg">
+                {rotulo}
+                {obrigatorio && <span className="text-red-400">*</span>}
+                {opcional && <span className="font-normal text-fg-subtle"> (opcional)</span>}
+            </span>
+            {children}
+        </label>
+    );
+}
 
 export default FormularioLancamento;

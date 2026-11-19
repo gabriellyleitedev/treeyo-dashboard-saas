@@ -1,18 +1,21 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-hot-toast";
 import FormularioLancamento from '@/features/lancamentos/FormularioLancamento';
 import CardLancamento from '@/features/lancamentos/CardLancamento';
-import ConfirmModal from '@/components/ui/ConfirmModal';
+import FormularioRapido from '@/features/lancamentos/FormularioRapido';
 import GlowTopo from '@/components/ui/GlowTopo';
+import Modal from '@/components/ui/Modal';
 import { PageHeaderMobile, PageHeaderDesktop } from '@/components/layout/PageHeader';
 import { useNotifications } from '@/context/NotificationContext';
 import { useLancamentos } from '@/context/LancamentosContext';
 import { containerVariants, itemVariants, itemVariantsSutil } from '@/utils/animations';
 import { formatarDataCurta, formatarMoeda } from '@/utils/formatters';
-import { TIPOS_LANCAMENTO, type Lancamento as LancamentoItem, type TipoLancamento } from '@/types/lancamento';
+import { toastComDesfazer } from '@/features/lancamentos/desfazer';
+import { dataISOParaBR, dataLocalISO } from '@/domain/datas';
+import { filtrarExtrato, situacaoDe } from '@/domain/extrato';
+import { TIPOS_LANCAMENTO, statusDoTipo, type Lancamento as LancamentoItem, type TipoLancamento } from '@/types/lancamento';
 import type { TipoNotificacao } from '@/types/notificacao';
 
 // Colunas da lista: celular (info | valor | excluir), md (6 colunas), lg (8 colunas)
@@ -20,74 +23,97 @@ const COLUNAS_LISTA = "grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 md:grid-cols-
 
 const TIPO_NOTIFICACAO: Record<TipoLancamento, TipoNotificacao> = { "Entrada": "sucesso", "Saída": "aviso", "Investimento": "info" };
 
-// Classes do botão de tipo: barra lateral colorida + borda/brilho
-interface CoresTipo {
-    barra: string;
-    glow: string;
-}
-
 const Lancamento = () => {
-    const [modalOpen, setModalOpen] = useState(false);
-    const [itemParaExcluir, setItemParaExcluir] = useState<LancamentoItem | null>(null);
+    const hoje = dataLocalISO();
+    // Formulário no modal: novo (de um tipo), editando ou repetindo um lançamento
+    const [modal, setModal] = useState<{ tipo: TipoLancamento; editando?: LancamentoItem; modelo?: LancamentoItem } | null>(() => {
+        const tipo = TIPOS_LANCAMENTO.find((t) => t === new URLSearchParams(window.location.search).get("tipo"));
+        return tipo ? { tipo } : null;
+    });
+    const fecharModal = useCallback(() => setModal(null), []);
+    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(() => modal?.tipo ?? "Entrada");
 
     // Os atalhos da Visão Geral abrem esta tela com ?tipo=Entrada|Saída|Investimento
     const [searchParams] = useSearchParams();
-    const tipoDaUrl = searchParams.get("tipo");
-    const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(
-        () => TIPOS_LANCAMENTO.find((t) => t === tipoDaUrl) ?? "Entrada"
-    );
     // A busca global (Ctrl+K) abre esta tela já filtrada com ?busca=termo
     const [busca, setBusca] = useState(() => searchParams.get("busca") ?? ""); // Guarda o que o usuário esta digitando no campo de pesquisa
 
-    const { lancamentos: lista, adicionarLancamento, removerLancamento } = useLancamentos();
+    const { lancamentos: lista, adicionarLancamento, atualizarLancamento, removerLancamento } = useLancamentos();
     const { adicionarNotificacao } = useNotifications();
 
-    const listaGeral = useMemo(() => { // UseMemo é como uma memória de rascunho
-        return lista
-            .filter((item) => {
+    // Busca com o mesmo índice da busca global: sem acento, por palavra,
+    // e entende "novembro", "1.350", "atrasado", "pendente"...
+    const listaGeral = useMemo(
+        () => filtrarExtrato(lista, { periodo: "tudo", tipo: "todos", situacao: "todas", termo: busca }, hoje),
+        [lista, busca, hoje]
+    );
 
-                if (!busca) return true;
+    const editar = (item: LancamentoItem) => { setTipoAtivo(item.tipo); setModal({ tipo: item.tipo, editando: item }); };
 
-                const termo = busca.toLowerCase();
-                const dataFormatada = formatarDataCurta(item.data);
+    // Repetir: o formulário vem com os mesmos dados e a data de hoje (novo lançamento)
+    const repetir = (item: LancamentoItem) =>
+        setModal({ tipo: item.tipo, modelo: { ...item, id: Date.now(), data: hoje, status: statusDoTipo(item.tipo, true) } });
 
-                return (
-                    item.tipo?.toLowerCase().includes(termo) ||
-                    item.categoria?.toLowerCase().includes(termo) ||
-                    item.metodo?.toLowerCase().includes(termo) ||
-                    item.conta?.toLowerCase().includes(termo) ||
-                    item.status?.toLowerCase().includes(termo) ||
-                    String(item.valor)?.includes(termo) ||
-                    dataFormatada.includes(termo) ||
-                    item.data?.includes(termo)
-                );
-            })
-            .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
+    const salvar = (novo: LancamentoItem) => {
+        const anterior = modal?.editando;
+        setModal(null);
 
-    }, [lista, busca]);
+        if (anterior) {
+            atualizarLancamento(novo);
+            toastComDesfazer("Alterações salvas", () => atualizarLancamento(anterior));
+            return;
+        }
 
-    // Card de destaque: lançamento mais recente do tipo selecionado nos botões
-    const ultimoDoTipo = listaGeral.find((item) => item.tipo === tipoAtivo);
-
-    const getCoresDinamicas = (tipo: TipoLancamento): CoresTipo => {
-        const ativo = tipoAtivo === tipo;
-        const config: Record<TipoLancamento, CoresTipo> = {
-            "Entrada": {
-                barra: "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]",
-                glow: ativo ? "border-green-500/40 bg-green-500/5 shadow-[0_0_20px_rgba(34,197,94,0.15)]" : "border-line bg-card"
-            },
-            "Saída": {
-                barra: ativo ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" : "bg-green-500/50",
-                glow: ativo ? "border-red-500/40 bg-red-500/5 shadow-[0_0_20px_rgba(239,68,68,0.15)]" : "border-line bg-card"
-            },
-            "Investimento": {
-                barra: ativo ? "bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.9)]" : "bg-green-500/50",
-                glow: ativo ? "border-blue-500/40 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.15)]" : "border-line bg-card"
-            }
-        };
-        if (!ativo) return { barra: "bg-neutral-500/50", glow: "border-line bg-card" };
-        return config[tipo];
+        adicionarLancamento(novo);
+        setTipoAtivo(novo.tipo);
+        adicionarNotificacao({
+            modulo: "lancamentos",
+            tipo: TIPO_NOTIFICACAO[novo.tipo] || "info",
+            titulo: "Novo lançamento registrado",
+            mensagem: `${novo.tipo} de ${formatarMoeda(novo.valor)} adicionada`
+        });
+        toastComDesfazer(`${novo.tipo} registrada: ${novo.categoria} · ${formatarMoeda(novo.valor)}`, () => removerLancamento(novo.id));
     };
+
+    // Pagou/recebeu agora: a data passa a ser a do pagamento (hoje)
+    const concluir = (item: LancamentoItem) => {
+        atualizarLancamento({ ...item, status: statusDoTipo(item.tipo, true), data: hoje, dataDisplay: dataISOParaBR(hoje) });
+        const verbo = item.tipo === "Entrada" ? "recebido" : item.tipo === "Saída" ? "pago" : "aplicado";
+        toastComDesfazer(`${item.categoria || item.tipo} marcado como ${verbo} hoje`, () => atualizarLancamento(item));
+    };
+
+    // Exclui na hora e oferece desfazer (em vez de perguntar antes)
+    const excluir = (item: LancamentoItem) => {
+        removerLancamento(item.id);
+        adicionarNotificacao({
+            modulo: "lancamentos",
+            tipo: "aviso",
+            titulo: "Lançamento removido",
+            mensagem: `${item.tipo} de ${formatarMoeda(item.valor)} foi removido`
+        });
+        toastComDesfazer(`Excluído: ${item.categoria || item.tipo} · ${formatarMoeda(item.valor)}`, () => adicionarLancamento(item));
+    };
+
+    const coresDoBotao = (tipo: TipoLancamento) => {
+        if (tipoAtivo !== tipo) return { barra: "bg-fg/20", fundo: "border-line bg-card" };
+        const barra: Record<TipoLancamento, string> = { Entrada: "bg-[#1fba11]", Saída: "bg-red-400", Investimento: "bg-blue-400" };
+        return { barra: barra[tipo], fundo: "border-fg/20 bg-fg/[0.05]" };
+    };
+
+    // Legenda do card: data de hoje e quantos lançamentos do tipo no mês
+    const legenda = useMemo(() => {
+        const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+        const [ano, mes, dia] = hoje.split("-");
+        const doMes = lista.filter((l) => l.tipo === tipoAtivo && l.data.startsWith(hoje.slice(0, 7))).length;
+        const nome = { Entrada: ["entrada", "entradas"], Saída: ["saída", "saídas"], Investimento: ["investimento", "investimentos"] }[tipoAtivo];
+        return `${Number(dia)} ${MESES[Number(mes) - 1]} ${ano}  |  ${doMes} ${doMes === 1 ? nome[0] : nome[1]} este mês`;
+    }, [lista, tipoAtivo, hoje]);
+
+    // Último lançamento de cada tipo (card do meio; ignora a busca)
+    const ultimos = useMemo(() => {
+        const ordenados = filtrarExtrato(lista, { periodo: "tudo", tipo: "todos", situacao: "todas", termo: "" }, hoje);
+        return Object.fromEntries(TIPOS_LANCAMENTO.map((t) => [t, ordenados.find((l) => l.tipo === t) ?? null])) as Record<TipoLancamento, LancamentoItem | null>;
+    }, [lista, hoje]);
 
     return (
         <div className="w-full">
@@ -103,37 +129,6 @@ const Lancamento = () => {
             />
 
             <motion.div className="w-full flex flex-col" initial="hidden" animate="visible" variants={containerVariants}>
-                <ConfirmModal
-                    isOpen={modalOpen}
-                    title="Excluir lançamento?"
-                    message="Esse item será removido permanentemente."
-
-                    onConfirm={() => {
-                        if (itemParaExcluir) {
-
-                            removerLancamento(itemParaExcluir.id);
-
-                            adicionarNotificacao({
-                                modulo: "lancamentos",
-                                tipo: "aviso",
-                                titulo: "Lançamento removido",
-                                mensagem: `${itemParaExcluir.tipo} de ${formatarMoeda(itemParaExcluir.valor)} foi removido`
-                            });
-
-                            setItemParaExcluir(null);
-                            setModalOpen(false);
-
-                            toast.success("Item excluído com sucesso!");
-                        }
-                    }}
-
-                    onCancel={() => {
-                        setModalOpen(false);
-                        setItemParaExcluir(null);
-                    }}
-
-                />
-
                 <PageHeaderDesktop
                     titulo="Lançamentos"
                     busca={busca}
@@ -146,65 +141,64 @@ const Lancamento = () => {
                 <motion.div variants={itemVariants} className="w-full bg-gradient-to-r from-transparent via-fg/15 to-transparent mt-6 mb-6 md:mt-8 md:mb-8 h-px shrink-0" />
 
                 {/*
-                  Celular: tipos (em linha) > formulário > card.
-                  md: tipos | formulário, card embaixo.
-                  xl: tipos | card | formulário.
+                  Celular: tipos em linha > formulário > card.
+                  md: tipos em linha; card | formulário.
+                  xl: tipos | card | formulário, alinhados na altura.
                 */}
-                <div className="grid grid-cols-1 md:grid-cols-[9rem_minmax(0,1fr)] xl:grid-cols-[9rem_minmax(0,1fr)_minmax(0,22rem)] gap-5 md:gap-6 xl:gap-10 items-start relative z-20">
-
-                    {/* Filtros de Tipo */}
-                    <motion.div variants={itemVariants} className="grid grid-cols-3 gap-2 md:flex md:flex-col md:gap-3">
+                <motion.div
+                    variants={itemVariants}
+                    className="recua-ao-sair relative z-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[9rem_332px_minmax(0,26rem)] xl:justify-center gap-6 md:gap-8 xl:gap-12 items-center"
+                >
+                    <div className="md:col-span-2 xl:col-span-1 grid grid-cols-3 gap-2 md:gap-3 xl:flex xl:flex-col xl:justify-center">
                         {TIPOS_LANCAMENTO.map((tipo) => {
-                            const cores = getCoresDinamicas(tipo);
+                            const cores = coresDoBotao(tipo);
                             return (
                                 <button
                                     key={tipo}
                                     type="button"
                                     onClick={() => setTipoAtivo(tipo)}
-                                    className={`flex items-center justify-start px-1.5 sm:px-2 w-full h-11 md:h-10 rounded-xl md:rounded-lg border transition-all duration-300 cursor-pointer min-w-0 ${cores.glow}`}
+                                    aria-pressed={tipoAtivo === tipo}
+                                    className={`flex items-center justify-start px-1.5 sm:px-2 w-full h-11 md:h-10 rounded-xl md:rounded-lg border transition-all duration-300 cursor-pointer min-w-0 ${cores.fundo}`}
                                 >
                                     <span className={`h-6 w-1 shrink-0 rounded-full transition-all duration-300 ${cores.barra}`}></span>
                                     <span className="pl-1.5 sm:pl-2 text-[13px] sm:text-sm md:text-base font-normal text-fg select-none truncate">{tipo}</span>
                                 </button>
                             );
                         })}
-                    </motion.div>
+                    </div>
 
-                    {/* FORMULÁRIO */}
-                    <motion.div variants={itemVariantsSutil} className="w-full min-w-0 md:col-start-2 xl:col-start-3 xl:row-start-1">
-                        <FormularioLancamento
-                            tipoSelecionado={tipoAtivo}
-                            aoConfirmar={(novo) => {
-
-                                adicionarLancamento(novo);
-
-                                adicionarNotificacao({
-                                    modulo: "lancamentos",
-                                    tipo: TIPO_NOTIFICACAO[novo.tipo] || "info",
-                                    titulo: "Novo lançamento registrado",
-                                    mensagem: `${novo.tipo} de ${formatarMoeda(novo.valor)} adicionada`
-                                });
-
-                                toast.success("Lançamento registrado!");
-
-                            }}
+                    <div className="order-3 md:order-none min-w-0">
+                        <CardLancamento
+                            tipo={tipoAtivo}
+                            lancamento={ultimos[tipoAtivo]}
+                            hoje={hoje}
+                            legenda={legenda}
+                            aoNovo={(t) => setModal({ tipo: t })}
+                            aoConcluir={concluir}
+                            aoRepetir={repetir}
+                            aoEditar={editar}
                         />
-                    </motion.div>
+                    </div>
 
-                    {/* CARD DO ÚLTIMO LANÇAMENTO */}
-                    <motion.div variants={itemVariantsSutil} className={`w-full min-w-0 justify-center md:col-span-2 xl:col-span-1 xl:col-start-2 xl:row-start-1 ${ultimoDoTipo ? "flex" : "hidden md:flex"}`}>
-                        {ultimoDoTipo ? (
-                            <CardLancamento lancamento={ultimoDoTipo} />
-                        ) : (
-                            <div className="w-full max-w-[420px] h-[160px] border border-dashed border-line rounded-2xl flex items-center justify-center text-center text-fg-subtle text-sm italic p-4">
-                                Nenhum lançamento de {tipoAtivo} para exibir no card.
-                            </div>
-                        )}
-                    </motion.div>
-                </div>
+                    <div className="order-2 md:order-none min-w-0">
+                        <FormularioRapido
+                            key={tipoAtivo}
+                            tipo={tipoAtivo}
+                            historico={lista}
+                            aoConfirmar={salvar}
+                            aoDetalhar={(base) => setModal({ tipo: base.tipo, modelo: base })}
+                            aoMudarTipo={setTipoAtivo}
+                        />
+                    </div>
+                </motion.div>
 
                 {/* ÚLTIMOS LANÇAMENTOS */}
-                <motion.div variants={itemVariantsSutil} className="w-full flex flex-col pt-8 md:pt-16">
+                <motion.div
+                    variants={itemVariantsSutil}
+                    className="folha-lista relative z-30 flex flex-col mt-8 md:mt-12 -mx-4 md:-mx-8 xl:-mx-10 px-4 md:px-8 xl:px-10 pt-3 -mb-28 pb-28 md:-mb-8 md:pb-8 min-h-[70vh] rounded-t-[32px] md:rounded-t-[40px] bg-surface border-t border-line shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.55)]"
+                >
+                    {/* Alça, como num bottom sheet */}
+                    <div aria-hidden="true" className="self-center w-10 h-1 rounded-full bg-fg/15 mb-5 md:mb-6" />
 
                     <div className="flex items-baseline justify-between gap-4 mb-4">
                         <h2 className="text-fg font-medium tracking-wider uppercase text-sm">
@@ -239,6 +233,7 @@ const Lancamento = () => {
                                 listaGeral.map((item) => {
                                     const isEntrada = item.tipo === 'Entrada';
                                     const isSaida = item.tipo === 'Saída';
+                                    const situacao = situacaoDe(item, hoje);
 
                                     return (
                                         <motion.div
@@ -246,13 +241,14 @@ const Lancamento = () => {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, x: -30, transition: { duration: 0.2 } }}
-                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-fg py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-fg/[0.04] transition-all duration-400 border-b border-line`}
+                                            onClick={() => editar(item)}
+                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-fg py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-fg/[0.04] transition-all duration-400 border-b border-line cursor-pointer ${modal?.editando?.id === item.id ? "bg-fg/[0.05]" : ""}`}
                                         >
                                             {/* CELULAR: categoria + detalhes numa célula só */}
                                             <div className="md:hidden min-w-0">
                                                 <p className="text-fg truncate">{item.categoria || "-"}</p>
-                                                <p className="text-fg-subtle text-xs truncate">
-                                                    {formatarDataCurta(item.data)} · {item.tipo} · {item.metodo}
+                                                <p className={`text-xs truncate ${situacao === "atrasado" ? "text-red-400" : "text-fg-subtle"}`}>
+                                                    {formatarDataCurta(item.data)} · {item.tipo} · {situacao === "realizado" ? item.metodo : situacao === "atrasado" ? "Atrasado" : item.status}
                                                 </p>
                                             </div>
 
@@ -268,13 +264,25 @@ const Lancamento = () => {
                                             <span className="hidden md:block text-fg-muted truncate">{item.categoria || "-"}</span>
                                             <span className="hidden lg:block text-fg-muted truncate">{item.metodo}</span>
                                             <span className="hidden lg:block text-fg-muted truncate">{item.conta}</span>
-                                            <span className="hidden md:block text-fg-muted truncate">{item.status}</span>
+                                            <span className="hidden md:flex items-center gap-2 min-w-0">
+                                                {situacao === "realizado" ? (
+                                                    <span className="text-fg-muted truncate">{item.status}</span>
+                                                ) : (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); concluir(item); }}
+                                                        title={`Marcar como ${isEntrada ? "recebido" : "pago"} hoje`}
+                                                        className={`flex items-center gap-1 h-7 px-2 -ml-2 rounded-md hover:bg-fg/[0.06] transition cursor-pointer ${situacao === "atrasado" ? "text-red-400" : "text-fg-muted"}`}
+                                                    >
+                                                        <span className="group-hover:hidden">{situacao === "atrasado" ? "Atrasado" : item.status}</span>
+                                                        <span className="hidden group-hover:flex items-center gap-1 text-fg"><Check size={13} />{isEntrada ? "Recebi" : item.tipo === "Investimento" ? "Apliquei" : "Paguei"}</span>
+                                                    </button>
+                                                )}
+                                            </span>
 
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setItemParaExcluir(item);
-                                                    setModalOpen(true);
+                                                    excluir(item);
                                                 }}
                                                 aria-label="Excluir lançamento"
                                                 className="justify-self-end opacity-100 lg:opacity-0 lg:group-hover:opacity-100 focus:opacity-100 transition-all text-fg-subtle hover:text-red-500 p-2 -m-1 lg:p-1 lg:m-0"
@@ -293,6 +301,21 @@ const Lancamento = () => {
                 </motion.div>
 
             </motion.div>
+
+            <Modal aberto={modal !== null} aoFechar={fecharModal} rotulo="Formulário de lançamento">
+                {modal && (
+                    <FormularioLancamento
+                        key={modal.editando ? `e-${modal.editando.id}` : modal.modelo ? `m-${modal.modelo.id}` : `n-${modal.tipo}`}
+                        tipoSelecionado={modal.tipo}
+                        historico={lista}
+                        editando={modal.editando}
+                        modelo={modal.modelo}
+                        aoCancelar={fecharModal}
+                        aoMudarTipo={(tipo) => { setTipoAtivo(tipo); setModal((m) => (m ? { ...m, tipo } : m)); }}
+                        aoConfirmar={salvar}
+                    />
+                )}
+            </Modal>
         </div>
     );
 };

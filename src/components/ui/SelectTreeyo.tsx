@@ -17,19 +17,7 @@ export default function SelectTreeyo<T extends string>({ value, onChange, option
             <div className="relative w-full">
 
                 <Listbox.Button
-                    className="
-                        w-full bg-card
-                        backdrop-blur-md
-                        border border-line
-                        rounded-xl md:rounded-lg
-                        h-12 md:h-10
-                        pl-3 pr-8
-                        text-base md:text-sm
-                        text-fg-muted
-                        flex items-center justify-between
-                        transition-all
-                        focus:border-[#1fba11]
-                        "
+                    className="w-full h-11 md:h-10 pl-3 pr-8 rounded-lg bg-fg/[0.05] border border-fg/[0.07] text-base md:text-[13px] text-fg flex items-center justify-between outline-none transition-colors focus:border-fg/25 data-[open]:border-fg/25 cursor-pointer"
                 >
 
                     <span className={`truncate ${!value ? "text-fg-subtle" : ""}`}>

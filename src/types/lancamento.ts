@@ -31,3 +31,15 @@ export interface Lancamento {
   /** Texto digitado quando o banco é "Outro" (guardado junto pelo formulário) */
   outroBanco: string;
 }
+
+/** Bancos sugeridos no formulário ("Outro" permite digitar qualquer um) */
+export const BANCOS_SUGERIDOS = ['Nubank PJ', 'Itaú', 'Banco Inter', 'Bradesco', 'C6 Bank', 'Santander'] as const;
+
+/** Conta usada quando o pagamento é em dinheiro */
+export const CONTA_ESPECIE = 'Espécie';
+
+/** Status "já aconteceu" e "ainda vai acontecer" de cada tipo */
+export function statusDoTipo(tipo: TipoLancamento, realizado: boolean): StatusLancamento {
+  if (tipo === 'Investimento') return realizado ? 'Executado' : 'Agendado';
+  return realizado ? 'Pago' : 'Pendente';
+}

@@ -81,3 +81,8 @@ export const MENSAGENS_ERRO_VALOR: Record<ErroValor, string> = {
   zero: 'O valor precisa ser maior que zero',
   acima_do_limite: 'Valor acima do limite permitido',
 };
+
+/** 150050 -> "1.500,50" (texto para preencher o campo de valor, sem "R$") */
+export function centavosParaTexto(centavos: Centavos): string {
+  return (centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
