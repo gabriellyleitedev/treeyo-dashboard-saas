@@ -12,7 +12,7 @@ interface HeaderProps {
   onDataChange: (dataISO: string) => void;
 }
 
-// Cabeçalho da Visão Geral. Celular: HeaderMobile (perfil, busca, sino).
+// Cabeçalho da Visão Geral. Celular: HeaderMobile (perfil, calendário, busca, sino).
 // md+: título, seletor de data, tema e notificações.
 const Header = ({ data, onDataChange }: HeaderProps) => {
   const { preferencias } = usePreferencias();
@@ -20,7 +20,7 @@ const Header = ({ data, onDataChange }: HeaderProps) => {
 
   return (
     <>
-      <HeaderMobile />
+      <HeaderMobile data={data} onDataChange={onDataChange} />
 
       <header className="hidden md:block sticky top-0 z-50 pt-4">
         <div className="flex items-center justify-between gap-4 py-2">

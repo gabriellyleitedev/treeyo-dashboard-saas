@@ -22,7 +22,7 @@ export function Secao({ id, icone: Icone, titulo, descricao, children, perigo = 
             id={id}
             variants={itemVariants}
             aria-labelledby={`${id}-titulo`}
-            className={`scroll-mt-24 rounded-[24px] border p-5 md:p-6 bg-card ${perigo ? "border-red-500/25" : "border-line"}`}
+            className={`scroll-mt-28 rounded-[24px] border p-5 md:p-6 bg-card ${perigo ? "border-red-500/25" : "border-line"}`}
         >
             <header className="flex items-start gap-3 mb-5">
                 <span className={`w-10 h-10 shrink-0 rounded-2xl flex items-center justify-center ${perigo ? "bg-red-500/10 text-red-400" : "bg-[#1fba11]/10 text-marca"}`}>

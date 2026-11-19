@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CalendarDays, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
-import { dataLocalISO, isDataISO } from '@/domain/datas';
+import { dataLocalISO, diferencaEmDias, isDataISO } from '@/domain/datas';
 
 const MESES = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -65,6 +65,11 @@ export default function CalendarPicker({ value, onChange, customTrigger }: Calen
     fechar();
   };
 
+  // Data escolhida diferente de hoje: faixa ligando as duas no calendário
+  const temFaixa = selecionada !== hoje;
+  const [inicioFaixa, fimFaixa] = selecionada < hoje ? [selecionada, hoje] : [hoje, selecionada];
+  const distancia = Math.abs(diferencaEmDias(selecionada, hoje));
+
   const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
   const diasNoMes = new Date(ano, mes + 1, 0).getDate();
 
@@ -87,7 +92,7 @@ export default function CalendarPicker({ value, onChange, customTrigger }: Calen
           {ancora && (
             <div className="fixed inset-0 z-[400]">
               <motion.div
-                className="absolute inset-0 bg-black/25 backdrop-blur-md"
+                className="absolute inset-0 bg-black/35 backdrop-blur-xl"
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 onClick={fechar}
               />
@@ -109,8 +114,10 @@ export default function CalendarPicker({ value, onChange, customTrigger }: Calen
                     <button onClick={() => navegar(-1)} aria-label="Mês anterior" className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:bg-fg/10 transition cursor-pointer">
                       <ChevronLeft size={18} />
                     </button>
-                    <p className="text-sm text-fg">
-                      <span className="font-medium">{MESES[mes]}</span> <span className="text-fg-subtle">{ano}</span>
+                    {/* Mês em destaque e o ano pequeno embaixo */}
+                    <p className="flex flex-col items-center leading-tight">
+                      <span className="text-sm font-medium text-fg">{MESES[mes]}</span>
+                      <span className="text-[11px] text-fg-subtle tabular-nums">{ano}</span>
                     </p>
                     <button onClick={() => navegar(1)} aria-label="Próximo mês" className="w-8 h-8 rounded-full flex items-center justify-center text-fg-muted hover:bg-fg/10 transition cursor-pointer">
                       <ChevronRight size={18} />
@@ -121,7 +128,8 @@ export default function CalendarPicker({ value, onChange, customTrigger }: Calen
                     {DIAS_SEMANA.map((d, i) => <div key={i} className="text-center py-1">{d}</div>)}
                   </div>
 
-                  <div className="grid grid-cols-7 gap-0.5">
+                  {/* Sem espaço entre colunas: a faixa entre hoje e a data escolhida fica contínua */}
+                  <div className="grid grid-cols-7 gap-y-1">
                     {Array.from({ length: primeiroDiaSemana }).map((_, i) => <div key={`v${i}`} />)}
                     {Array.from({ length: diasNoMes }).map((_, i) => {
                       const dia = i + 1;
@@ -129,25 +137,48 @@ export default function CalendarPicker({ value, onChange, customTrigger }: Calen
                       // Compara a data inteira: o dia 17 só fica marcado no mês/ano certos
                       const ehSelecionado = iso === selecionada;
                       const ehHoje = iso === hoje;
+                      const naFaixa = temFaixa && iso >= inicioFaixa && iso <= fimFaixa;
+                      const ehInicio = naFaixa && iso === inicioFaixa;
+                      const ehFim = naFaixa && iso === fimFaixa;
+                      const semana = (primeiroDiaSemana + i) % 7; // 0 = domingo
+                      // A faixa arredonda nas pontas do intervalo e nas bordas da semana
+                      const arredondaEsq = ehInicio || semana === 0 || dia === 1;
+                      const arredondaDir = ehFim || semana === 6 || dia === diasNoMes;
                       return (
-                        <button
-                          key={dia}
-                          onClick={() => escolher(iso)}
-                          aria-pressed={ehSelecionado}
-                          aria-current={ehHoje ? 'date' : undefined}
-                          className={`aspect-square flex items-center justify-center rounded-full text-[13px] transition cursor-pointer ${
-                            ehSelecionado
-                              ? 'bg-[#1fba11] text-white font-semibold shadow-[0_4px_14px_rgba(31,186,17,0.35)]'
-                              : ehHoje
-                                ? 'text-marca font-semibold ring-1 ring-[#1fba11]/50 hover:bg-fg/10'
-                                : 'text-fg hover:bg-fg/10'
-                          }`}
-                        >
-                          {dia}
-                        </button>
+                        <div key={dia} className="relative aspect-square">
+                          {naFaixa && (
+                            <span
+                              aria-hidden="true"
+                              className={`absolute inset-y-[3px] bg-[#1fba11]/15 ${ehInicio ? 'left-1/2' : 'left-0'} ${ehFim ? 'right-1/2' : 'right-0'} ${arredondaEsq && !ehInicio ? 'rounded-l-full' : ''} ${arredondaDir && !ehFim ? 'rounded-r-full' : ''}`}
+                            />
+                          )}
+                          <button
+                            onClick={() => escolher(iso)}
+                            aria-pressed={ehSelecionado}
+                            aria-current={ehHoje ? 'date' : undefined}
+                            className={`relative w-full h-full flex items-center justify-center rounded-full text-[13px] transition cursor-pointer ${
+                              ehSelecionado
+                                ? 'bg-[#1fba11] text-white font-semibold shadow-[0_4px_14px_rgba(31,186,17,0.4)]'
+                                : ehHoje
+                                  ? temFaixa
+                                    // Hoje como a outra ponta da faixa: círculo verde mais suave
+                                    ? 'bg-[#1fba11]/35 text-fg font-semibold ring-1 ring-[#1fba11]/70'
+                                    : 'text-marca font-semibold ring-1 ring-[#1fba11]/50 hover:bg-fg/10'
+                                  : 'text-fg hover:bg-fg/10'
+                            }`}
+                          >
+                            {dia}
+                          </button>
+                        </div>
                       );
                     })}
                   </div>
+
+                  {temFaixa && (
+                    <p className="mt-3 text-[11px] text-fg-subtle text-center">
+                      {distancia === 1 ? '1 dia' : `${distancia} dias`} {selecionada < hoje ? 'antes de hoje' : 'depois de hoje'}
+                    </p>
+                  )}
 
                   <div className="flex justify-end mt-3 pt-3 border-t border-line">
                     <button onClick={() => escolher(hoje)} className="text-xs font-medium text-marca hover:underline cursor-pointer">

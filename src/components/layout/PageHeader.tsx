@@ -24,6 +24,8 @@ interface PageHeaderMobileProps extends PageHeaderProps {
 
 interface PageHeaderDesktopProps extends PageHeaderProps {
     variants?: Variants;
+    /** Trava no topo ao rolar, com fundo de vidro (telas longas, como Configurações) */
+    fixo?: boolean;
 }
 
 const MOLA = { type: "spring", stiffness: 400, damping: 36 } as const;
@@ -108,7 +110,7 @@ export function PageHeaderMobile({
                                         initial={false}
                                         animate={{ fontSize: rolou ? "21px" : "32px" }}
                                         transition={MOLA}
-                                        className="font-light tracking-[-0.03em] leading-none text-fg truncate"
+                                        className="font-light tracking-[-0.03em] leading-[1.15] pb-[0.08em] text-fg truncate"
                                     >
                                         {titulo}
                                     </motion.h1>
@@ -221,11 +223,28 @@ function MenuDaPagina({ posicao, onFechar }: { posicao: { top: number; left: num
 
 // Cabeçalho das páginas internas no desktop: "Dashboard / Título", busca,
 // seletor de tema e notificações.
-export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, modulo, variants }: PageHeaderDesktopProps) {
+export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, modulo, variants, fixo = false }: PageHeaderDesktopProps) {
+    // Fixo: um "sentinela" de 1px antes do cabeçalho diz se a página saiu do topo
+    const sentinelaRef = useRef<HTMLDivElement>(null);
+    const [rolou, setRolou] = useState(false);
+    useEffect(() => {
+        const el = sentinelaRef.current;
+        if (!fixo || !el) return;
+        const obs = new IntersectionObserver(([entrada]) => setRolou(!entrada.isIntersecting));
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, [fixo]);
+
+    const classeFixo = fixo
+        ? `md:sticky md:top-0 z-40 md:-mx-8 md:px-8 xl:-mx-10 xl:px-10 border-b transition-[background-color,border-color] duration-300 ${rolou ? "bg-surface/75 backdrop-blur-xl backdrop-saturate-150 border-line" : "border-transparent"}`
+        : "";
+
     return (
-        <motion.header className="hidden md:flex items-center justify-between w-full h-14 gap-4 shrink-0 mt-2" variants={variants}>
-            {/* Título fino à esquerda */}
-            <h1 className="text-fg font-light text-[28px] tracking-[-0.02em] leading-none truncate">{titulo}</h1>
+        <>
+        {fixo && <div ref={sentinelaRef} aria-hidden="true" className="hidden md:block h-px -mb-px" />}
+        <motion.header className={`hidden md:flex items-center justify-between w-full h-14 gap-4 shrink-0 mt-2 ${classeFixo} ${fixo ? "md:mt-0 md:h-[72px]" : ""}`} variants={variants}>
+            {/* Título fino à esquerda (altura de linha folgada para não cortar g, j, ç) */}
+            <h1 className="text-fg font-light text-[28px] tracking-[-0.02em] leading-[1.2] pb-1 -mt-1 truncate">{titulo}</h1>
 
             {/* À direita: busca em pílula, sol, lua e sino */}
             <div className="flex items-center gap-3 shrink-0">
@@ -246,5 +265,6 @@ export function PageHeaderDesktop({ titulo, busca, onBuscaChange, placeholder, m
                 <NotificationBell modulo={modulo} />
             </div>
         </motion.header>
+        </>
     );
 }

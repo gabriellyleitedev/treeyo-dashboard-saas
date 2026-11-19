@@ -55,7 +55,7 @@ export default function Configuracoes() {
             <PageHeaderMobile titulo="Configurações" modulo="geral" />
 
             <motion.div className="relative w-full max-w-[1200px] mx-auto flex flex-col" initial="hidden" animate="visible" variants={containerVariants}>
-                <PageHeaderDesktop titulo="Configurações" modulo="geral" variants={itemVariants} />
+                <PageHeaderDesktop titulo="Configurações" modulo="geral" variants={itemVariants} fixo />
 
                 <motion.p variants={itemVariants} className="mt-1 md:mt-2 mb-5 md:mb-8 text-sm text-fg-muted">
                     Tudo o que você muda aqui é salvo na hora.
@@ -63,7 +63,7 @@ export default function Configuracoes() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)] gap-8 xl:gap-12 items-start">
                     {/* Índice (computador) */}
-                    <motion.nav variants={itemVariants} aria-label="Seções" className="hidden lg:flex flex-col gap-1 sticky top-6">
+                    <motion.nav variants={itemVariants} aria-label="Seções" className="hidden lg:flex flex-col gap-1 sticky top-24">
                         {INDICE.map(({ id, rotulo, icone: Icone }) => {
                             const ativo = visivel === id;
                             return (

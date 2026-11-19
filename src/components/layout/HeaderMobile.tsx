@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, ChevronRight, LogOut, Search, Settings, User } from 'lucide-react';
+import { CalendarDays, ChevronDown, ChevronRight, LogOut, Search, Settings, User } from 'lucide-react';
+import CalendarPicker from '@/components/ui/CalendarPicker';
+import { dataLocalISO } from '@/domain/datas';
 import NotificationBell from '@/components/ui/NotificationBell';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { ROUTES } from '@/constants/navigation';
@@ -16,7 +18,13 @@ import { useLayout } from './contextoLayout';
 // - Ao rolar: vira uma cápsula de vidro destacada das bordas (topo e laterais).
 // Um "sentinela" de 1px antes do cabeçalho diz se a página saiu do topo
 // (IntersectionObserver funciona com o contêiner de rolagem do Layout).
-export default function HeaderMobile() {
+interface HeaderMobileProps {
+  /** Data de referência do painel (AAAA-MM-DD) */
+  data: string;
+  onDataChange: (dataISO: string) => void;
+}
+
+export default function HeaderMobile({ data, onDataChange }: HeaderMobileProps) {
   const { abrirBusca } = useLayout();
   const { preferencias } = usePreferencias();
   const sentinelaRef = useRef<HTMLDivElement>(null);
@@ -107,8 +115,19 @@ export default function HeaderMobile() {
             </span>
           </button>
 
-          {/* BUSCA + SINO */}
+          {/* CALENDÁRIO + BUSCA + SINO */}
           <div className={`flex items-center gap-0.5 p-1 rounded-full transition-all duration-300 ${rolou ? 'bg-fg/[0.04]' : 'vidro'}`}>
+            {/* Calendário: ver o painel de outro dia. Fora de hoje, ganha um ponto verde */}
+            <CalendarPicker
+              value={data}
+              onChange={onDataChange}
+              customTrigger={
+                <span aria-label="Escolher data" className="relative w-9 h-9 rounded-full flex items-center justify-center text-fg hover:bg-fg/10 transition">
+                  <CalendarDays size={18} strokeWidth={1.75} />
+                  {data !== dataLocalISO() && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#1fba11] ring-2 ring-surface" />}
+                </span>
+              }
+            />
             <button
               type="button"
               onClick={abrirBusca}
