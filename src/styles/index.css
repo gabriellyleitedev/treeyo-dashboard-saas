@@ -287,9 +287,24 @@
   }
 }
 
+/* ---------- Lançamentos: item recém-criado ----------
+   Depois da tela de sucesso, a linha nova acende na cor do tipo e apaga. */
+@keyframes destaque-novo {
+  0%, 35% { background-color: color-mix(in srgb, var(--destaque) 22%, transparent); }
+  100% { background-color: transparent; }
+}
+.destaque-novo {
+  animation: destaque-novo 2.4s ease-out both;
+  box-shadow: inset 3px 0 0 var(--destaque);
+}
+.destaque-entrada { --destaque: #1fba11; }
+.destaque-saida { --destaque: #ef4444; }
+.destaque-investimento { --destaque: #3b82f6; }
+
 /* ---------- Lançamentos: a lista sobe como uma folha ----------
    Ao rolar, a folha da lista sobe e a área de cima (tipos, card e
-   formulário) recua: encolhe, desfoca e apaga enquanto sai da tela.
+   formulário) fica travada e recua: encolhe, desfoca e apaga enquanto a
+   folha passa por cima.
    Guiado pela rolagem (CSS puro). Sem suporte ou com "reduzir movimento",
    tudo só rola normalmente. */
 @keyframes recua-ao-sair {
@@ -308,11 +323,13 @@
 
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
+    /* A área de cima fica travada (sticky) e não sai da tela, então o
+       recuo segue a rolagem do painel em vez da saída do elemento */
     .recua-ao-sair {
       transform-origin: 50% 100%;
       animation: recua-ao-sair linear both;
-      animation-timeline: view();
-      animation-range: exit 0% exit 100%;
+      animation-timeline: scroll();
+      animation-range: 0px 70vh;
     }
 
     .folha-lista {

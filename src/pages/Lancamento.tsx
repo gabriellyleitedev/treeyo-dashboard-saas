@@ -5,6 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import FormularioLancamento from '@/features/lancamentos/FormularioLancamento';
 import CardLancamento from '@/features/lancamentos/CardLancamento';
 import FormularioRapido from '@/features/lancamentos/FormularioRapido';
+import { useTopoTravado } from '@/features/lancamentos/useTopoTravado';
+import TecladoLancamento from '@/features/lancamentos/TecladoLancamento';
+import SucessoLancamento from '@/features/lancamentos/SucessoLancamento';
 import GlowTopo from '@/components/ui/GlowTopo';
 import Modal from '@/components/ui/Modal';
 import { PageHeaderMobile, PageHeaderDesktop } from '@/components/layout/PageHeader';
@@ -31,6 +34,11 @@ const Lancamento = () => {
         return tipo ? { tipo } : null;
     });
     const fecharModal = useCallback(() => setModal(null), []);
+    const { ref: refTopo, top: topoTop } = useTopoTravado<HTMLDivElement>();
+    // Teclado de novo lançamento, tela de sucesso e item recém-criado em destaque na lista
+    const [teclado, setTeclado] = useState<TipoLancamento | null>(null);
+    const [sucesso, setSucesso] = useState<{ lancamento: LancamentoItem; origem?: { x: number; y: number } } | null>(null);
+    const [destaque, setDestaque] = useState<number | null>(null);
     const [tipoAtivo, setTipoAtivo] = useState<TipoLancamento>(() => modal?.tipo ?? "Entrada");
 
     // Os atalhos da Visão Geral abrem esta tela com ?tipo=Entrada|Saída|Investimento
@@ -64,6 +72,11 @@ const Lancamento = () => {
             return;
         }
 
+        registrar(novo);
+    };
+
+    // Novo lançamento (de qualquer formulário): grava, avisa e abre a tela de sucesso
+    const registrar = (novo: LancamentoItem, origem?: { x: number; y: number }) => {
         adicionarLancamento(novo);
         setTipoAtivo(novo.tipo);
         adicionarNotificacao({
@@ -72,8 +85,23 @@ const Lancamento = () => {
             titulo: "Novo lançamento registrado",
             mensagem: `${novo.tipo} de ${formatarMoeda(novo.valor)} adicionada`
         });
-        toastComDesfazer(`${novo.tipo} registrada: ${novo.categoria} · ${formatarMoeda(novo.valor)}`, () => removerLancamento(novo.id));
+        setSucesso({ lancamento: novo, origem });
     };
+
+    // Ao fechar o sucesso: rola até o item novo na lista, destaca e oferece desfazer
+    const fecharSucesso = useCallback(() => {
+        setSucesso((atual) => {
+            if (!atual) return null;
+            const novo = atual.lancamento;
+            setDestaque(novo.id);
+            setTimeout(() => {
+                document.getElementById(`lancamento-${novo.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 320);
+            setTimeout(() => setDestaque((id) => (id === novo.id ? null : id)), 2600);
+            toastComDesfazer(`${novo.tipo} registrada: ${novo.categoria} · ${formatarMoeda(novo.valor)}`, () => removerLancamento(novo.id));
+            return null;
+        });
+    }, [removerLancamento]);
 
     // Pagou/recebeu agora: a data passa a ser a do pagamento (hoje)
     const concluir = (item: LancamentoItem) => {
@@ -129,6 +157,8 @@ const Lancamento = () => {
             />
 
             <motion.div className="w-full flex flex-col" initial="hidden" animate="visible" variants={containerVariants}>
+                {/* Área de cima: fica travada (depois de aparecer inteira) e a lista sobe por cima */}
+                <div ref={refTopo} style={{ top: topoTop }} className="recua-ao-sair sticky z-0">
                 <PageHeaderDesktop
                     titulo="Lançamentos"
                     busca={busca}
@@ -147,7 +177,7 @@ const Lancamento = () => {
                 */}
                 <motion.div
                     variants={itemVariants}
-                    className="recua-ao-sair relative z-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[9rem_332px_minmax(0,26rem)] xl:justify-center gap-6 md:gap-8 xl:gap-x-20 2xl:gap-x-28 items-center"
+                    className="relative z-20 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[9rem_332px_minmax(0,26rem)] xl:justify-center gap-6 md:gap-8 xl:gap-x-20 2xl:gap-x-28 items-center"
                 >
                     <div className="md:col-span-2 xl:col-span-1 grid grid-cols-3 gap-2 md:gap-4 xl:flex xl:flex-col xl:justify-center">
                         {TIPOS_LANCAMENTO.map((tipo) => {
@@ -173,7 +203,7 @@ const Lancamento = () => {
                             lancamento={ultimos[tipoAtivo]}
                             hoje={hoje}
                             legenda={legenda}
-                            aoNovo={(t) => setModal({ tipo: t })}
+                            aoNovo={setTeclado}
                             aoConcluir={concluir}
                             aoRepetir={repetir}
                             aoEditar={editar}
@@ -191,11 +221,12 @@ const Lancamento = () => {
                         />
                     </div>
                 </motion.div>
+                </div>
 
                 {/* ÚLTIMOS LANÇAMENTOS */}
                 <motion.div
                     variants={itemVariantsSutil}
-                    className="folha-lista relative z-30 flex flex-col mt-8 md:mt-12 -mx-4 md:-mx-8 xl:-mx-10 px-4 md:px-8 xl:px-10 pt-3 -mb-28 pb-28 md:-mb-8 md:pb-8 min-h-[70vh] rounded-t-[32px] md:rounded-t-[40px] bg-surface border-t border-line shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.55)]"
+                    className="folha-lista relative z-30 flex flex-col mt-8 md:mt-12 -mx-4 md:-mx-8 xl:-mx-10 px-4 md:px-8 xl:px-10 pt-3 -mb-28 pb-28 md:-mb-8 md:pb-8 min-h-[100dvh] md:min-h-[calc(100vh-1.5rem)] rounded-t-[32px] md:rounded-t-[40px] bg-surface border-t border-line shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.55)]"
                 >
                     {/* Alça, como num bottom sheet */}
                     <div aria-hidden="true" className="self-center w-10 h-1 rounded-full bg-fg/15 mb-5 md:mb-6" />
@@ -238,11 +269,12 @@ const Lancamento = () => {
                                     return (
                                         <motion.div
                                             key={item.id}
+                                            id={`lancamento-${item.id}`}
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, x: -30, transition: { duration: 0.2 } }}
                                             onClick={() => editar(item)}
-                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-fg py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-fg/[0.04] transition-all duration-400 border-b border-line cursor-pointer ${modal?.editando?.id === item.id ? "bg-fg/[0.05]" : ""}`}
+                                            className={`group grid ${COLUNAS_LISTA} items-center text-[13px] text-fg py-3 md:py-2.5 px-2 md:px-4 lg:px-6 hover:bg-fg/[0.04] transition-all duration-400 border-b border-line cursor-pointer ${modal?.editando?.id === item.id ? "bg-fg/[0.05]" : ""} ${destaque === item.id ? `destaque-novo destaque-${item.tipo === "Entrada" ? "entrada" : item.tipo === "Saída" ? "saida" : "investimento"}` : ""}`}
                                         >
                                             {/* CELULAR: categoria + detalhes numa célula só */}
                                             <div className="md:hidden min-w-0">
@@ -316,6 +348,30 @@ const Lancamento = () => {
                     />
                 )}
             </Modal>
+
+            <AnimatePresence>
+                {teclado && (
+                    <TecladoLancamento
+                        key="teclado"
+                        tipoInicial={teclado}
+                        historico={lista}
+                        aoFechar={() => setTeclado(null)}
+                        aoConfirmar={(novo, origem) => { setTeclado(null); registrar(novo, origem); }}
+                        aoDetalhar={(base) => { setTeclado(null); setModal({ tipo: base.tipo, modelo: base }); }}
+                    />
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {sucesso && (
+                    <SucessoLancamento
+                        key={sucesso.lancamento.id}
+                        lancamento={sucesso.lancamento}
+                        origem={sucesso.origem}
+                        aoFechar={fecharSucesso}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 };
