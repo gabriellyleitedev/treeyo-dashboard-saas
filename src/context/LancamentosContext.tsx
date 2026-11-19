@@ -1,0 +1,97 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { STORAGE_KEYS, isOneOf, isRecord, lerStorage, salvarStorage, textoOuVazio as texto } from '@/utils/storage';
+import { converterValorDigitado } from '@/utils/formatters';
+import {
+  METODOS_PAGAMENTO,
+  STATUS_INVESTIMENTO,
+  STATUS_PAGAMENTO,
+  TIPOS_LANCAMENTO,
+  type Lancamento,
+} from '@/types/lancamento';
+
+interface LancamentosContextValue {
+  lancamentos: Lancamento[];
+  adicionarLancamento: (novo: Lancamento) => void;
+  /** Substitui o lançamento de mesmo id (edição, "marcar como pago") */
+  atualizarLancamento: (alterado: Lancamento) => void;
+  removerLancamento: (id: Lancamento['id']) => void;
+  /** Troca a lista inteira (renomear categoria, apagar tudo) */
+  substituirLancamentos: (lista: Lancamento[]) => void;
+}
+
+const LancamentosContext = createContext<LancamentosContextValue | null>(null);
+
+const STATUS_VALIDOS = [...STATUS_PAGAMENTO, ...STATUS_INVESTIMENTO];
+
+// Converte um item lido do storage. Itens que não são um lançamento
+// reconhecível são descartados. A primeira versão do formulário gravava
+// `valor` como o texto digitado ("1.500,00"), que é convertido com a mesma
+// regra do formulário para não perder o valor ao regravar o storage.
+function interpretarLancamento(item: unknown): Lancamento | null {
+  if (!isRecord(item)) return null;
+  const { id, tipo, status, metodo, valor } = item;
+  if (typeof id !== 'number') return null;
+  if (!isOneOf(TIPOS_LANCAMENTO, tipo)) return null;
+  if (!isOneOf(STATUS_VALIDOS, status)) return null;
+  if (!isOneOf(METODOS_PAGAMENTO, metodo)) return null;
+
+  return {
+    id,
+    tipo,
+    status,
+    metodo,
+    valor: typeof valor === 'number' ? valor : converterValorDigitado(texto(valor)) || 0,
+    data: texto(item.data),
+    dataDisplay: texto(item.dataDisplay),
+    categoria: texto(item.categoria),
+    conta: texto(item.conta),
+    outroBanco: texto(item.outroBanco),
+  };
+}
+
+function interpretarLancamentos(dados: unknown): Lancamento[] {
+  if (!Array.isArray(dados)) return [];
+  return dados.map(interpretarLancamento).filter((l) => l !== null);
+}
+
+interface LancamentosProviderProps {
+  children: ReactNode;
+}
+
+// Fonte única dos lançamentos do app (persistidos no localStorage).
+export function LancamentosProvider({ children }: LancamentosProviderProps) {
+  const [lancamentos, setLancamentos] = useState<Lancamento[]>(
+    () => lerStorage(STORAGE_KEYS.lancamentos, [], interpretarLancamentos)
+  );
+
+  useEffect(() => {
+    salvarStorage(STORAGE_KEYS.lancamentos, lancamentos);
+  }, [lancamentos]);
+
+  const adicionarLancamento = useCallback((novo: Lancamento) => {
+    setLancamentos((prev) => [novo, ...prev]);
+  }, []);
+
+  const atualizarLancamento = useCallback((alterado: Lancamento) => {
+    setLancamentos((prev) => prev.map((l) => (l.id === alterado.id ? alterado : l)));
+  }, []);
+
+  const removerLancamento = useCallback((id: Lancamento['id']) => {
+    setLancamentos((prev) => prev.filter((l) => l.id !== id));
+  }, []);
+
+  const substituirLancamentos = useCallback((lista: Lancamento[]) => setLancamentos(lista), []);
+
+  const value = useMemo(
+    () => ({ lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento, substituirLancamentos }),
+    [lancamentos, adicionarLancamento, atualizarLancamento, removerLancamento, substituirLancamentos]
+  );
+
+  return <LancamentosContext.Provider value={value}>{children}</LancamentosContext.Provider>;
+}
+
+export const useLancamentos = (): LancamentosContextValue => {
+  const contexto = useContext(LancamentosContext);
+  if (!contexto) throw new Error('useLancamentos precisa estar dentro de <LancamentosProvider>');
+  return contexto;
+};

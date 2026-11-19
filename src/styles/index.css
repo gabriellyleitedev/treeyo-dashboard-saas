@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+/*
+ * Visão Geral em 3 colunas: largura de desktop E tela deitada. Um iPad Pro em
+ * pé (1024px de largura) fica com as 2 colunas do tablet, que respiram melhor.
+ */
+@custom-variant largo (@media (min-width: 1024px) and (min-aspect-ratio: 1/1));
+
+/*
+ * Painel sem rolagem (Visão Geral): telas com largura de desktop e altas o
+ * bastante (computador e tablet deitado). Em notebooks muito baixos e em
+ * tablets em pé, a página rola em vez de esticar ou espremer os cards.
+ */
+@custom-variant painel-fixo (@media (min-width: 1024px) and (min-height: 660px) and (min-aspect-ratio: 1/1));
+
+/*
+ * TEMAS
+ *
+ * Cada cor da interface é um token semântico ("fundo de card", "texto
+ * secundário"...) e não um hex solto. O valor de cada token muda conforme o
+ * atributo data-theme do <html> (definido pelo ThemeContext).
+ *
+ * Utilitários gerados: bg-card, bg-card-alt, bg-surface, text-fg,
+ * text-fg-muted, text-fg-subtle, border-line, text-marca...
+ * Sobreposições usam o próprio texto com opacidade (bg-fg/5, border-fg/10),
+ * o que funciona nos dois temas: clareia no escuro e escurece no claro.
+ *
+ * A sidebar e a dock são escuras nos dois temas (identidade da marca), por
+ * isso continuam com cores fixas.
+ */
+:root {
+  color-scheme: dark;
+  --tema-surface: #101411;      /* painel principal */
+  --tema-card: #151a16;         /* cards */
+  --tema-card-alt: #1c221e;     /* campos, hover, card dentro de card */
+  --tema-fg: #e8ece9;           /* texto principal */
+  --tema-fg-muted: #9aa39d;     /* texto secundário */
+  --tema-fg-subtle: #6b746e;    /* rótulos, placeholders */
+  --tema-line: rgb(255 255 255 / 0.08);
+  --tema-marca: #1fba11;        /* verde usado como TEXTO */
+  --tema-sombra: rgb(0 0 0 / 0.55);
+  /* Vidro escuro (cards de Lançamentos): escuro, mas deixando passar a luz
+     verde de trás (antes era quase preto e parecia um buraco na tela) */
+  --vidro-fundo-topo: rgb(22 26 24 / 0.55);
+  --vidro-fundo-base: rgb(14 17 15 / 0.65);
+  --vidro-borda: rgb(255 255 255 / 0.10);
+  --vidro-brilho: rgb(255 255 255 / 0.16);
+  --vidro-camada: rgb(255 255 255 / 0.03);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --tema-surface: #f3f5f3;
+  --tema-card: #ffffff;
+  --tema-card-alt: #f0f3f0;
+  --tema-fg: #101512;
+  --tema-fg-muted: #59625c;
+  --tema-fg-subtle: #8a938d;
+  --tema-line: rgb(16 21 18 / 0.09);
+  /* o verde da marca sobre branco tem contraste baixo para texto; escurece */
+  --tema-marca: #138a0a;
+  --tema-sombra: rgb(16 21 18 / 0.08);
+  --vidro-fundo-topo: rgb(255 255 255 / 0.85);
+  --vidro-fundo-base: rgb(255 255 255 / 0.70);
+  --vidro-borda: rgb(16 21 18 / 0.10);
+  --vidro-brilho: rgb(255 255 255 / 0.95);
+  --vidro-camada: rgb(16 21 18 / 0.07);
+}
+
+@theme inline {
+  --color-surface: var(--tema-surface);
+  --color-card: var(--tema-card);
+  --color-card-alt: var(--tema-card-alt);
+  --color-fg: var(--tema-fg);
+  --color-fg-muted: var(--tema-fg-muted);
+  --color-fg-subtle: var(--tema-fg-subtle);
+  --color-line: var(--tema-line);
+  --color-marca: var(--tema-marca);
+  --color-sombra: var(--tema-sombra);
+}
+
+@theme {
+  /* Marca (igual nos dois temas) */
+  --color-brand: #1fba11;
+  --color-brand-strong: #2ad81a;
+  --color-brand-ink: #041a02; /* texto sobre fundo brand */
+
+  /* Fundo atrás do painel e da sidebar: escuro nos dois temas */
+  --color-canvas: #0b0e0c;
+
+  /* Semântica financeira */
+  --color-entrada: #1fba11;
+  --color-saida: #f05252;
+  --color-investimento: #4b8bf5;
+  --color-pendente: #eab308;
+}
+
+/*
+ * Estilos globais.
+ * O reset fica em @layer base para que as utilities do Tailwind
+ * (mt-4, mx-auto, space-y-2...) consigam sobrescrevê-lo.
+ */
+@layer base {
+  * {
+    font-family: "Inter", sans-serif;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    background: var(--color-canvas);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+/* ---------- Animações ---------- */
+
+@keyframes barGrow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* usada pela Sidebar via animate-[pulseGlow_6s_ease-in-out_infinite] */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(-50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.75;
+    transform: translateY(-50%) scale(1.08);
+  }
+}
+
+.animate-barGrow {
+  animation: barGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ---------- Scrollbars ---------- */
+
+/* Esconde todas as scrollbars por padrão */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar fina e visível (ex: lista de lançamentos) */
+.custom-scroll {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #333333 transparent !important;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 5px !important;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background-color: #222222 !important;
+  border-radius: 20px !important;
+}
+
+/* Fundo do painel principal: grafite esverdeado com uma luz sutil no topo,
+   para dar profundidade sem competir com o conteúdo */
+.bg-painel {
+  background-image: radial-gradient(120% 60% at 50% -10%, rgb(31 186 17 / 0.07), transparent 60%);
+}
+
+/* Painel de vidro (popovers sobre fundo desfocado: calendário, notificações).
+   78% de opacidade + desfoque forte: o efeito aparece sem prejudicar a leitura. */
+@utility vidro {
+  background-color: color-mix(in srgb, var(--tema-card) 78%, transparent);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--tema-line);
+  box-shadow: 0 24px 60px var(--tema-sombra), inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+
+/* Vidro mais transparente (cabeçalho do celular ao rolar): o conteúdo que
+   passa por baixo aparece desfocado, como no iOS. */
+@utility vidro-forte {
+  background-color: color-mix(in srgb, var(--tema-card) 45%, transparent);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--tema-line) 80%, rgb(255 255 255 / 0.08));
+  box-shadow: 0 12px 32px var(--tema-sombra), inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+/* ---------- Visão Geral no celular: saldo no fundo, folha por cima ----------
+   O saldo fica preso atrás (sticky) e, conforme a folha de conteúdo sobe,
+   recua: encolhe, desfoca e apaga. Animação guiada pela rolagem (CSS puro,
+   roda fora da thread principal). Sem suporte ou com "reduzir movimento",
+   o saldo só rola junto, sem efeito. */
+@keyframes saldo-recua {
+  to {
+    opacity: 0.1;
+    transform: scale(0.88) translateY(-12px);
+    filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .saldo-recua {
+      transform-origin: 50% 0;
+      animation: saldo-recua linear both;
+      animation-timeline: scroll(nearest block);
+      animation-range: 0 340px;
+    }
+  }
+}
+
+/* Entradas da Visão Geral no celular:
+   - .folha-sobe: ao abrir, a folha de conteúdo sobe da parte de baixo
+   - .surge-do-fundo: cada bloco sobe e aparece conforme entra na tela ao rolar
+   - .entra-lateral: ao abrir, a Fila Inteligente chega deslizando da direita
+   - .fila-sai-de-lado: ao rolar, a Fila desliza para a direita enquanto sai
+     pelo topo; depois disso ela fica como fatia na borda (FilaLateral) */
+@keyframes entra-lateral {
+  from {
+    opacity: 0;
+    transform: translateX(80%);
+  }
+}
+
+@keyframes fila-sai-de-lado {
+  to {
+    opacity: 0.4;
+    transform: translateX(85%) scale(0.92);
+  }
+}
+@keyframes folha-sobe {
+  from {
+    opacity: 0;
+    transform: translateY(140px);
+  }
+}
+
+@keyframes surge-do-fundo {
+  from {
+    opacity: 0;
+    transform: translateY(48px) scale(0.97);
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .folha-sobe {
+    animation: folha-sobe 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  }
+
+  .entra-lateral {
+    animation: entra-lateral 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+  }
+
+  @supports (animation-timeline: view()) {
+    .surge-do-fundo {
+      animation: surge-do-fundo linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+
+    .fila-sai-de-lado {
+      animation: fila-sai-de-lado linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+/* ---------- Lançamentos: item recém-criado ----------
+   Depois da tela de sucesso, a linha nova acende na cor do tipo e apaga. */
+@keyframes destaque-novo {
+  0%, 35% { background-color: color-mix(in srgb, var(--destaque) 22%, transparent); }
+  100% { background-color: transparent; }
+}
+.destaque-novo {
+  animation: destaque-novo 2.4s ease-out both;
+  box-shadow: inset 3px 0 0 var(--destaque);
+}
+.destaque-entrada { --destaque: #1fba11; }
+.destaque-saida { --destaque: #ef4444; }
+.destaque-investimento { --destaque: #3b82f6; }
+
+/* ---------- Lançamentos: a lista sobe como uma folha ----------
+   Ao rolar, a folha da lista sobe e a área de cima (tipos, card e
+   formulário) fica travada e recua: encolhe, desfoca e apaga enquanto a
+   folha passa por cima.
+   Guiado pela rolagem (CSS puro). Sem suporte ou com "reduzir movimento",
+   tudo só rola normalmente. */
+@keyframes recua-ao-sair {
+  to {
+    opacity: 0.15;
+    transform: scale(0.94) translateY(48px);
+    filter: blur(6px);
+  }
+}
+
+@keyframes folha-lista-sobe {
+  from {
+    transform: translateY(96px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* A área de cima fica travada (sticky) e não sai da tela, então o
+       recuo segue a rolagem do painel em vez da saída do elemento */
+    .recua-ao-sair {
+      transform-origin: 50% 100%;
+      animation: recua-ao-sair linear both;
+      animation-timeline: scroll();
+      animation-range: 0px 70vh;
+    }
+
+    .folha-lista {
+      animation: folha-lista-sobe linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+/* Vidro escuro: fundo mais escuro que o painel, borda clara fina e um fio de
+   luz na borda de cima (como um cartão de vidro). No tema claro, vidro claro. */
+@utility vidro-escuro {
+  background: linear-gradient(180deg, var(--vidro-fundo-topo), var(--vidro-fundo-base));
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid var(--vidro-borda);
+  box-shadow: inset 0 1px 0 var(--vidro-brilho), 0 20px 44px var(--tema-sombra);
+}
