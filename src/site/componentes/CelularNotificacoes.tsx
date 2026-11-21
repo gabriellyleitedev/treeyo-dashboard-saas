@@ -6,7 +6,7 @@ import { SOLUCOES } from '@/site/textos';
 // Quantas notificações ficam empilhadas na tela ao mesmo tempo
 const NA_TELA = 3;
 // Intervalo entre uma notificação e outra
-const INTERVALO = 2600;
+const INTERVALO = 2000;
 
 interface Item {
   id: number;

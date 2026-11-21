@@ -44,7 +44,7 @@ export default function Crescimento() {
 
         <motion.h2
           variants={sobe}
-          className="mt-7 text-[34px] font-bold leading-[1.1] tracking-[-0.025em] text-white text-balance [text-shadow:0_0_12px_rgb(0_0_0/0.8)] md:text-[58px]"
+          className="mt-7 text-[34px] font-medium leading-[1.1] tracking-[-0.025em] text-white text-balance [text-shadow:0_0_12px_rgb(0_0_0/0.8)] md:text-[58px]"
         >
           {CRESCIMENTO.titulo.map((parte, i) =>
             typeof parte === 'string' ? (

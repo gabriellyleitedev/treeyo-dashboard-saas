@@ -1,12 +1,13 @@
-// Símbolo da Treeyo (as barras da logo) desenhado em SVG: nítido em qualquer
-// tamanho, usado no ícone do app dentro do celular.
+// Símbolo da Treeyo (as três barras e a barra inclinada que formam o "T" da
+// logo), redesenhado em SVG com as medidas tiradas de /site/logo.png: nítido
+// em qualquer tamanho e na cor do texto (currentColor).
 export default function MarcaTreeyo({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 40" aria-hidden className={className}>
-      <rect x="5" y="22" width="6" height="12" rx="1.5" fill="currentColor" />
-      <rect x="13.5" y="15" width="6" height="19" rx="1.5" fill="currentColor" />
-      <rect x="22" y="11" width="6" height="23" rx="1.5" fill="currentColor" />
-      <rect x="20" y="4.5" width="16" height="4.5" rx="1.5" transform="rotate(-14 28 6.75)" fill="currentColor" />
+    <svg viewBox="-2 -2 140 138" aria-hidden className={className}>
+      <rect x="1" y="90" width="25" height="43" rx="3" fill="currentColor" />
+      <rect x="38" y="61" width="25" height="72" rx="3" fill="currentColor" />
+      <rect x="75" y="39" width="25" height="94" rx="3" fill="currentColor" />
+      <rect x="38.5" y="14.6" width="96" height="19" rx="3" transform="rotate(-15.5 86.5 24.1)" fill="currentColor" />
     </svg>
   );
 }

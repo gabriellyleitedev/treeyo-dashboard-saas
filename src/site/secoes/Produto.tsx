@@ -1,66 +1,128 @@
-import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useInView, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { PRODUTO } from '@/site/textos';
 import TituloSecao, { Destaque } from '@/site/componentes/TituloSecao';
 import { cn } from '@/site/componentes/cn';
-import Notebook3D from '@/site/componentes/Notebook3D';
+import TelaPainel from '@/site/componentes/TelaPainel';
+
+// Tamanho da arte (notebook sobre a pedra) em que os cantos da tela foram medidos
+const ARTE = { largura: 2752, altura: 1536 };
+// Leva a Visão Geral (1536 × 960) para os 4 cantos da tela do notebook na arte
+// (cantos medidos na imagem: 1174,399 · 1849,279 · 1814,864 · 1124,902)
+const PERSPECTIVA_TELA =
+  'matrix3d(0.27082571, -0.10310215, 0, -0.000091259801, -0.086383113, 0.49721431, 0, -0.000030335866, 0, 0, 1, 0, 1174, 398.6, 0, 1)';
 
 // Onde cada etiqueta de vidro flutua em volta do notebook (computador)
 const POSICOES = [
-  'left-[1%] top-[20%]',
-  'right-[0%] top-[16%]',
-  'right-[4%] top-[66%]',
+  'left-[7%] top-[24%]',
+  'right-[9%] top-[17%]',
+  'right-[7%] top-[56%]',
 ];
 
 /*
- * Seção "Produto": um MacBook em 3D (de três-quartos) com a tela de verdade
- * do painel da Treeyo, flutuando sobre uma rocha que vai de ponta a ponta da
- * tela (foto real, tingida no verde da marca). Ao rolar, a tampa abre; o
- * notebook flutua devagar e as
- * etiquetas de vidro se movem em velocidades diferentes (profundidade).
+ * Seção "Produto": a arte do notebook flutuando sobre a pedra, de ponta a
+ * ponta da tela, com a Visão Geral do painel VIVA dentro da tela do notebook
+ * (HTML de verdade, posto na perspectiva da tela; ver TelaPainel). Ao entrar,
+ * a tela acende e o painel se monta: saldo contando, barras subindo, gráfico
+ * se desenhando; depois entradas novas vão chegando. Ao rolar, a cena aproxima
+ * de leve; o mouse move a cena um pouco (profundidade). Só transform/opacity.
  */
 export default function Produto() {
   const ref = useRef<HTMLDivElement>(null);
   const semMovimento = useReducedMotion();
+  const naTela = useInView(ref, { amount: 0.35 });
+  // a tela acende uma vez e fica viva enquanto a seção aparece
+  const acendeu = useInView(ref, { amount: 0.35, once: true });
+
+  // escala da camada da tela: a arte ocupa 100% da largura da caixa
+  const [escala, setEscala] = useState(0);
+  useEffect(() => {
+    const caixa = ref.current;
+    if (!caixa) return;
+    const medir = () => setEscala(caixa.clientWidth / ARTE.largura);
+    medir();
+    const obs = new ResizeObserver(medir);
+    obs.observe(caixa);
+    return () => obs.disconnect();
+  }, []);
+
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] });
-  const rochaY = useTransform(scrollYProgress, [0, 1], [60, 0]);
+  const cenaEscala = useTransform(scrollYProgress, [0, 1], [1.12, 1.03]);
+  const cenaY = useTransform(scrollYProgress, [0, 1], [50, 0]);
   const etiquetaY = [
     useTransform(scrollYProgress, [0, 1], [90, 0]),
     useTransform(scrollYProgress, [0, 1], [140, 0]),
     useTransform(scrollYProgress, [0, 1], [60, 0]),
   ];
 
+  // mouse: a cena desliza um pouco para o lado oposto (suavizado)
+  const mouseX = useSpring(0, { stiffness: 60, damping: 20 });
+  const mouseY = useSpring(0, { stiffness: 60, damping: 20 });
+  const mover = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (semMovimento || e.pointerType !== 'mouse') return;
+    const r = e.currentTarget.getBoundingClientRect();
+    mouseX.set(-((e.clientX - r.left) / r.width - 0.5) * 24);
+    mouseY.set(-((e.clientY - r.top) / r.height - 0.5) * 14);
+  };
+
   return (
-    <section id="produto" className="relative isolate overflow-hidden pb-[min(40vw,420px)] pt-32 md:pt-44">
+    <section id="produto" className="relative isolate overflow-hidden pb-24 pt-32 md:pb-32 md:pt-44">
 
       <TituloSecao etiqueta={PRODUTO.etiqueta} subtitulo={PRODUTO.subtitulo} className="px-6">
         {PRODUTO.titulo} <Destaque>{PRODUTO.tituloDestaque}</Destaque>
       </TituloSecao>
 
-      <div ref={ref} className="relative mx-auto mt-6 max-w-7xl px-4 md:mt-8">
-        {/* luz verde atrás do notebook */}
-        <div aria-hidden className="pointer-events-none absolute left-1/2 top-[30%] h-[70%] w-[90%] -translate-x-1/2 bg-[radial-gradient(closest-side,rgb(31_186_17/0.28),transparent)] blur-2xl" />
-
-        {/* rocha de ponta a ponta (foto real tingida de verde): começa logo
-            abaixo da base do notebook e vai até as bordas da tela; o topo some
-            no escuro. Sobe um pouco ao rolar. */}
-        <motion.picture
-          style={semMovimento ? undefined : { y: rochaY }}
-          className="pointer-events-none absolute left-1/2 top-[70%] block h-[min(52vw,620px)] w-screen -translate-x-1/2 [mask-image:linear-gradient(to_bottom,transparent_0%,black_20%,black_60%,transparent_100%)]"
+      {/* cena com 100% da largura da tela; topo e base somem no fundo */}
+      <div
+        ref={ref}
+        onPointerMove={mover}
+        onPointerLeave={() => { mouseX.set(0); mouseY.set(0); }}
+        className="relative mt-2 w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_88%,transparent_100%)] md:-mt-4"
+      >
+        <motion.div
+          style={semMovimento ? { scale: 1.03 } : { scale: cenaEscala, y: cenaY, x: mouseX, translateY: mouseY }}
+          className="relative"
         >
-          <source type="image/avif" srcSet="/site/rocha-1000.avif 1000w, /site/rocha-1920.avif 1920w" sizes="100vw" />
-          <img
-            src="/site/rocha-1920.webp"
-            srcSet="/site/rocha-1000.webp 1000w, /site/rocha-1920.webp 1920w"
-            sizes="100vw"
-            alt=""
-            loading="lazy"
-            className="h-full w-full object-cover object-top brightness-[0.85]"
-          />
-        </motion.picture>
+          <picture className="block">
+            <source
+              type="image/avif"
+              srcSet="/site/notebook-pedra-1376.avif 1376w, /site/notebook-pedra-2752.avif 2752w"
+              sizes="100vw"
+            />
+            <img
+              src="/site/notebook-pedra-2752.webp"
+              srcSet="/site/notebook-pedra-1376.webp 1376w, /site/notebook-pedra-2752.webp 2752w"
+              sizes="100vw"
+              width={ARTE.largura}
+              height={ARTE.altura}
+              alt="Painel da Treeyo aberto num notebook, com a Visão Geral do mês"
+              loading="lazy"
+              decoding="async"
+              className="block h-auto w-full"
+            />
+          </picture>
 
-        {/* notebook 3D apoiado na rocha (a tampa abre com a rolagem) */}
-        <Notebook3D className="relative z-10 mx-auto aspect-[16/10] w-full max-w-[1280px]" />
+          {/* a Visão Geral viva, na perspectiva da tela do notebook */}
+          {escala > 0 && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-0 top-0 origin-top-left"
+              style={{ width: ARTE.largura, height: ARTE.altura, transform: `scale(${escala})` }}
+            >
+              <motion.div
+                className="absolute left-0 top-0 origin-top-left"
+                style={{ transform: PERSPECTIVA_TELA }}
+                initial={{ opacity: semMovimento ? 0.94 : 0 }}
+                animate={{ opacity: acendeu || semMovimento ? 0.94 : 0 }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+              >
+                <TelaPainel ativo={naTela} parado={!!semMovimento} />
+                {/* reflexo do vidro por cima da tela */}
+                <div className="absolute inset-0 bg-[linear-gradient(125deg,rgb(255_255_255/0.10)_0%,rgb(255_255_255/0.03)_35%,transparent_55%)]" />
+              </motion.div>
+            </div>
+          )}
+        </motion.div>
 
         {/* etiquetas de vidro flutuando (só no computador) */}
         {PRODUTO.destaques.map((texto, i) => (
@@ -79,7 +141,7 @@ export default function Produto() {
       </div>
 
       {/* no celular, as etiquetas viram uma linha embaixo */}
-      <ul className="mx-auto -mt-8 flex max-w-md flex-wrap justify-center gap-2 px-6 lg:hidden">
+      <ul className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2 px-6 lg:hidden">
         {PRODUTO.destaques.map((texto) => (
           <li key={texto} className="flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm text-white">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1fba11]" />

@@ -40,7 +40,7 @@ export default function TituloSecao({ etiqueta, children, subtitulo, alinhamento
       <motion.div variants={sobe}>
         <Etiqueta>{etiqueta}</Etiqueta>
       </motion.div>
-      <motion.h2 variants={sobe} className="mt-7 text-[34px] font-bold leading-[1.1] tracking-[-0.025em] text-white text-balance md:text-[52px]">
+      <motion.h2 variants={sobe} className="mt-7 text-[34px] font-medium leading-[1.1] tracking-[-0.025em] text-white text-balance md:text-[52px]">
         {children}
       </motion.h2>
       {subtitulo && (

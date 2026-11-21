@@ -142,8 +142,9 @@
     min-height: 100vh;
     width: 100%;
     background: var(--color-canvas);
-    overflow-x: hidden;
-    overflow-y: auto;
+    /* "clip" corta o que vaza para os lados sem virar uma caixa de rolagem
+       (com "hidden"/"auto" aqui, position: sticky para de funcionar) */
+    overflow-x: clip;
   }
 }
 
