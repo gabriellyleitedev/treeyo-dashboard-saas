@@ -1,40 +1,49 @@
 /*
- * Som de notificação do site: toca o arquivo /site/notificacao.mp3 (uma
- * gravação de verdade; som sintetizado no navegador soa como jogo). Se o
- * arquivo não existir, o site simplesmente fica em silêncio.
+ * Som de notificação do site: toca o arquivo /site/notificacao.mp3.
  *
- * Os navegadores não deixam tocar som antes de a pessoa interagir com a
- * página (clique, toque ou tecla; rolar a página não conta). O áudio é
- * "destravado" nessa primeira interação; quem quiser saber o momento usa
- * aoLiberarSom().
+ * Os navegadores só deixam tocar som depois de a pessoa interagir com a
+ * página (clique, toque ou tecla; rolar não conta). No celular só o FIM do
+ * toque (touchend/click) libera o áudio, então o som só é dado como liberado
+ * quando o navegador confirma (a promessa de play() resolve); se ele recusar,
+ * continua esperando a próxima interação.
+ *
+ * Usa um <audio> comum (e não Web Audio): no iPhone, a Web Audio fica muda com
+ * a chave do silencioso, e o <audio> segue o volume de mídia.
  */
 
-let contexto: AudioContext | null = null;
-let liberado = false;
+const ARQUIVO = '/site/notificacao.mp3';
+const VOLUME = 0.7;
+
+let audio: HTMLAudioElement | null = null;
+let pronto = false;
 const esperando = new Set<() => void>();
 
-let pronto = false; // áudio liberado e arquivo já carregado (ou sem arquivo)
+const EVENTOS = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'] as const;
 
-function liberar() {
-  if (liberado) return;
-  try {
-    contexto ??= new AudioContext();
-    void contexto.resume();
-    liberado = true;
-  } catch { return; /* navegador sem Web Audio */ }
-  EVENTOS.forEach((e) => window.removeEventListener(e, liberar));
-  // avisa quem espera só depois de carregar o arquivo (o 1º aviso não sai mudo)
-  void carregar(contexto).finally(() => {
-    pronto = true;
-    esperando.forEach((f) => f());
-    esperando.clear();
-  });
+function tentarLiberar() {
+  if (pronto || !audio) return;
+  const el = audio;
+  // toca mudo dentro do gesto: se o navegador aceitar, o áudio está liberado
+  el.muted = true;
+  el.play()
+    .then(() => {
+      el.pause();
+      el.currentTime = 0;
+      el.muted = false;
+      if (pronto) return;
+      pronto = true;
+      EVENTOS.forEach((e) => window.removeEventListener(e, tentarLiberar));
+      esperando.forEach((f) => f());
+      esperando.clear();
+    })
+    .catch(() => { el.muted = false; /* ainda bloqueado: espera o próximo gesto */ });
 }
 
-// interações que o navegador aceita para liberar áudio
-const EVENTOS = ['pointerdown', 'keydown', 'touchend', 'click'] as const;
 if (typeof window !== 'undefined') {
-  EVENTOS.forEach((e) => window.addEventListener(e, liberar, { passive: true }));
+  audio = new Audio(ARQUIVO);
+  audio.preload = 'auto';
+  audio.volume = VOLUME;
+  EVENTOS.forEach((e) => window.addEventListener(e, tentarLiberar, { passive: true }));
 }
 
 /** Chama "f" quando o som for liberado (na hora, se já estiver). Devolve o cancelamento. */
@@ -44,26 +53,9 @@ export function aoLiberarSom(f: () => void) {
   return () => { esperando.delete(f); };
 }
 
-const ARQUIVO = '/site/notificacao.mp3';
-let gravacao: AudioBuffer | null = null;
-
-/** Baixa e decodifica o arquivo uma vez (quando o som é liberado) */
-async function carregar(ctx: AudioContext) {
-  if (gravacao) return;
-  try {
-    const resp = await fetch(ARQUIVO);
-    if (!resp.ok) return;
-    gravacao = await ctx.decodeAudioData(await resp.arrayBuffer());
-  } catch { /* sem arquivo ou formato inválido: fica em silêncio */ }
-}
-
-/** Toca o aviso (se o áudio já foi liberado e o arquivo carregou) */
+/** Toca o aviso (se o áudio já foi liberado) */
 export function tocarPlim() {
-  if (!liberado || !contexto || !gravacao || document.hidden) return;
-  const fonte = contexto.createBufferSource();
-  const volume = contexto.createGain();
-  volume.gain.value = 0.7;
-  fonte.buffer = gravacao;
-  fonte.connect(volume).connect(contexto.destination);
-  fonte.start();
+  if (!pronto || !audio || document.hidden) return;
+  audio.currentTime = 0;
+  void audio.play().catch(() => { /* bloqueado de novo: ignora */ });
 }

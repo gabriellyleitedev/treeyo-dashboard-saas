@@ -21,7 +21,7 @@ const SUAVE = [0.16, 1, 0.3, 1] as const;
  */
 export default function Abertura() {
   return (
-    <section id="treeyo" className="pt-20 md:pt-[88px]">
+    <section id="treeyo" className="pb-10 pt-20 md:pb-0 md:pt-[88px]">
       <div className="relative isolate h-[78svh] w-full overflow-hidden rounded-[28px] md:h-auto md:aspect-[2/1] md:rounded-[48px] lg:rounded-[64px]">
         <picture className="absolute inset-0 -z-30">
           <source type="image/avif" srcSet="/site/abertura-1080.avif 1080w, /site/abertura-1920.avif 1920w" sizes="100vw" />
@@ -30,7 +30,7 @@ export default function Abertura() {
             src="/site/abertura-1920.webp"
             alt="Microempreendedor trabalhando no notebook"
             fetchPriority="high"
-            className="h-full w-full object-cover object-[10%_center] brightness-[0.72] contrast-[1.06] saturate-[0.8] md:object-top"
+            className="h-full w-full object-cover object-[38%_center] brightness-[0.72] contrast-[1.06] saturate-[0.8] md:object-top"
           />
         </picture>
 
@@ -44,11 +44,17 @@ export default function Abertura() {
         <Notificacoes />
 
         {/* a frase da marca, entrando pela direita */}
-        <div className="animate-entra-direita absolute inset-x-5 bottom-8 md:inset-x-auto md:bottom-auto md:right-[3%] md:top-[43%]">
-          <h1 className="text-[28px] font-medium leading-[1.12] tracking-[-0.02em] text-white md:text-[clamp(30px,3.3vw,58px)]">
-            {ABERTURA.titulo.map((linha) => (
-              <span key={linha} className="md:block md:whitespace-nowrap">{linha} </span>
-            ))}
+        <div className="animate-entra-direita absolute inset-x-5 bottom-[24%] text-center md:inset-x-auto md:text-left md:bottom-auto md:right-[3%] md:top-[43%]">
+          <h1 className="text-[33px] font-medium leading-[1.1] tracking-[-0.03em] text-white md:text-[clamp(30px,3.3vw,58px)]">
+            {/* celular: 3 linhas com quebras fixas; computador: 2 linhas */}
+            <span className="md:hidden">
+              {ABERTURA.tituloCelular.map((linha) => <span key={linha} className="block">{linha}</span>)}
+            </span>
+            <span className="hidden md:inline">
+              {ABERTURA.titulo.map((linha) => (
+                <span key={linha} className="block whitespace-nowrap">{linha}</span>
+              ))}
+            </span>
           </h1>
         </div>
       </div>

@@ -19,6 +19,7 @@ export const BOTOES = {
 export const ABERTURA = {
   // uma linha por item (no computador a frase fica em 2 linhas)
   titulo: ['Somos o solo fértil para o sucesso', 'do microempreendedor.'],
+  tituloCelular: ['Somos o solo fértil', 'para o sucesso do', 'microempreendedor.'],
   // notificações da Treeyo que chegam ao lado do rapaz (em loop)
   notificacoes: [
     { titulo: 'Chegou uma entrada', texto: '+R$ 350,00 no Pix · Ana Souza', quando: 'agora' },

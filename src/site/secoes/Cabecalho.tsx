@@ -39,7 +39,7 @@ export default function Cabecalho() {
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-2">
       <div
         className={cn(
-          'mx-auto flex h-16 max-w-6xl items-center justify-between rounded-full pl-3 pr-2 md:h-[80px] md:pl-6 md:pr-4',
+          'mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 rounded-full pl-4 pr-2 md:h-[80px] md:pl-8 md:pr-4 xl:pl-10',
           'border transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500',
           rolou
             ? 'border-white/10 bg-black/45 backdrop-blur-xl backdrop-saturate-150 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_12px_40px_-12px_rgb(0_0_0/0.8)]'
@@ -52,14 +52,14 @@ export default function Cabecalho() {
 
         <MenuComputador />
 
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-1 md:gap-4">
           <Link
             to={ROTA_ENTRAR}
             className="hidden rounded-full px-4 py-2 text-[17px] font-medium text-white/90 transition-colors duration-300 hover:text-[#1fba11] sm:block"
           >
             {BOTOES.entrar}
           </Link>
-          <div className="ml-2 hidden sm:block">
+          <div className="hidden sm:block">
             <BotaoBrilho para={ROTA_ENTRAR} className="px-14 py-[9px] text-[15px] leading-5">{BOTOES.sejaTreeyo}</BotaoBrilho>
           </div>
 
@@ -124,63 +124,92 @@ function MenuComputador() {
   );
 }
 
+const SUAVE = [0.16, 1, 0.3, 1] as const;
+
+// Menu do celular: uma folha de vidro puro (só desfoque, quase sem cor) que desce do topo até o
+// tamanho do conteúdo (o site continua aparecendo embaixo). A folha se
+// desenrola de cima para baixo e os itens entram um a um, saindo do desfoque
+// e deslizando da esquerda; por último, o botão sobe.
 function MenuCelular({ aoFechar }: { aoFechar: () => void }) {
+  const itens = [...MENU, { rotulo: BOTOES.entrar, ancora: '' }];
   return (
-    <motion.div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Menu"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      className="fixed inset-0 z-50 flex flex-col bg-black/85 px-6 pb-8 pt-5 backdrop-blur-2xl lg:hidden"
-    >
-      {/* brilho verde no topo, como no site antigo */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(60%_100%_at_50%_0%,rgb(31_186_17/0.25),transparent)]" />
+    <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+      {/* toque fora fecha (sem escurecer o site: só o vidro do menu) */}
+      <motion.button
+        type="button"
+        aria-label="Fechar menu"
+        tabIndex={-1}
+        onClick={aoFechar}
+        className="absolute inset-0 cursor-default"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+      />
 
-      <div className="relative flex h-14 items-center justify-between pl-1">
-        <img src="/site/logo.png" alt="Treeyo" className="h-9 w-auto" />
-        <button
-          type="button"
-          onClick={aoFechar}
-          aria-label="Fechar menu"
-          className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10"
-        >
-          <X size={22} />
-        </button>
-      </div>
+      <motion.div
+        className="absolute inset-x-0 top-0 overflow-hidden rounded-b-[28px] border-b border-white/10 bg-white/[0.04] px-4 pb-6 pt-2 shadow-[inset_0_-1px_0_rgb(255_255_255/0.06),0_30px_60px_-20px_rgb(0_0_0/0.6)] backdrop-blur-[40px] backdrop-saturate-[1.8]"
+        initial={{ clipPath: 'inset(0 0 100% 0 round 0 0 28px 28px)' }}
+        animate={{ clipPath: 'inset(0 0 0% 0 round 0 0 28px 28px)' }}
+        exit={{ clipPath: 'inset(0 0 100% 0 round 0 0 28px 28px)', transition: { duration: 0.45, ease: [0.7, 0, 0.84, 0] } }}
+        transition={{ duration: 0.7, ease: SUAVE }}
+      >
+        {/* mesma posição da logo e do botão do cabeçalho: abrir não dá "pulo" */}
+        <div className="relative flex h-16 items-center justify-between pl-4 pr-2">
+          <img src="/site/logo.png" alt="Treeyo" className="h-9 w-auto" />
+          <motion.button
+            type="button"
+            onClick={aoFechar}
+            aria-label="Fechar menu"
+            className="flex h-10 w-10 items-center justify-center rounded-full text-white hover:bg-white/10"
+            initial={{ rotate: -90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.15, ease: SUAVE }}
+          >
+            <X size={24} />
+          </motion.button>
+        </div>
 
-      <nav aria-label="Principal" className="relative mt-10 flex-1">
-        <ul className="space-y-1">
-          {MENU.map((item, i) => (
-            <motion.li
-              key={item.ancora}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 + i * 0.05, ease: [0.16, 1, 0.3, 1], duration: 0.5 }}
-            >
-              <a
-                href={item.ancora}
-                onClick={aoFechar}
-                className="block py-3 text-3xl font-semibold tracking-tight text-white/90 hover:text-[#1fba11]"
+        <nav aria-label="Principal" className="relative mt-4 px-4">
+          <ul>
+            {itens.map((item, i) => (
+              <motion.li
+                key={item.rotulo}
+                initial={{ opacity: 0, x: -28, filter: 'blur(8px)' }}
+                animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                transition={{ duration: 0.6, delay: 0.18 + i * 0.06, ease: SUAVE }}
               >
-                {item.rotulo}
-              </a>
-            </motion.li>
-          ))}
-        </ul>
-      </nav>
+                {item.ancora ? (
+                  <a href={item.ancora} onClick={aoFechar} className="block py-3 text-[19px] font-medium text-white/90 transition-colors duration-300 hover:text-[#1fba11]">
+                    {item.rotulo}
+                  </a>
+                ) : (
+                  <Link to={ROTA_ENTRAR} onClick={aoFechar} className="block py-3 text-[19px] font-medium text-white/90 transition-colors duration-300 hover:text-[#1fba11]">
+                    {item.rotulo}
+                  </Link>
+                )}
+              </motion.li>
+            ))}
+          </ul>
+        </nav>
 
-      <div className="relative grid gap-3">
-        <BotaoBrilho para={ROTA_ENTRAR} bloco className="py-3.5 text-base">{BOTOES.sejaTreeyo}</BotaoBrilho>
-        <Link
-          to={ROTA_ENTRAR}
-          className="rounded-full border border-white/15 py-3.5 text-center text-base font-medium text-white"
+        <motion.div
+          className="relative mt-5 px-1"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.15 } }}
+          transition={{ duration: 0.6, delay: 0.18 + itens.length * 0.06, ease: SUAVE }}
         >
-          {BOTOES.entrar}
-        </Link>
-      </div>
-    </motion.div>
+          <Link
+            to={ROTA_ENTRAR}
+            onClick={aoFechar}
+            className="block rounded-2xl bg-white py-3.5 text-center text-base font-semibold text-[#0b2a07] transition-transform duration-300 active:scale-[0.98]"
+          >
+            {BOTOES.sejaTreeyo}
+          </Link>
+        </motion.div>
+      </motion.div>
+    </div>
   );
 }
