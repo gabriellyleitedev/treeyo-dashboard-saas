@@ -42,7 +42,9 @@ function useComputador() {
  * chega, o painel dele se monta (números contando, barras, calendário) e fica
  * para fora da borda de baixo do cartão. Depois de todos chegarem, a seção
  * segura um pouco e segue a rolagem.
- * No celular não prende: os pilares aparecem um embaixo do outro.
+ * No celular não prende: os pilares aparecem um embaixo do outro. No iPad em
+ * pé, cada pilar fica com o texto à esquerda e o cartão à direita (senão o
+ * cartão ocupa a largura toda e fica enorme).
  */
 export default function Recursos() {
   const ref = useRef<HTMLElement>(null);
@@ -64,12 +66,12 @@ export default function Recursos() {
           className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end"
         >
           <div>
-            <motion.div variants={sobe}><Etiqueta>{R.etiqueta}</Etiqueta></motion.div>
-            <motion.h2 variants={sobe} className="mt-6 max-w-2xl text-[34px] font-medium leading-[1.08] tracking-[-0.03em] text-white text-balance md:text-[50px]">
+            <motion.div variants={sobe}><Etiqueta claro>{R.etiqueta}</Etiqueta></motion.div>
+            <motion.h2 variants={sobe} className="mt-6 max-w-2xl text-[34px] font-medium leading-[1.08] tracking-[-0.03em] text-[#101512] text-balance md:text-[50px]">
               {R.titulo} {R.tituloDestaque}
             </motion.h2>
           </div>
-          <motion.p variants={sobe} className="max-w-md text-lg leading-relaxed text-[#a8a8a8] lg:justify-self-end">
+          <motion.p variants={sobe} className="max-w-md text-lg leading-relaxed text-[#59625c] lg:justify-self-end">
             {R.subtitulo}
           </motion.p>
         </motion.div>
@@ -114,23 +116,23 @@ function Pilar({ indice, titulo, texto, progresso, parado }: PilarProps) {
   const ativo = progresso ? chegou : visto || parado;
 
   return (
-    <div ref={caixaRef}>
+    <div ref={caixaRef} className="md:grid md:grid-cols-[1fr_1.15fr] md:items-center md:gap-10 lg:block">
       <motion.div style={progresso ? { opacity: textoOpacidade } : undefined}>
-        <p className="font-mono text-sm text-[#1fba11]">[{indice + 1}]</p>
-        <h3 className="mt-2 text-xl font-medium text-white">{titulo}</h3>
-        <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-[#8f948f]">{texto}</p>
+        <p className="font-mono text-sm text-[#138a0a]">[{indice + 1}]</p>
+        <h3 className="mt-2 text-xl font-medium text-[#101512]">{titulo}</h3>
+        <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-[#59625c]">{texto}</p>
       </motion.div>
 
       {/* cartão: fundo fora de foco que entra em foco; o painel sai pela borda de baixo */}
       <motion.div
-        className="relative mb-12 mt-6 aspect-[4/4.3]"
+        className="relative mb-12 mt-6 aspect-[4/4.3] md:mt-0 lg:mt-6"
         style={progresso ? { y } : undefined}
         initial={progresso || parado ? false : { opacity: 0, y: 80 }}
         whileInView={progresso ? undefined : { opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 1, delay: indice * 0.12, ease: SUAVE }}
       >
-        <div className="absolute inset-0 overflow-hidden rounded-[28px] border border-white/10">
+        <div className="absolute inset-0 overflow-hidden rounded-[28px] shadow-[0_30px_60px_-30px_rgb(16_21_18/0.45)]">
           <motion.div
             aria-hidden
             className="absolute -inset-6"
@@ -158,7 +160,7 @@ function Vidro({ icone, titulo, ativo, parado, escuro, children }: CartaoProps &
       animate={ativo ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 1, ease: SUAVE }}
       className={cn(
-        'h-full overflow-hidden rounded-[22px] border p-5 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.15),0_30px_60px_-20px_rgb(0_0_0/0.8)]',
+        'h-full overflow-hidden rounded-[22px] border p-5 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.15),0_30px_60px_-20px_rgb(0_0_0/0.55)]',
         escuro ? 'border-white/10 bg-[#111512]' : 'border-white/20 bg-[#0b0f0c]/45 backdrop-blur-2xl'
       )}
     >

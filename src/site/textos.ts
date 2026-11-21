@@ -169,6 +169,8 @@ export const PACOTE = {
   tituloSegundaLinha: 'Sem mensalidade.',
   subtitulo: 'Todo app cobra assinatura todo mês. A Treeyo não: você fecha o pacote uma vez e o sistema cuida do resto.',
   colunas: ['Planilha', 'Apps por assinatura', 'Treeyo Pacote'],
+  // no celular a tabela é estreita: nomes curtos
+  colunasCurtas: ['Planilha', 'Apps', 'Treeyo'],
   // [planilha, assinatura, treeyo]: true = tem, false = não tem, texto = detalhe
   linhas: [
     { nome: 'Entradas e saídas organizadas', valores: [true, true, true] },

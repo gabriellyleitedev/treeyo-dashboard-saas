@@ -4,7 +4,8 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 /*
  * Efeito "cortina": a seção de trás (fundo) fica parada na tela quando o fim
  * dela chega embaixo, e a seção da frente sobe por cima como uma folha de
- * cantos arredondados (igual à folha da tela de Lançamentos). Enquanto a
+ * cantos arredondados e BRANCA (igual à folha da tela de Lançamentos): dali
+ * para baixo o site é claro. Enquanto a
  * folha cobre, o fundo afunda: escurece, desfoca e diminui um pouco.
  */
 export default function Cortina({ fundo, children }: { fundo: ReactNode; children: ReactNode }) {
@@ -49,9 +50,10 @@ export default function Cortina({ fundo, children }: { fundo: ReactNode; childre
       {/* a folha que sobe por cima */}
       <div
         ref={folhaRef}
-        className="relative z-10 rounded-t-[40px] border-t border-white/10 bg-[#0b0f0c] shadow-[0_-30px_60px_-10px_rgb(0_0_0/0.7)] md:rounded-t-[56px]"
+        data-fundo-claro
+        className="relative z-10 rounded-t-[40px] bg-white text-[#101512] shadow-[0_-30px_60px_-10px_rgb(0_0_0/0.7)] md:rounded-t-[56px]"
       >
-        <span aria-hidden className="absolute left-1/2 top-4 h-1.5 w-12 -translate-x-1/2 rounded-full bg-white/15" />
+        <span aria-hidden className="absolute left-1/2 top-4 h-1.5 w-12 -translate-x-1/2 rounded-full bg-black/10" />
         {children}
       </div>
     </div>

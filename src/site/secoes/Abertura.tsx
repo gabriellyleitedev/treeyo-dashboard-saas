@@ -15,14 +15,16 @@ const SUAVE = [0.16, 1, 0.3, 1] as const;
  * Primeira dobra: o rapaz trabalhando (o lado humano), com a foto puxada para
  * o escuro/verde do resto do site. Ao lado dele, notificações da Treeyo vão
  * chegando, uma de cada vez (a Treeyo cuidando do dinheiro dele); à direita,
- * a frase da marca.
+ * a frase da marca. Celular e iPad em pé: foto alta e frase embaixo, no
+ * centro; a partir de 1024px: foto larga e frase à direita. O pé da foto
+ * some no fundo (sem a linha da borda).
  * A foto original tinha 25 MB; aqui vai em AVIF/WebP (~30–70 KB), já sem as
  * etiquetas que vinham gravadas nela.
  */
 export default function Abertura() {
   return (
-    <section id="treeyo" className="pb-10 pt-20 md:pb-0 md:pt-[88px]">
-      <div className="relative isolate h-[78svh] w-full overflow-hidden rounded-[28px] md:h-auto md:aspect-[2/1] md:rounded-[48px] lg:rounded-[64px]">
+    <section id="treeyo" className="pb-10 pt-20 md:pt-[88px] lg:pb-0">
+      <div className="relative isolate h-[78svh] w-full overflow-hidden rounded-[28px] [mask-image:linear-gradient(to_bottom,black_78%,transparent)] md:h-[72svh] md:rounded-[48px] lg:h-auto lg:aspect-[2/1] lg:rounded-[64px]">
         <picture className="absolute inset-0 -z-30">
           <source type="image/avif" srcSet="/site/abertura-1080.avif 1080w, /site/abertura-1920.avif 1920w" sizes="100vw" />
           <source type="image/webp" srcSet="/site/abertura-1080.webp 1080w, /site/abertura-1920.webp 1920w" sizes="100vw" />
@@ -30,7 +32,7 @@ export default function Abertura() {
             src="/site/abertura-1920.webp"
             alt="Microempreendedor trabalhando no notebook"
             fetchPriority="high"
-            className="h-full w-full object-cover object-[38%_center] brightness-[0.72] contrast-[1.06] saturate-[0.8] md:object-top"
+            className="h-full w-full object-cover object-[38%_center] brightness-[0.72] contrast-[1.06] saturate-[0.8] lg:object-top"
           />
         </picture>
 
@@ -38,19 +40,19 @@ export default function Abertura() {
             perder o tom de pele (o verde entra por "multiply", só nas sombras) */}
         <div aria-hidden className="absolute inset-0 -z-20 bg-[#0d3317] opacity-50 mix-blend-multiply" />
         <div aria-hidden className="absolute inset-0 -z-20 bg-[radial-gradient(60%_70%_at_40%_45%,transparent_30%,rgb(4_10_6/0.75)_100%)]" />
-        {/* sombra para ler a frase: embaixo no celular, à direita no computador */}
-        <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgb(4_8_5/0.92)_0%,rgb(4_8_5/0.5)_40%,transparent_65%)] md:bg-[linear-gradient(to_left,rgb(4_8_5/0.85)_0%,rgb(4_8_5/0.45)_35%,transparent_60%)]" />
+        {/* sombra para ler a frase: embaixo no celular/iPad, à direita no computador */}
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgb(4_8_5/0.92)_0%,rgb(4_8_5/0.5)_40%,transparent_65%)] lg:bg-[linear-gradient(to_left,rgb(4_8_5/0.85)_0%,rgb(4_8_5/0.45)_35%,transparent_60%)]" />
 
         <Notificacoes />
 
         {/* a frase da marca, entrando pela direita */}
-        <div className="animate-entra-direita absolute inset-x-5 bottom-[24%] text-center md:inset-x-auto md:text-left md:bottom-auto md:right-[3%] md:top-[43%]">
-          <h1 className="text-[33px] font-medium leading-[1.1] tracking-[-0.03em] text-white md:text-[clamp(30px,3.3vw,58px)]">
-            {/* celular: 3 linhas com quebras fixas; computador: 2 linhas */}
-            <span className="md:hidden">
+        <div className="animate-entra-direita absolute inset-x-5 bottom-[24%] text-center lg:inset-x-auto lg:bottom-auto lg:right-[3%] lg:top-[43%] lg:text-left">
+          <h1 className="text-[33px] font-medium leading-[1.1] tracking-[-0.03em] text-white md:text-[52px] lg:text-[clamp(30px,3.3vw,58px)]">
+            {/* celular e iPad em pé: 3 linhas com quebras fixas; computador: 2 linhas */}
+            <span className="lg:hidden">
               {ABERTURA.tituloCelular.map((linha) => <span key={linha} className="block">{linha}</span>)}
             </span>
-            <span className="hidden md:inline">
+            <span className="hidden lg:inline">
               {ABERTURA.titulo.map((linha) => (
                 <span key={linha} className="block whitespace-nowrap">{linha}</span>
               ))}
@@ -102,7 +104,7 @@ function Notificacoes() {
   const pilha = [0].map((atras) => ({ chave: atual - atras, atras, item: ABERTURA.notificacoes[(((atual - atras) % total) + total) % total] }));
 
   return (
-    <div ref={ref} aria-hidden className="absolute left-5 right-5 top-6 h-[96px] md:left-[5%] md:right-auto md:top-[16%] md:h-[120px] md:w-[min(30%,380px)]">
+    <div ref={ref} aria-hidden className="absolute left-5 right-5 top-6 h-[96px] md:left-8 md:right-auto md:top-8 md:w-[380px] lg:left-[5%] lg:top-[16%] lg:h-[120px] lg:w-[min(30%,380px)]">
       <AnimatePresence initial={false}>
         {pilha.map(({ chave, atras, item }) => (
           <motion.div

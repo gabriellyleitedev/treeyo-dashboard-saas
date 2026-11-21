@@ -3,10 +3,18 @@ import { motion } from 'framer-motion';
 import { cascata, sobe } from '@/site/componentes/animacoes';
 import { cn } from '@/site/componentes/cn';
 
-/** Pílula verde com o nome da seção (CRESCIMENTO, SOLUÇÕES...) */
-export function Etiqueta({ children }: { children: ReactNode }) {
+/** Pílula verde com o nome da seção (CRESCIMENTO, SOLUÇÕES...).
+ *  `claro`: para as seções de fundo branco (verde mais escuro, sem brilho) */
+export function Etiqueta({ children, claro }: { children: ReactNode; claro?: boolean }) {
   return (
-    <span className="inline-block rounded-full border border-[#1fba11] bg-[#1fba11]/[0.06] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#1fba11] shadow-[0_0_6px_rgb(255_255_255/0.35),inset_0_0_10px_rgb(255_255_255/0.2)]">
+    <span
+      className={cn(
+        'inline-block rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em]',
+        claro
+          ? 'border-[#138a0a]/50 bg-[#1fba11]/[0.08] text-[#138a0a]'
+          : 'border-[#1fba11] bg-[#1fba11]/[0.06] text-[#1fba11] shadow-[0_0_6px_rgb(255_255_255/0.35),inset_0_0_10px_rgb(255_255_255/0.2)]'
+      )}
+    >
       {children}
     </span>
   );
