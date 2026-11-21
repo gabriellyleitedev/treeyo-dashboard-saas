@@ -39,7 +39,8 @@ export const CRESCIMENTO = {
 
 export const SOLUCOES = {
   etiqueta: 'Soluções',
-  tituloDestaque: 'Mais do que notificações:',
+  // \u00a0 = espaço que não quebra: "do que" nunca se separa (no celular: "Mais do que / notificações:")
+  tituloDestaque: 'Mais do\u00a0que notificações:',
   titulo: 'inteligência que age por você',
   subtitulo: 'Ative os alertas e receba notificações automáticas sobre cada movimentação. Simples, seguro e instantâneo.',
   notificacao: 'Chegou uma entrada.',

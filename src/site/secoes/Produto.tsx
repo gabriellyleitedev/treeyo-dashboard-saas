@@ -30,15 +30,16 @@ const POSICOES = [
  */
 export default function Produto() {
   const ref = useRef<HTMLDivElement>(null);
+  const arteRef = useRef<HTMLDivElement>(null);
   const semMovimento = useReducedMotion();
   const naTela = useInView(ref, { amount: 0.35 });
   // a tela acende uma vez e fica viva enquanto a seção aparece
   const acendeu = useInView(ref, { amount: 0.35, once: true });
 
-  // escala da camada da tela: a arte ocupa 100% da largura da caixa
+  // escala da camada da tela: mede a largura real da arte
   const [escala, setEscala] = useState(0);
   useEffect(() => {
-    const caixa = ref.current;
+    const caixa = arteRef.current;
     if (!caixa) return;
     const medir = () => setEscala(caixa.clientWidth / ARTE.largura);
     medir();
@@ -73,7 +74,7 @@ export default function Produto() {
   ];
 
   return (
-    <section id="produto" className="relative isolate overflow-hidden pb-24 pt-32 md:pb-32 md:pt-44">
+    <section id="produto" className="relative isolate overflow-hidden pb-24 pt-24 md:pb-32 md:pt-44">
 
       <TituloSecao etiqueta={PRODUTO.etiqueta} subtitulo={PRODUTO.subtitulo} className="px-6">
         {PRODUTO.titulo} <Destaque>{PRODUTO.tituloDestaque}</Destaque>
@@ -86,6 +87,9 @@ export default function Produto() {
         onPointerLeave={() => { mouseX.set(0); mouseY.set(0); }}
         className="relative mt-2 w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_88%,transparent_100%)] md:-mt-4"
       >
+        {/* no celular a arte fica mais larga que a tela (laterais cortadas)
+            para o notebook não ficar pequeno */}
+        <div ref={arteRef} className="relative -ml-[30%] w-[170%] md:ml-0 md:w-full">
         <motion.div
           style={semMovimento ? undefined : { scale: cenaEscala }}
           className="relative"
@@ -94,12 +98,12 @@ export default function Produto() {
             <source
               type="image/avif"
               srcSet="/site/notebook-pedra-1376.avif 1376w, /site/notebook-pedra-2752.avif 2752w"
-              sizes="100vw"
+              sizes="(max-width: 767px) 170vw, 100vw"
             />
             <img
               src="/site/notebook-pedra-2752.webp"
               srcSet="/site/notebook-pedra-1376.webp 1376w, /site/notebook-pedra-2752.webp 2752w"
-              sizes="100vw"
+              sizes="(max-width: 767px) 170vw, 100vw"
               width={ARTE.largura}
               height={ARTE.altura}
               alt="Painel da Treeyo aberto num notebook, com a Visão Geral do mês"
@@ -130,6 +134,7 @@ export default function Produto() {
             </div>
           )}
         </motion.div>
+        </div>
 
         {/* etiquetas de vidro flutuando (só no computador) */}
         {PRODUTO.destaques.map((texto, i) => (
