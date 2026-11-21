@@ -230,7 +230,7 @@ function CartaoLimite({ ativo, parado }: CartaoProps) {
   const pct = useContagem(usado, ativo, parado, 2);
 
   return (
-    <Vidro icone={<Gauge className="h-4 w-4" />} titulo="Limite do MEI" ativo={ativo} parado={parado} escuro>
+    <Vidro icone={<Gauge className="h-4 w-4" />} titulo="Limite do MEI" ativo={ativo} parado={parado}>
       <p className="mt-6 flex items-start gap-2 text-[56px] font-semibold leading-none tracking-[-0.04em]">
         <Contagem valor={pct} formato={(v) => `${Math.round(v)}%`} />
         <ArrowUpRight className="mt-2 h-5 w-5 text-[#2ad81a]" />

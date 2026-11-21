@@ -4,7 +4,7 @@
 export const MENU = [
   { rotulo: 'Treeyo', ancora: '#treeyo' },
   { rotulo: 'Segurança', ancora: '#seguranca' },
-  { rotulo: 'Plano', ancora: '#plano' },
+  { rotulo: 'Pacote', ancora: '#pacote' },
   { rotulo: 'Benefícios', ancora: '#beneficios' },
   { rotulo: 'Ajuda', ancora: '#ajuda' },
 ] as const;
@@ -158,4 +158,57 @@ export const RECURSOS = {
     ],
     hoje: 20,
   },
+} as const;
+
+// Seção "pacote": a Treeyo vendida como pacote fechado (sem mensalidade)
+export const PACOTE = {
+  etiqueta: 'Pacote',
+  titulo: 'Feita para o MEI de hoje.',
+  tituloSegundaLinha: 'Sem mensalidade.',
+  subtitulo: 'Todo app cobra assinatura todo mês. A Treeyo não: você fecha o pacote uma vez e o sistema cuida do resto.',
+  colunas: ['Planilha', 'Apps por assinatura', 'Treeyo Pacote'],
+  // [planilha, assinatura, treeyo]: true = tem, false = não tem, texto = detalhe
+  linhas: [
+    { nome: 'Entradas e saídas organizadas', valores: [true, true, true] },
+    { nome: 'Limite do MEI em tempo real', valores: [false, true, true] },
+    { nome: 'Alertas automáticos', valores: [false, true, true] },
+    { nome: 'Fila Inteligente', valores: [false, false, true] },
+    { nome: 'Lembrete do DAS', valores: [false, false, true] },
+    { nome: 'Custo', valores: ['Seu tempo', 'Todo mês', 'Uma vez'] },
+  ],
+  cartao: {
+    nome: 'Pacote Treeyo',
+    preco: 'Valor de lançamento em breve',
+    detalhe: 'Pagamento único · sem mensalidade',
+    itens: ['Painel completo do MEI', 'Fila Inteligente e alertas', 'Limite do MEI em tempo real', 'Lembretes e DAS em dia'],
+    botao: 'Quero o pacote',
+  },
+} as const;
+
+// Rodapé
+export const RODAPE = {
+  descricao: 'A Treeyo transforma as entradas, saídas e contas do seu MEI em decisões claras, tudo num lugar só.',
+  colunas: [
+    { titulo: 'Produto', links: [
+      { rotulo: 'Visão Geral', href: '#produto' },
+      { rotulo: 'Alertas', href: '#solucoes' },
+      { rotulo: 'Controle', href: '#recursos' },
+      { rotulo: 'Pacote', href: '#pacote' },
+    ] },
+    { titulo: 'Ajuda', links: [
+      { rotulo: 'Central de ajuda', href: '#' },
+      { rotulo: 'Perguntas frequentes', href: '#' },
+      { rotulo: 'Fale conosco', href: '#' },
+    ] },
+    { titulo: 'Empresa', links: [
+      { rotulo: 'Sobre a Treeyo', href: '#treeyo' },
+      { rotulo: 'Segurança', href: '#' },
+      { rotulo: 'Contato', href: '#' },
+    ] },
+  ],
+  legal: [
+    { rotulo: 'Termos de uso', href: '#' },
+    { rotulo: 'Privacidade', href: '#' },
+  ],
+  letreiro: 'Treeyo',
 } as const;

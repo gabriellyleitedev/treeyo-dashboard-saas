@@ -6,6 +6,8 @@ import Solucoes from '@/site/secoes/Solucoes';
 import Produto from '@/site/secoes/Produto';
 import Recursos from '@/site/secoes/Recursos';
 import Cortina from '@/site/componentes/Cortina';
+import Pacote from '@/site/secoes/Pacote';
+import Rodape from '@/site/secoes/Rodape';
 
 // Página inicial do site (rota "/"). Sempre escura, independente do tema do painel.
 // Fundo quase preto esverdeado (mesma família do fundo do painel).
@@ -23,6 +25,8 @@ export default function Inicio() {
         {/* Recursos sobe por cima do notebook como uma cortina */}
         <Cortina fundo={<Produto />}>
           <Recursos />
+          <Pacote />
+          <Rodape />
         </Cortina>
         {/* Próximas seções: a definir (as versões de Segurança, Benefícios,
             Planos, Ajuda e Rodapé foram descartadas) */}
