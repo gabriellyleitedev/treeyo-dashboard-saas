@@ -15,11 +15,11 @@ const GRAO =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E\")";
 
 // Fundos dos cartões: manchas de luz como uma foto fora de foco
-// (água/céu, folhas e terra — o "solo fértil" da marca)
+// (água/céu, folhas e terra), em tons apagados como foto: a cor fica nos detalhes
 const FUNDOS = [
-  'radial-gradient(60% 50% at 20% 15%, #3d8fb0 0%, transparent 70%), radial-gradient(50% 45% at 85% 35%, #1b5d78 0%, transparent 70%), radial-gradient(70% 60% at 50% 100%, #0b3a4c 0%, transparent 75%), radial-gradient(30% 25% at 70% 70%, #6fb8d2 0%, transparent 70%), #08202a',
-  'radial-gradient(45% 40% at 25% 25%, #8fe36b 0%, transparent 70%), radial-gradient(55% 50% at 80% 20%, #1fba11 0%, transparent 70%), radial-gradient(60% 55% at 40% 85%, #0f5a1c 0%, transparent 72%), radial-gradient(30% 30% at 85% 75%, #4fa83a 0%, transparent 70%), #0a2410',
-  'radial-gradient(55% 45% at 75% 20%, #e0a867 0%, transparent 70%), radial-gradient(50% 50% at 20% 40%, #9a5f2c 0%, transparent 72%), radial-gradient(70% 55% at 55% 100%, #4a2a12 0%, transparent 75%), radial-gradient(28% 24% at 30% 80%, #c78a4a 0%, transparent 70%), #24150a',
+  'radial-gradient(60% 50% at 20% 15%, #7d97a3 0%, transparent 70%), radial-gradient(50% 45% at 85% 35%, #3f5a66 0%, transparent 70%), radial-gradient(70% 60% at 50% 100%, #1d2a30 0%, transparent 75%), radial-gradient(30% 25% at 70% 70%, #a9bcc4 0%, transparent 70%), #151d21',
+  'radial-gradient(45% 40% at 25% 25%, #7f8f6a 0%, transparent 70%), radial-gradient(55% 50% at 80% 20%, #4d5e3f 0%, transparent 70%), radial-gradient(60% 55% at 40% 85%, #222b1d 0%, transparent 72%), radial-gradient(30% 30% at 85% 75%, #67784f 0%, transparent 70%), #171d14',
+  'radial-gradient(55% 45% at 75% 20%, #b59a7a 0%, transparent 70%), radial-gradient(50% 50% at 20% 40%, #6e5844 0%, transparent 72%), radial-gradient(70% 55% at 55% 100%, #2c241c 0%, transparent 75%), radial-gradient(28% 24% at 30% 80%, #94795c 0%, transparent 70%), #1d1813',
 ];
 
 /** Computador (≥1024px): só nele a seção fica presa na tela */
@@ -185,13 +185,13 @@ function CartaoMes({ ativo, parado }: CartaoProps) {
   return (
     <Vidro icone={<Wallet className="h-4 w-4" />} titulo="Visão do mês" ativo={ativo} parado={parado}>
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <Dado rotulo="Entradas" cor="text-[#2ad81a]"><Contagem valor={vEntradas} formato={inteiro} /></Dado>
+        <Dado rotulo="Entradas"><Contagem valor={vEntradas} formato={inteiro} /></Dado>
         <Dado rotulo="Saídas"><Contagem valor={vSaidas} formato={inteiro} /></Dado>
         <Dado rotulo="Lançamentos"><Contagem valor={vQtd} formato={(v) => String(Math.round(v))} /></Dado>
       </div>
       {/* entradas x saídas */}
       <div className="mt-5 space-y-2">
-        {[{ v: entradas, cor: 'bg-[#1fba11]', icone: ArrowDownLeft }, { v: saidas, cor: 'bg-white/45', icone: ArrowUpRight }].map(({ v, cor, icone: Icone }, i) => (
+        {[{ v: entradas, cor: 'bg-white/85', icone: ArrowDownLeft }, { v: saidas, cor: 'bg-white/30', icone: ArrowUpRight }].map(({ v, cor, icone: Icone }, i) => (
           <div key={i} className="flex items-center gap-2">
             <Icone className="h-3.5 w-3.5 text-white/60" />
             <div className="h-6 flex-1 overflow-hidden rounded-md bg-white/10">
@@ -239,7 +239,7 @@ function CartaoLimite({ ativo, parado }: CartaoProps) {
       {/* régua com marcação do limite */}
       <div className="relative mt-5 h-2.5 rounded-full bg-white/10">
         <motion.div
-          className="h-full origin-left rounded-full bg-[linear-gradient(90deg,#1fba11,#b8ffa6)] shadow-[0_0_14px_rgb(31_186_17/0.6)]"
+          className="h-full origin-left rounded-full bg-white/85"
           style={{ width: `${usado}%` }}
           initial={{ scaleX: parado ? 1 : 0 }}
           animate={{ scaleX: ativo || parado ? 1 : 0 }}
@@ -248,7 +248,7 @@ function CartaoLimite({ ativo, parado }: CartaoProps) {
       </div>
       <div className="mt-6 grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
         <Dado rotulo="Faturado">R$ {faturado}</Dado>
-        <Dado rotulo="Ainda cabe" cor="text-[#2ad81a]">R$ {falta}</Dado>
+        <Dado rotulo="Ainda cabe">R$ {falta}</Dado>
         <Dado rotulo="Por mês">R$ {media}</Dado>
       </div>
     </Vidro>
@@ -266,7 +266,7 @@ function CartaoContas({ ativo, parado }: CartaoProps) {
     <Vidro icone={<CalendarCheck className="h-4 w-4" />} titulo="Contas do mês" ativo={ativo} parado={parado}>
       <p className="mt-4 text-[30px] font-semibold tracking-[-0.03em]"><Contagem valor={valor} formato={reais} /></p>
       <p className="flex items-center gap-1.5 text-[12px] text-white/65">
-        <i className="h-1.5 w-1.5 rounded-full bg-[#f87171]" /> a pagar nos próximos 7 dias
+        <i className="h-1.5 w-1.5 rounded-full bg-white/60" /> a pagar nos próximos 7 dias
       </p>
       <div className="mt-4 grid grid-cols-7 gap-1 text-center text-[11px]">
         {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => <span key={i} className="pb-1 text-white/45">{d}</span>)}
@@ -288,8 +288,8 @@ function CartaoContas({ ativo, parado }: CartaoProps) {
               {venc && (
                 <i className={cn(
                   'absolute bottom-0.5 h-1 w-1 rounded-full',
-                  venc.pago ? 'bg-[#2ad81a]' : atrasado ? 'bg-[#f87171]' : 'bg-[#fbbf24]',
-                  !venc.pago && 'shadow-[0_0_6px_currentColor]'
+                  venc.pago ? 'bg-white/35' : atrasado ? 'bg-white' : 'bg-white/75',
+                  
                 )} />
               )}
             </motion.span>

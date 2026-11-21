@@ -24,8 +24,9 @@ const POSICOES = [
  * ponta da tela, com a Visão Geral do painel VIVA dentro da tela do notebook
  * (HTML de verdade, posto na perspectiva da tela; ver TelaPainel). Ao entrar,
  * a tela acende e o painel se monta: saldo contando, barras subindo, gráfico
- * se desenhando; depois entradas novas vão chegando. Ao rolar, a cena aproxima
- * de leve; o mouse move a cena um pouco (profundidade). Só transform/opacity.
+ * se desenhando; depois entradas novas vão chegando. A cena fica quase
+ * parada; quem se mexe são as etiquetas de vidro: flutuam sem parar e seguem
+ * o mouse, cada uma numa profundidade. Só transform/opacity.
  */
 export default function Produto() {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,23 +48,29 @@ export default function Produto() {
   }, []);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'center center'] });
-  const cenaEscala = useTransform(scrollYProgress, [0, 1], [1.12, 1.03]);
-  const cenaY = useTransform(scrollYProgress, [0, 1], [50, 0]);
-  const etiquetaY = [
-    useTransform(scrollYProgress, [0, 1], [90, 0]),
-    useTransform(scrollYProgress, [0, 1], [140, 0]),
-    useTransform(scrollYProgress, [0, 1], [60, 0]),
-  ];
+  // a cena (pedra + notebook) fica quase parada: só um zoom bem leve ao entrar
+  const cenaEscala = useTransform(scrollYProgress, [0, 1], [1.04, 1]);
 
-  // mouse: a cena desliza um pouco para o lado oposto (suavizado)
+  // mouse: só as etiquetas reagem, cada uma numa profundidade (suavizado)
   const mouseX = useSpring(0, { stiffness: 60, damping: 20 });
   const mouseY = useSpring(0, { stiffness: 60, damping: 20 });
   const mover = (e: React.PointerEvent<HTMLDivElement>) => {
     if (semMovimento || e.pointerType !== 'mouse') return;
     const r = e.currentTarget.getBoundingClientRect();
-    mouseX.set(-((e.clientX - r.left) / r.width - 0.5) * 24);
-    mouseY.set(-((e.clientY - r.top) / r.height - 0.5) * 14);
+    mouseX.set((e.clientX - r.left) / r.width - 0.5);
+    mouseY.set((e.clientY - r.top) / r.height - 0.5);
   };
+  // cada etiqueta: sobe com a rolagem (velocidades diferentes) + segue o mouse
+  const etiquetaX = [
+    useTransform(mouseX, (m) => m * -36),
+    useTransform(mouseX, (m) => m * -22),
+    useTransform(mouseX, (m) => m * -48),
+  ];
+  const etiquetaY = [
+    useTransform([scrollYProgress, mouseY], ([p, m]: number[]) => (1 - p) * 90 + m * -24),
+    useTransform([scrollYProgress, mouseY], ([p, m]: number[]) => (1 - p) * 140 + m * -16),
+    useTransform([scrollYProgress, mouseY], ([p, m]: number[]) => (1 - p) * 60 + m * -30),
+  ];
 
   return (
     <section id="produto" className="relative isolate overflow-hidden pb-24 pt-32 md:pb-32 md:pt-44">
@@ -80,7 +87,7 @@ export default function Produto() {
         className="relative mt-2 w-full overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_0%,black_14%,black_88%,transparent_100%)] md:-mt-4"
       >
         <motion.div
-          style={semMovimento ? { scale: 1.03 } : { scale: cenaEscala, y: cenaY, x: mouseX, translateY: mouseY }}
+          style={semMovimento ? undefined : { scale: cenaEscala }}
           className="relative"
         >
           <picture className="block">
@@ -126,17 +133,20 @@ export default function Produto() {
 
         {/* etiquetas de vidro flutuando (só no computador) */}
         {PRODUTO.destaques.map((texto, i) => (
-          <motion.span
+          <motion.div
             key={texto}
-            style={semMovimento ? undefined : { y: etiquetaY[i] }}
-            className={cn(
-              'absolute z-20 hidden items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.07] px-5 py-3 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_20px_40px_-12px_rgb(0_0_0/0.7)] backdrop-blur-xl lg:flex',
-              POSICOES[i]
-            )}
+            style={semMovimento ? undefined : { x: etiquetaX[i], y: etiquetaY[i] }}
+            className={cn('absolute z-20 hidden lg:block', POSICOES[i])}
           >
-            <span className="h-2 w-2 rounded-full bg-[#1fba11] shadow-[0_0_8px_2px_rgb(31_186_17/0.6)]" />
-            {texto}
-          </motion.span>
+            {/* flutua sem parar, cada uma num ritmo */}
+            <span
+              className="animate-flutua flex items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.07] px-5 py-3 text-[15px] font-medium text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_20px_40px_-12px_rgb(0_0_0/0.7)] backdrop-blur-xl"
+              style={{ animationDuration: `${3.4 + i * 0.7}s`, animationDelay: `${i * -1.3}s` }}
+            >
+              <span className="h-2 w-2 rounded-full bg-[#1fba11] shadow-[0_0_8px_2px_rgb(31_186_17/0.6)]" />
+              {texto}
+            </span>
+          </motion.div>
         ))}
       </div>
 

@@ -390,3 +390,44 @@
   border: 1px solid var(--vidro-borda);
   box-shadow: inset 0 1px 0 var(--vidro-brilho), 0 20px 44px var(--tema-sombra);
 }
+
+/* Cobrinha de luz (site, contorno do celular): um trecho de luz verde que
+   corre pela borda (sobe por um lado, passa pelo topo e desce pelo outro).
+   A borda vira um anel com máscara e o brilho é um degradê cônico girando. */
+@property --cobra-angulo {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes cobra-gira {
+  to { --cobra-angulo: 360deg; }
+}
+
+@utility cobrinha {
+  border-style: solid;
+  border-color: transparent;
+  background: conic-gradient(from var(--cobra-angulo), transparent 0deg, transparent 250deg, rgb(31 186 17 / 0.6) 300deg, #c8ffb4 340deg, transparent 360deg) border-box;
+  mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  animation: cobra-gira var(--cobra-tempo, 6s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cobrinha { animation: none; opacity: 0; }
+}
+
+/* Flutuar (site): sobe e desce devagar, sem parar (etiquetas do notebook) */
+@keyframes flutua {
+  from { transform: translateY(0); }
+  to { transform: translateY(-12px); }
+}
+
+@utility animate-flutua {
+  animation: flutua 3.6s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-flutua { animation: none; }
+}

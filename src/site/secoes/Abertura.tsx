@@ -45,7 +45,7 @@ export default function Abertura() {
 
         {/* a frase da marca, entrando pela direita */}
         <div className="animate-entra-direita absolute inset-x-5 bottom-8 md:inset-x-auto md:bottom-auto md:right-[3%] md:top-[43%]">
-          <h1 className="text-[28px] font-medium leading-[1.12] tracking-[-0.02em] text-white md:text-[clamp(26px,2.7vw,54px)]">
+          <h1 className="text-[28px] font-medium leading-[1.12] tracking-[-0.02em] text-white md:text-[clamp(30px,3.3vw,58px)]">
             {ABERTURA.titulo.map((linha) => (
               <span key={linha} className="md:block md:whitespace-nowrap">{linha} </span>
             ))}

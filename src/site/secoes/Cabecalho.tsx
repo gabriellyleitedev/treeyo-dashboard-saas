@@ -55,7 +55,7 @@ export default function Cabecalho() {
         <div className="flex items-center gap-1 md:gap-2">
           <Link
             to={ROTA_ENTRAR}
-            className="hidden rounded-full px-4 py-2 text-[17px] font-medium text-white/90 transition-colors hover:text-[#1fba11] sm:block"
+            className="hidden rounded-full px-4 py-2 text-[17px] font-medium text-white/90 transition-colors duration-300 hover:text-[#1fba11] sm:block"
           >
             {BOTOES.entrar}
           </Link>
@@ -82,8 +82,8 @@ export default function Cabecalho() {
   );
 }
 
-// Menu do meio (computador): pílula de vidro; ao passar o mouse, um destaque
-// desliza até o item e um pontinho verde acende embaixo dele.
+// Menu do meio (computador): pílula de vidro; ao passar o mouse, um contorno
+// desliza até o item.
 function MenuComputador() {
   const [emFoco, setEmFoco] = useState<string | null>(null);
 
@@ -113,10 +113,8 @@ function MenuComputador() {
                 <motion.span
                   layoutId="menu-destaque"
                   transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                  className="absolute inset-0 rounded-full bg-white/[0.08] shadow-[inset_0_1px_0_rgb(255_255_255/0.12)]"
-                >
-                  <span className="absolute -bottom-px left-1/2 h-[3px] w-5 -translate-x-1/2 rounded-full bg-[#1fba11] shadow-[0_0_10px_2px_rgb(31_186_17/0.7)]" />
-                </motion.span>
+                  className="absolute inset-0 rounded-full border border-white/25"
+                />
               )}
             </li>
           );

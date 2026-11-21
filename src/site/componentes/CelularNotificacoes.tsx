@@ -19,7 +19,26 @@ interface Item {
  * empurrando as anteriores para baixo, enquanto o celular está na tela.
  * Em volta, os dois contornos de neon verde do site antigo.
  */
+/** Hora e data de agora, como na tela de bloqueio (atualiza a cada minuto) */
+function useRelogio() {
+  const [agora, setAgora] = useState(() => new Date());
+  useEffect(() => {
+    let intervalo: number | undefined;
+    // espera virar o minuto e depois atualiza de minuto em minuto
+    const primeiro = window.setTimeout(() => {
+      setAgora(new Date());
+      intervalo = window.setInterval(() => setAgora(new Date()), 60_000);
+    }, 60_000 - (Date.now() % 60_000) + 50);
+    return () => { clearTimeout(primeiro); clearInterval(intervalo); };
+  }, []);
+  return {
+    hora: agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    data: agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }),
+  };
+}
+
 export default function CelularNotificacoes() {
+  const { hora, data } = useRelogio();
   const ref = useRef<HTMLDivElement>(null);
   const naTela = useInView(ref, { amount: 0.4 });
   const semMovimento = useReducedMotion();
@@ -43,8 +62,16 @@ export default function CelularNotificacoes() {
   return (
     <div ref={ref} className="relative mx-auto h-[400px] w-[320px] md:h-[460px] md:w-[380px]">
       {/* contornos de neon (site antigo): um nítido e um mais espalhado */}
-      <div aria-hidden className="absolute -inset-x-[14px] -top-[14px] bottom-0 rounded-t-[70px] border-x-[3px] border-t-[3px] border-[#1fba11]/80 blur-[1px] [mask-image:linear-gradient(to_bottom,black_55%,transparent)]" />
-      <div aria-hidden className="absolute -inset-x-[30px] -top-[30px] bottom-0 rounded-t-[86px] border-x-[3px] border-t-[3px] border-[#1fba11]/50 blur-[4px] [mask-image:linear-gradient(to_bottom,black_45%,transparent)]" />
+      {/* as duas linhas ficam mais apagadas e uma "cobrinha" de luz corre por
+          cada uma, sem parar (a de fora mais devagar e defasada) */}
+      <div aria-hidden className="absolute -inset-x-[14px] -top-[14px] bottom-0 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]">
+        <div className="absolute inset-0 rounded-t-[70px] border-x-[3px] border-t-[3px] border-[#1fba11]/45 blur-[1px]" />
+        <div className="cobrinha absolute inset-0 rounded-t-[70px] border-x-[3px] border-t-[3px] border-b-0 blur-[1px] [--cobra-tempo:6s]" />
+      </div>
+      <div aria-hidden className="absolute -inset-x-[30px] -top-[30px] bottom-0 [mask-image:linear-gradient(to_bottom,black_45%,transparent)]">
+        <div className="absolute inset-0 rounded-t-[86px] border-x-[3px] border-t-[3px] border-[#1fba11]/30 blur-[4px]" />
+        <div className="cobrinha absolute inset-0 rounded-t-[86px] border-x-[3px] border-t-[3px] border-b-0 blur-[3px] [--cobra-tempo:9s] [animation-delay:-4.5s]" />
+      </div>
       <div aria-hidden className="animate-neon-respira absolute -inset-x-[60px] -top-[60px] bottom-0 rounded-t-[120px] bg-[radial-gradient(50%_60%_at_50%_30%,rgb(31_186_17/0.22),transparent_70%)] blur-xl" />
 
       {/* corpo do celular */}
@@ -54,7 +81,7 @@ export default function CelularNotificacoes() {
 
         {/* barra de status + ilha */}
         <div className="relative flex items-center justify-between px-7 pt-4 text-[13px] font-semibold text-white">
-          <span>09:41</span>
+          <span>{hora}</span>
           <span aria-hidden className="absolute left-1/2 top-3 h-[26px] w-[96px] -translate-x-1/2 rounded-full bg-black" />
           <span aria-hidden className="flex items-center gap-1.5">
             <span className="flex items-end gap-[2px]">
@@ -66,8 +93,8 @@ export default function CelularNotificacoes() {
 
         {/* data e hora da tela de bloqueio */}
         <div className="relative mt-6 text-center text-white">
-          <p className="text-[13px] font-medium text-white/70">quinta-feira, 19 de novembro</p>
-          <p className="text-[64px] font-semibold leading-none tracking-tight md:text-[72px]">09:41</p>
+          <p className="text-[13px] font-medium text-white/70">{data}</p>
+          <p className="text-[64px] font-semibold leading-none tracking-tight md:text-[72px]">{hora}</p>
         </div>
 
         {/* notificações */}

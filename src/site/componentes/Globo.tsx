@@ -12,7 +12,10 @@ import { cn } from '@/site/componentes/cn';
  * O que anima (visual limpo, igual à imagem; a novidade está no movimento):
  *  - o sol nasce conforme a seção entra na tela (rolagem);
  *  - a luz do horizonte acompanha levemente o mouse;
- *  - a luz respira devagar (o pulso do site antigo);
+ *  - o planeta respira devagar (~6 s por ciclo): a atmosfera se expande e
+ *    volta, a luz e o sol acompanham — parece vivo;
+ *  - de tempos em tempos, um pulso de luz sai do sol e corre pela borda nos
+ *    dois sentidos, como um sinal sendo transmitido;
  *  - um reflexo de luz desliza pela borda do horizonte.
  *
  * Economia: só desenha enquanto está visível; com "reduzir movimento" desenha
@@ -53,13 +56,16 @@ void main() {
   vec3 verde = vec3(0.12, 0.73, 0.07);
   vec3 verdeClaro = vec3(0.55, 1.0, 0.42);
   vec3 branco = vec3(1.0, 1.0, 0.94);
-  // respira devagar, como o pulso do site antigo
-  float luz = (0.45 + 0.55 * uSol) * (0.9 + 0.1 * sin(uTime * 1.25));
+  // respiração: inspira e expira devagar (0 = vazio, 1 = cheio), com a
+  // subida um pouco mais lenta que a descida, como um fôlego de verdade
+  float fase = fract(uTime / 6.2);
+  float resp = fase < 0.55 ? smoothstep(0.0, 0.55, fase) : 1.0 - smoothstep(0.55, 1.0, fase);
+  float luz = (0.45 + 0.55 * uSol) * (0.84 + 0.2 * resp);
   vec3 cor = vec3(0.0);
 
-  // atmosfera acima do horizonte
+  // atmosfera acima do horizonte (se expande ao inspirar)
   if (d > 0.0) {
-    cor += verde * (exp(-d / 46.0) * 1.1 * foco + exp(-d / 170.0) * 0.26 * lados) * luz;
+    cor += verde * (exp(-d / (46.0 * (1.0 + 0.35 * resp))) * 1.1 * foco + exp(-d / (170.0 * (1.0 + 0.2 * resp))) * 0.26 * lados) * luz;
   }
 
   // borda de luz colada na curva
@@ -69,8 +75,17 @@ void main() {
 
   // reflexo de luz deslizando devagar pela borda, de um lado ao outro
   float gx = W * (0.5 + 0.42 * sin(uTime * 0.22));
-  float reflexo = exp(-pow((px.x - gx) / 70.0, 2.0)) * exp(-abs(d) / 2.2);
+  float dr = (px.x - gx) / 70.0;
+  float reflexo = exp(-dr * dr) * exp(-abs(d) / 2.2);
   cor += branco * reflexo * 0.9 * uSol;
+
+  // pulso de "sinal": a cada ~7 s, sai do sol e corre pela borda para os
+  // dois lados, sumindo aos poucos
+  float tp = fract(uTime / 7.0) * 7.0;          // segundos desde o último pulso
+  float frente = tp * W * 0.16;                  // distância já percorrida
+  float dp = (abs(px.x - W * 0.5) - frente) / 38.0;
+  float pulso = exp(-dp * dp) * exp(-abs(d) / 3.0);
+  cor += verdeClaro * pulso * 0.85 * exp(-tp * 0.7) * uSol;
 
   // superfície: clara junto à borda, escurecendo para baixo
   if (d < 0.0) {
@@ -80,7 +95,7 @@ void main() {
 
   // sol nascendo no topo da curva
   vec2 sp = vec2(px.x - W * 0.5, px.y - (horizonte - 1.0 - uSol * 5.0));
-  vec2 nucleo = sp / vec2(78.0, 14.0);
+  vec2 nucleo = sp / vec2(78.0 * (1.0 + 0.12 * resp), 14.0);
   float sol = exp(-dot(nucleo, nucleo)) * 1.8 * smoothstep(-14.0, 3.0, d);
   sol += exp(-length(sp / vec2(1.0, 0.42)) / 110.0) * 0.55;
   cor += mix(verdeClaro, branco, 0.75) * sol * uSol;

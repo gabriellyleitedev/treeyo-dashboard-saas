@@ -70,7 +70,7 @@ export default function BotaoBrilho({ para, children, className, bloco }: BotaoB
         <span key={lado} aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <span
             className={cn(
-              'absolute -inset-[2px] rounded-full blur-[1px] transition-opacity duration-350 ease-out',
+              'absolute -inset-[2px] rounded-full blur-[1px] transition-opacity duration-300 ease-out',
               lado === 'direita'
                 ? 'bg-[linear-gradient(to_right,transparent_55%,#3bfd72_85%,#c8ffb4_100%)] opacity-(--halo-direita)'
                 : 'bg-[linear-gradient(to_left,transparent_55%,#3bfd72_85%,#c8ffb4_100%)] opacity-(--halo-esquerda)'
@@ -78,7 +78,7 @@ export default function BotaoBrilho({ para, children, className, bloco }: BotaoB
           />
           <span
             className={cn(
-              'absolute -inset-[4px] rounded-full blur-[9px] transition-opacity duration-350 ease-out',
+              'absolute -inset-[4px] rounded-full blur-[9px] transition-opacity duration-300 ease-out',
               lado === 'direita'
                 ? 'bg-[linear-gradient(to_right,transparent_60%,#1fba11_90%)] opacity-[calc(var(--halo-direita)*0.7)]'
                 : 'bg-[linear-gradient(to_left,transparent_60%,#1fba11_90%)] opacity-[calc(var(--halo-esquerda)*0.7)]'
@@ -98,7 +98,7 @@ export default function BotaoBrilho({ para, children, className, bloco }: BotaoB
         {/* por dentro: luz grande e difusa, quase branca, com verde só nas bordas */}
         <span
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[150px] w-[300px] translate-x-(--luz-x) -translate-y-1/2 rounded-full bg-[radial-gradient(43%_44%_at_50%_50%,#fbfff5_0%,#effde4_28%,#c9f5b4_48%,rgb(120_230_90/0.35)_62%,transparent_76%)] blur-[6px] transition-transform duration-800 ease-[cubic-bezier(.4,0,.2,1)] group-data-ativo:duration-150 group-data-ativo:ease-out"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[150px] w-[300px] translate-x-(--luz-x) -translate-y-1/2 rounded-full bg-[radial-gradient(43%_44%_at_50%_50%,#fbfff5_0%,#effde4_28%,#c9f5b4_48%,rgb(120_230_90/0.35)_62%,transparent_76%)] blur-[6px] transition-transform duration-300 ease-[cubic-bezier(.4,0,.2,1)] group-data-ativo:ease-out"
         />
         <span className="relative">{children}</span>
       </span>
