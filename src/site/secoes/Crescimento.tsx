@@ -3,6 +3,7 @@ import { motion, type Variants } from 'framer-motion';
 import Globo from '@/site/componentes/Globo';
 import { BOTOES, CRESCIMENTO } from '@/site/textos';
 import { ROUTES } from '@/constants/navigation';
+import { useCelular } from '@/utils/useCelular';
 
 // Até o login existir, "Comece agora" abre o painel direto
 const ROTA_COMECAR = ROUTES.visaoGeral;
@@ -24,16 +25,19 @@ const desce: Variants = {
 // Seção "Crescimento": a frase principal do MEI sobre o horizonte do planeta
 // verde, que é desenhado ao vivo (ver Globo) e "nasce" conforme a rolagem.
 export default function Crescimento() {
+  // no celular o texto ocupa mais altura: o horizonte desce para não ficar
+  // atrás das frases e dos botões
+  const celular = useCelular();
   return (
     <section id="crescimento" className="relative isolate overflow-hidden">
-      <Globo className="absolute inset-0 -z-10" horizonte={0.7} />
+      <Globo className="absolute inset-0 -z-10" horizonte={celular ? 0.8 : 0.7} />
 
       <motion.div
         variants={cascata}
         initial="oculto"
         whileInView="visivel"
         viewport={{ once: true, amount: 0.4 }}
-        className="relative mx-auto flex min-h-[760px] max-w-4xl flex-col items-center px-6 pt-28 text-center md:min-h-[940px] md:pt-36"
+        className="relative mx-auto flex min-h-[780px] max-w-4xl flex-col items-center px-6 pt-14 text-center md:min-h-[940px] md:pt-36"
       >
         <motion.span
           variants={desce}
@@ -65,16 +69,16 @@ export default function Crescimento() {
           {CRESCIMENTO.subtitulo}
         </motion.p>
 
-        <motion.div variants={sobe} className="mt-10 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-4">
+        <motion.div variants={sobe} className="mt-10 flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-4">
           <Link
             to={ROTA_COMECAR}
-            className="w-full rounded-full bg-[#1fba11] px-8 py-3.5 text-center text-base font-bold text-[#041a02] shadow-[0_8px_30px_-8px_rgb(31_186_17/0.7)] transition-[transform,background-color] duration-300 hover:scale-[1.03] hover:bg-[#2ad81a] active:scale-95 sm:w-auto"
+            className="rounded-full bg-[#1fba11] px-6 py-3 text-sm sm:px-8 sm:py-3.5 text-center font-bold text-[#041a02] sm:text-base shadow-[0_8px_30px_-8px_rgb(31_186_17/0.7)] transition-[transform,background-color] duration-300 hover:scale-[1.03] hover:bg-[#2ad81a] active:scale-95"
           >
             {BOTOES.comeceAgora}
           </Link>
           <a
             href="#solucoes"
-            className="w-full rounded-full border border-[#1fba11]/70 bg-black/20 px-8 py-3.5 text-center text-base font-semibold text-white backdrop-blur-sm transition-[transform,background-color] duration-300 hover:scale-[1.03] hover:bg-[#1fba11]/10 active:scale-95 sm:w-auto"
+            className="rounded-full border border-[#1fba11]/70 bg-black/20 px-6 py-3 text-center text-sm sm:px-8 sm:py-3.5 sm:text-base font-semibold text-white backdrop-blur-sm transition-[transform,background-color] duration-300 hover:scale-[1.03] hover:bg-[#1fba11]/10 active:scale-95"
           >
             {BOTOES.saibaMais}
           </a>
